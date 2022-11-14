@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/33601/Desktop/RealEstateManager/app/src/main/res/layout-w600dp/activity_main.xml" value="0.340625" />
         <entry key="..\:/Users/33601/Desktop/RealEstateManager/app/src/main/res/layout-w600dp/main_activity.xml" value="0.378125" />
+        <entry key="..\:/Users/33601/Desktop/RealEstateManager/app/src/main/res/layout/activity_detail.xml" value="0.35052083333333334" />
         <entry key="..\:/Users/33601/Desktop/RealEstateManager/app/src/main/res/layout/activity_main.xml" value="0.33177083333333335" />
+        <entry key="..\:/Users/33601/Desktop/RealEstateManager/app/src/main/res/layout/fragment_property_list.xml" value="0.35052083333333334" />
       </map>
     </option>
   </component>

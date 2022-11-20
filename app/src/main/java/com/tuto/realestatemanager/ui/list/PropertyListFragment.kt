@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
+import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +29,7 @@ class PropertyListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.button.setOnClickListener{
-            startActivity(Intent(context, DetailsPropertyFragment::class.java))
+            startActivity(Intent(context, DetailActivity::class.java))
         }
     }
 

@@ -3,6 +3,8 @@ package com.tuto.realestatemanager.ui.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils.replace
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.R
@@ -25,8 +27,8 @@ class MainActivity : AppCompatActivity() {
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
-                .replace(binding.mainContainerList.id,
-                    PropertyListFragment())
+                .replace(binding.mainContainerList.id, PropertyListFragment())
+                .commit()
         }
 
         if(binding.mainContainerDetail != null && supportFragmentManager.findFragmentById(binding.mainContainerDetail.id) == null){
@@ -35,13 +37,14 @@ class MainActivity : AppCompatActivity() {
                     binding.mainContainerDetail.id,
                     DetailsPropertyFragment()
                 )
+                .commit()
         }
 
-        viewmodel.navigateSingleLiveEvent.observe(this){
-            when(it){
-                MainViewAction.NavigateToDetailActivity -> startActivity(Intent(this, DetailActivity::class.java))
-            }
-        }
+//        viewmodel.navigateSingleLiveEvent.observe(this){
+//            when(it){
+//                MainViewAction.NavigateToDetailActivity -> startActivity(Intent(this, DetailActivity::class.java))
+//            }
+//        }
     }
 
     override fun onResume() {

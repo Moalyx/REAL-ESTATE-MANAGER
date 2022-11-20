@@ -19,7 +19,7 @@ class DetailActivity : AppCompatActivity() {
         if (savedInstanceState == null){
             supportFragmentManager.beginTransaction()
                 .replace(binding.detailContainer.id, DetailsPropertyFragment())
+                .commit()
         }
-
     }
 }

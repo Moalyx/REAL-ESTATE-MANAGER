@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,7 +32,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/ic_launcher_background"
-        app:layout_constraintTop_toBottomOf="@id/surface"
+        app:layout_constraintTop_toBottomOf="@id/title_surface"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"/>
@@ -57,7 +58,6 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
-        android:id="@+id/surface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="215"

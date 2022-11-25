@@ -40,11 +40,11 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-//        viewmodel.navigateSingleLiveEvent.observe(this){
-//            when(it){
-//                MainViewAction.NavigateToDetailActivity -> startActivity(Intent(this, DetailActivity::class.java))
-//            }
-//        }
+        viewmodel.navigateSingleLiveEvent.observe(this){
+            when(it){
+                MainViewAction.NavigateToDetailActivity -> startActivity(Intent(this, DetailActivity::class.java))
+            }
+        }
     }
 
     override fun onResume() {

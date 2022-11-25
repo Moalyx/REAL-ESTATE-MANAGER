@@ -1,9 +1,6 @@
-package com.tuto.realestatemanager.model
+package com.tuto.realestatemanager.ui.detail
 
-import androidx.room.Entity
-
-@Entity
-class PropertyEntity(
+data class PropertyDetailViewState(
     val id: Int,
     val type: String,
     val price: Int,

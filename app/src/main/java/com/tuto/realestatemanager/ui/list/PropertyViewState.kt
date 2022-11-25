@@ -1,11 +1,11 @@
 package com.tuto.realestatemanager.ui.list
 
 data class PropertyViewState(
-    val id: String,
+    val id: Int,
     val type: String,
-    val price: String,
+    val price: Int,
     val photo: String,
-    val county: String
-
-
+    val county: String,
+    val onItemClicked: () -> Unit,
+//    val onClickForIntent: () -> Unit,
 )

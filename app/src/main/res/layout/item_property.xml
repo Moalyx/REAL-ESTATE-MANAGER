@@ -7,9 +7,18 @@
     android:background="?selectableItemBackground">
 
     <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="#3E3838"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageView
         android:id="@+id/property_photo"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:padding="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -23,7 +32,7 @@
         android:layout_marginStart="12dp"
         android:hint="Flat"
         android:textColor="@color/black"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/property_county"
         app:layout_constraintStart_toEndOf="@id/property_photo"
@@ -46,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:hint="1.000.000"
+        android:textColor="#FA0303"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/property_photo"

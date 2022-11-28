@@ -29,7 +29,7 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
 
             Glide
                 .with(binding.propertyPhoto)
-                .load(propertyViewState.photo)
+                .load(propertyViewState.photoList[0])
                 .into(binding.propertyPhoto)
         }
     }

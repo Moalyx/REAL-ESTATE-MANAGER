@@ -13,7 +13,7 @@ class MainViewModel @Inject constructor(
 
     private var isTablet: Boolean = false
 
-    val navigateSingleLiveEvent = SingleLiveEvent<MainViewAction>()
+    val navigateSingleLiveEvent: SingleLiveEvent<MainViewAction> = SingleLiveEvent()
 
     init {
         navigateSingleLiveEvent.addSource(currentPropertyIdRepository.currentIdLiveData) {

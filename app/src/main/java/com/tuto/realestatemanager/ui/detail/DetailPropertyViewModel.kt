@@ -22,7 +22,7 @@ class DetailPropertyViewModel @Inject constructor(
                 it.id,
                 it.type,
                 it.price,
-                it.photo,
+                it.photoList,
                 it.county,
                 it.surface
             )

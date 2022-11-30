@@ -34,11 +34,11 @@ class PropertyListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView: RecyclerView = binding.recyclerview
-        val adapter = PropertyListAdapter()
+        val adapter = this.context?.let { PropertyListAdapter(it) }
         //recyclerView.layoutManager = GridLayoutManager(context,2)
         recyclerView.adapter = adapter
         viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            adapter?.submitList(it)
         }
     }
 }

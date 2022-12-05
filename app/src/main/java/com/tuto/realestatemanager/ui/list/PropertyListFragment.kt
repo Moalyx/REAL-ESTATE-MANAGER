@@ -2,9 +2,8 @@ package com.tuto.realestatemanager.ui.list
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,7 +13,7 @@ import com.tuto.realestatemanager.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PropertyListFragment : Fragment() {
+class PropertyListFragment : Fragment(), MenuProvider {
 
     private var _binding: FragmentPropertyListBinding? = null
     private val binding: FragmentPropertyListBinding get() = _binding!!
@@ -40,5 +39,16 @@ class PropertyListFragment : Fragment() {
         viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
             adapter?.submitList(it)
         }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+
+
+
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+
+        return false
     }
 }

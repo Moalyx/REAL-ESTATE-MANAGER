@@ -9,14 +9,14 @@ import javax.inject.Singleton
 @Singleton
 class CurrentPropertyIdRepository @Inject constructor() {
 
-    private val currentPropertyIdMutableLveData = MutableLiveData<Int>()
+    private val currentPropertyIdMutableLiveData = MutableLiveData<Long>()
 
     @MainThread
-    fun setCurrentId (currentId : Int){
-        currentPropertyIdMutableLveData.value = currentId
+    fun setCurrentId (currentId : Long){
+        currentPropertyIdMutableLiveData.value = currentId
     }
 
-    val currentIdLiveData : LiveData<Int> = currentPropertyIdMutableLveData
+    val currentIdLiveData : LiveData<Long> = currentPropertyIdMutableLiveData
 
 
 

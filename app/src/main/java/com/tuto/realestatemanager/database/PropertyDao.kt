@@ -19,7 +19,7 @@ interface PropertyDao {
     fun getAllProperties(): Flow<List<PropertyEntity>>
 
     @Query("SELECT * FROM property_table WHERE id=:id")
-    fun getPropertyById(id: Int): Flow<PropertyEntity>
+    fun getPropertyById(id: Long): Flow<PropertyEntity>
 
     @Transaction
     @Query("SELECT * FROM property_table")
@@ -27,9 +27,9 @@ interface PropertyDao {
 
     @Transaction
     @Query("SELECT * FROM property_table WHERE id=:id")
-    fun getPropertyWithPhotosById(id: Int): Flow<PropertyWithPhotosEntity>
+    fun getPropertyWithPhotosById(id: Long): Flow<PropertyWithPhotosEntity>
 
     @Query("DELETE FROM property_table WHERE id=:id")
-    suspend fun deleteProperty(id: Int)
+    suspend fun deleteProperty(id: Long)
 
 }

@@ -1,7 +1,7 @@
 package com.tuto.realestatemanager.ui.list
 
 data class PropertyViewState(
-    val id: Int,
+    val id: Long,
     val type: String,
     val price: Int,
     val photoList: List<String>,

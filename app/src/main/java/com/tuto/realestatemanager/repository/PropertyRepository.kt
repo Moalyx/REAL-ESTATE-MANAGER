@@ -129,7 +129,7 @@ class PropertyRepository @Inject constructor() {
         )
     )
 
-    fun getPropertyByIdLiveData(id : Int): LiveData<PropertyEntity> = propertiesListLiveData.map { propertyEntities ->
+    fun getPropertyByIdLiveData(id : Long): LiveData<PropertyEntity> = propertiesListLiveData.map { propertyEntities ->
         propertyEntities.first{it.id == id}
     }
 

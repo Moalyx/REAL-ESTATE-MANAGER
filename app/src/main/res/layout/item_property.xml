@@ -8,9 +8,11 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="105dp"
         app:cardElevation="8dp"
         app:cardCornerRadius="25dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
 
         >
 
@@ -21,7 +23,7 @@
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="#F3F5F6"
+                android:background="#E0D1FA"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -66,19 +68,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:hint="1.000.000"
-                android:textColor="#FA0303"
+                android:textColor="#673AB7"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_photo"
                 app:layout_constraintTop_toBottomOf="@id/property_county" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1sp"
-                android:background="#DDDDDD"
-                app:layout_constraintBottom_toBottomOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+<!--    <ImageView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="3sp"-->
+<!--        android:background="#DDDDDD"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

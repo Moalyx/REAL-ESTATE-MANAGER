@@ -34,8 +34,9 @@ class DetailsPropertyFragment : Fragment() {
 
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
-            binding.propertyType.text = it.type
+            binding.type.text = it.type
             binding.surface?.text = it.surface.toString()
+            binding.price.text = it.price.toString()
 
             val recyclerView: RecyclerView = binding.mediaRecyclerview
             val adapter = PropertyDetailPhotoAdapter()

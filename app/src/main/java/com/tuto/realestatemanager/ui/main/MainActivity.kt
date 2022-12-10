@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.TextUtils.replace
 import android.widget.FrameLayout
 import androidx.activity.viewModels
+import com.tuto.realestatemanager.CreatePropertyActivity
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
@@ -24,6 +25,10 @@ class MainActivity : AppCompatActivity() {
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.createActivty?.setOnClickListener(){
+            startActivity(Intent(this, CreatePropertyActivity::class.java))
+        }
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()

@@ -25,11 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.createActivty?.setOnClickListener(){
-            startActivity(Intent(this, CreatePropertyActivity::class.java))
-        }
-
+        
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainContainerList.id, PropertyListFragment())

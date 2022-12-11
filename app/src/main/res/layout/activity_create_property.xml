@@ -33,8 +33,15 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#89D8FB"
+            app:boxCornerRadiusBottomStart="25dp"
+            app:boxCornerRadiusTopEnd="25dp"
+            app:boxStrokeColor="#0099E8"
+            app:boxStrokeWidth="2dp"
+            app:boxStrokeWidthFocused="3dp"
             app:endIconMode="clear_text"
-            app:endIconTint="#673AB7">
+            app:endIconTint="#673AB7"
+            app:placeholderTextColor="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/type"
@@ -43,7 +50,7 @@
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_round_type"
                 android:hint="property type"
-                android:inputType="number"
+                android:textColor="#036A9F"
                 android:textSize="15dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -69,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7">
 
@@ -104,6 +112,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:boxBackgroundColor="#D2B3F8"
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="12dp"
             app:counterEnabled="true"
@@ -117,7 +126,6 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_baseline_description"
                 android:hint="Description"
-                android:inputType="number"
                 android:textSize="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_description" />
@@ -177,6 +185,8 @@
                             android:layout_marginEnd="6dp"
                             app:endIconMode="clear_text"
                             app:endIconTint="#673AB7"
+                            app:boxBackgroundColor="#D2B3F8"
+
                             app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                             app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                             app:layout_constraintStart_toStartOf="parent"
@@ -204,6 +214,8 @@
                             android:layout_marginTop="12dp"
                             app:endIconMode="clear_text"
                             app:endIconTint="#673AB7"
+                            app:boxBackgroundColor="#D2B3F8"
+
                             app:layout_constraintBottom_toTopOf="@id/title_bathrooms"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/title_surface"
@@ -234,6 +246,8 @@
                             android:layout_marginEnd="6dp"
                             app:endIconMode="clear_text"
                             app:endIconTint="#673AB7"
+                            app:boxBackgroundColor="#D2B3F8"
+
                             app:layout_constraintEnd_toStartOf="@id/title_bathrooms"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/title_surface">
@@ -263,6 +277,8 @@
                             android:layout_marginTop="12dp"
                             app:endIconMode="clear_text"
                             app:endIconTint="#673AB7"
+                            app:boxBackgroundColor="#D2B3F8"
+
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/title_bedrooms"
                             app:layout_constraintTop_toBottomOf="@id/title_Rooms">
@@ -323,6 +339,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    app:boxBackgroundColor="#D2B3F8"
 
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
@@ -349,6 +366,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    app:boxBackgroundColor="#D2B3F8"
 
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
@@ -376,6 +394,8 @@
                     android:layout_marginTop="12dp"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
+                    app:boxBackgroundColor="#D2B3F8"
+
                     app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                     app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                     app:layout_constraintStart_toStartOf="parent"
@@ -400,6 +420,8 @@
                     android:layout_marginTop="12dp"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
+                    app:boxBackgroundColor="#D2B3F8"
+
                     app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                     app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                     app:layout_constraintStart_toStartOf="parent"
@@ -424,6 +446,8 @@
                     android:layout_marginTop="12dp"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
+                    app:boxBackgroundColor="#D2B3F8"
+
                     app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                     app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                     app:layout_constraintStart_toStartOf="parent"
@@ -448,6 +472,8 @@
                     android:layout_marginTop="12dp"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7"
+                    app:boxBackgroundColor="#D2B3F8"
+
                     app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                     app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                     app:layout_constraintStart_toStartOf="parent"
@@ -471,8 +497,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -490,23 +516,80 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="#673AB7"
                     android:text="Bus" />
 
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="School"
-                    android:layout_marginStart="90dp"/>
+                    android:layout_marginStart="70dp"
+                    android:buttonTint="#673AB7"
+                    android:text="School" />
 
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="90dp"
-                    android:text="Airport"/>
-
+                    android:buttonTint="#673AB7"
+                    android:text="Airport" />
 
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#673AB7"
+                    android:text="Tram" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="62dp"
+                    android:buttonTint="#673AB7"
+                    android:text="Park" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="104dp"
+                    android:buttonTint="#673AB7"
+                    android:text="Restaurant" />
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Photos"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add picture"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:backgroundTint="#D2B3F8"
+                android:layout_gravity="center"
+                android:elevation="8dp"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_height="match_parent"/>
+
+
 
         </LinearLayout>
 

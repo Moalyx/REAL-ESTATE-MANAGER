@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
+import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import kotlinx.coroutines.flow.Flow
@@ -12,8 +14,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PropertyDao {
 
+    //////////   PROPERTY  //////////
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProperty(propertyEntity: PropertyEntity)
+
+    @Update
+    suspend fun updateProperty(propertyEntity: PropertyEntity)
 
     @Query("SELECT * FROM property_table")
     fun getAllProperties(): Flow<List<PropertyEntity>>
@@ -30,6 +37,23 @@ interface PropertyDao {
     fun getPropertyWithPhotosById(id: Long): Flow<PropertyWithPhotosEntity>
 
     @Query("DELETE FROM property_table WHERE id=:id")
-    suspend fun deleteProperty(id: Long)
+    suspend fun deletePropertyById(id: Long)
+
+    //////////  PHOTO  //////////
+
+    @Query("SELECT * FROM photo_table WHERE id=:id")
+    fun getPhotoByID(id: Long): Flow<PhotoEntity>
+
+    @Query("SELECT * FROM photo_table")
+    fun getAllPhotos(): Flow<List<PhotoEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPhoto(photoEntity: PhotoEntity)
+
+    @Query("DELETE FROM photo_table WHERE id=:id")
+    suspend fun deletePhotoById(id: Long)
+
+    @Query("DELETE FROM photo_table WHERE propertyId =:propertyId")
+    suspend fun deleteAllPropertyPhotos(propertyId: Long)
 
 }

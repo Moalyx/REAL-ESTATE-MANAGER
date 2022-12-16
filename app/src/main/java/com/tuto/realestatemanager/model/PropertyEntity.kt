@@ -11,7 +11,7 @@ class PropertyEntity constructor(
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "price") val price: Int,
 //    @ColumnInfo(name = "list_photo") val photo: String,
-    @ColumnInfo(name = "list_photo") val photoList: List<String>,
+//    @ColumnInfo(name = "list_photo") val photoList: List<String>,
     @ColumnInfo(name = "county") val county: String,
     @ColumnInfo(name = "surface") val surface: Int,
 //    @ColumnInfo(name = "property_location") val latLng: LatLng,

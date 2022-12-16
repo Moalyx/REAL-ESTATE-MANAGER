@@ -28,7 +28,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/proptype"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
@@ -39,19 +39,25 @@
             app:boxStrokeColor="#0099E8"
             app:boxStrokeWidth="2dp"
             app:boxStrokeWidthFocused="3dp"
-            app:endIconMode="clear_text"
+            app:endIconMode="dropdown_menu"
             app:endIconTint="#673AB7"
             app:placeholderTextColor="@color/black">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/type"
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/type_dropdown"
+                android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:drawableStart="@drawable/ic_round_type"
-                android:hint="property type"
-                android:textColor="#036A9F"
-                android:textSize="15dp" />
+                android:layout_height="wrap_content"/>
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/type"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:drawableStart="@drawable/ic_round_type"-->
+<!--                android:hint="property type"-->
+<!--                android:textColor="#036A9F"-->
+<!--                android:textSize="15dp" />-->
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -529,7 +535,7 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="90dp"
+                    android:layout_marginStart="70dp"
                     android:buttonTint="#673AB7"
                     android:text="Airport" />
 
@@ -557,23 +563,93 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="104dp"
+                    android:layout_marginStart="84dp"
                     android:buttonTint="#673AB7"
                     android:text="Restaurant" />
 
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Agent"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/title_agent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                app:boxBackgroundColor="#D2B3F8"
+                app:endIconMode="clear_text"
+                app:endIconTint="#673AB7"
+                app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
+                app:layout_constraintEnd_toStartOf="@id/title_Rooms"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/add_edit_offer_closure_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Agent in charge" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Date of publication"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/title_date"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                app:boxBackgroundColor="#D2B3F8"
+                app:endIconMode="clear_text"
+                app:endIconTint="#673AB7"
+                app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
+                app:layout_constraintEnd_toStartOf="@id/title_Rooms"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:hint="date of publication"
+                    android:inputType="date"
+                    android:textSize="15dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="Photos"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <Button
+                android:layout_marginTop="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -586,7 +662,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/black"/>
+                android:background="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
@@ -595,10 +671,10 @@
                 tools:listitem="@layout/item_add_picture_recyclerview" />
 
             <ImageView
-                android:layout_marginTop="150dp"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/black"/>
+                android:layout_marginTop="150dp"
+                android:background="@color/black" />
 
             <LinearLayout
                 android:layout_width="match_parent"

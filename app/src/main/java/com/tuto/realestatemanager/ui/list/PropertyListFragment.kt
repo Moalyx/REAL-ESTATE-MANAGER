@@ -6,11 +6,10 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.CreatePropertyActivity
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
-import com.tuto.realestatemanager.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,20 +40,27 @@ class PropertyListFragment : Fragment(), MenuProvider {
             adapter?.submitList(it)
         }
 
-        binding.createProperty.setOnClickListener(){
+        binding.createProperty.setOnClickListener() {
             startActivity(Intent(context, CreatePropertyActivity::class.java))
         }
 
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-
-
-
+        menuInflater.inflate(R.menu.edit_property_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-
-        return false
+        when (menuItem.itemId) {
+            R.id.edit_property2 -> startActivity(
+                Intent(
+                    context,
+                    CreatePropertyActivity::class.java
+                )
+            )
+        }
+        return true
     }
+
+
 }

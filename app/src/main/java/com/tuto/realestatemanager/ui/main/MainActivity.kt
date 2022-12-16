@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils.replace
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.FrameLayout
 import androidx.activity.viewModels
 import com.tuto.realestatemanager.CreatePropertyActivity
@@ -25,6 +27,10 @@ class MainActivity : AppCompatActivity() {
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
         
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
@@ -52,4 +58,18 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         viewmodel.onConfigurationChanged(resources.getBoolean(R.bool.isTablet))
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.edit_property_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.edit_property2 -> startActivity(Intent(this, CreatePropertyActivity::class.java))
+        }
+        return true
+    }
+
 }

@@ -1,33 +1,33 @@
 package com.tuto.realestatemanager.ui.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.repository.PropertyRepository
-import com.tuto.realestatemanager.ui.list.PropertyViewState
+import com.tuto.realestatemanager.repository.property.PropertyRepository
+import com.tuto.realestatemanager.repository.property.PropertyRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailPropertyViewModel @Inject constructor(
     currentPropertyIdRepository: CurrentPropertyIdRepository,
     private val propertyRepository: PropertyRepository
-): ViewModel() {
+) : ViewModel() {
 
-    val detailPropertyLiveData: LiveData<PropertyDetailViewState> = currentPropertyIdRepository.currentIdLiveData.switchMap { id ->
-        propertyRepository.getPropertyByIdLiveData(id).map {
-            PropertyDetailViewState(
-                it.id,
-                it.type,
-                it.price,
-                it.photoList,
-                it.county,
-                it.surface
-            )
-        }
-    }
+    val detailPropertyLiveData: LiveData<PropertyDetailViewState> =
+        currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
+            propertyRepository.getPropertyById(id).map { propertyWithPhotosEntity ->
+                PropertyDetailViewState(
+                    propertyWithPhotosEntity.propertyEntity.id,
+                    propertyWithPhotosEntity.propertyEntity.type,
+                    propertyWithPhotosEntity.propertyEntity.price,
+                    propertyWithPhotosEntity.photos.map { it.url },
+                    propertyWithPhotosEntity.propertyEntity.county,
+                    propertyWithPhotosEntity.propertyEntity.surface
+                )
+            }
+        }.asLiveData(Dispatchers.IO)
 
 
 }

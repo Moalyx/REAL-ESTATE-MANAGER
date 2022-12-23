@@ -3,12 +3,11 @@ package com.tuto.realestatemanager.ui.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.FrameLayout
 import androidx.activity.viewModels
-import com.tuto.realestatemanager.CreatePropertyActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.tuto.realestatemanager.ui.createupdateproperty.CreatePropertyActivity
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
@@ -67,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.edit_property2 -> startActivity(Intent(this, CreatePropertyActivity::class.java))
+            R.id.edit_property -> startActivity(CreatePropertyActivity.navigate(this, 1))
         }
         return true
     }

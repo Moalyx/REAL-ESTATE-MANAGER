@@ -24,7 +24,18 @@ class DetailPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map { it.url },
                     propertyWithPhotosEntity.propertyEntity.county,
-                    propertyWithPhotosEntity.propertyEntity.surface
+                    propertyWithPhotosEntity.propertyEntity.surface,
+                    propertyWithPhotosEntity.propertyEntity.description,
+                    propertyWithPhotosEntity.propertyEntity.room,
+                    propertyWithPhotosEntity.propertyEntity.bedroom,
+                    propertyWithPhotosEntity.propertyEntity.bathroom,
+                    propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
+                    propertyWithPhotosEntity.propertyEntity.poiTrain,
+                    propertyWithPhotosEntity.propertyEntity.poiAirport,
+                    propertyWithPhotosEntity.propertyEntity.poiResto,
+                    propertyWithPhotosEntity.propertyEntity.poiSchool,
+                    propertyWithPhotosEntity.propertyEntity.poiBus,
+                    propertyWithPhotosEntity.propertyEntity.poiPark
                 )
             }
         }.asLiveData(Dispatchers.IO)

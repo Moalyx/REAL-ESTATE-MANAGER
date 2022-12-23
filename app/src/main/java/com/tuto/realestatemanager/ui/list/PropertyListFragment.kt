@@ -7,7 +7,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.tuto.realestatemanager.CreatePropertyActivity
+import com.tuto.realestatemanager.ui.createupdateproperty.CreatePropertyActivity
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,7 +52,7 @@ class PropertyListFragment : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.edit_property2 -> startActivity(
+            R.id.edit_property -> startActivity(
                 Intent(
                     context,
                     CreatePropertyActivity::class.java

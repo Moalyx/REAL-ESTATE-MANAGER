@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreatePropertyActivity">
+    tools:context=".ui.createupdateproperty.CreatePropertyActivity">
 
     <LinearLayout
         android:id="@+id/linear1"
@@ -228,7 +228,7 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/Rooms"
+                                android:id="@+id/rooms"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -520,12 +520,14 @@
                 android:orientation="horizontal">
 
                 <CheckBox
+                    android:id="@+id/checkbox_bus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#673AB7"
                     android:text="Bus" />
 
                 <CheckBox
+                    android:id="@+id/checkbox_school"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="70dp"
@@ -533,6 +535,7 @@
                     android:text="School" />
 
                 <CheckBox
+                    android:id="@+id/checkbox_airport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="70dp"
@@ -548,12 +551,14 @@
                 android:orientation="horizontal">
 
                 <CheckBox
+                    android:id="@+id/checkboxtr_train"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#673AB7"
-                    android:text="Tram" />
+                    android:text="Train" />
 
                 <CheckBox
+                    android:id="@+id/checkbox_park"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="62dp"
@@ -561,6 +566,7 @@
                     android:text="Park" />
 
                 <CheckBox
+                    android:id="@+id/checkbox_restaurant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="84dp"
@@ -587,7 +593,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="12dp"
                 app:boxBackgroundColor="#D2B3F8"
-                app:endIconMode="clear_text"
+                app:endIconMode="dropdown_menu"
                 app:endIconTint="#673AB7"
                 app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                 app:layout_constraintEnd_toStartOf="@id/title_Rooms"
@@ -649,6 +655,7 @@
                 android:textStyle="bold" />
 
             <Button
+                android:id="@+id/add_picture_button"
                 android:layout_marginTop="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -684,6 +691,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/save_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -694,6 +702,7 @@
                     android:textColor="@color/black" />
 
                 <Button
+                    android:id="@+id/delete_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

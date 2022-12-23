@@ -10,7 +10,7 @@ interface PropertyRepository {
 
     suspend fun updateProperty(propertyEntity: PropertyEntity)
 
-    fun getAllProperties(): Flow<List<PropertyWithPhotosEntity>>
+    fun getAllPropertiesWithPhotosEntity(): Flow<List<PropertyWithPhotosEntity>>
 
     fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity>
 

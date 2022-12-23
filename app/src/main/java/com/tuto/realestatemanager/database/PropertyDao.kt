@@ -44,6 +44,9 @@ interface PropertyDao {
     @Query("SELECT * FROM photo_table WHERE id=:id")
     fun getPhotoByID(id: Long): Flow<PhotoEntity>
 
+    @Update
+    suspend fun updatePhoto(photoEntity: PhotoEntity)
+
     @Query("SELECT * FROM photo_table")
     fun getAllPhotos(): Flow<List<PhotoEntity>>
 

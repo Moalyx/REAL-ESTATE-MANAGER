@@ -13,12 +13,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-     propertyRepository: PropertyRepository,
+    propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
-    val propertyListLiveData: LiveData<List<PropertyViewState>> = propertyRepository.getAllProperties().map { propertyEntities ->
-            propertyEntities.map { propertyWithPhotosEntity->
+//    val propertyListLiveData: LiveData<List<PropertyViewState>> = propertyRepository.getAllProperties().map { propertyEntities ->
+//            propertyEntities.map { propertyWithPhotosEntity->
+//                PropertyViewState(
+//                    id = propertyWithPhotosEntity.propertyEntity.id,
+//                    type = propertyWithPhotosEntity.propertyEntity.type,
+//                    price = propertyWithPhotosEntity.propertyEntity.price,
+//                    photoList = propertyWithPhotosEntity.photos.map { it.url },
+//                    county = propertyWithPhotosEntity.propertyEntity.county,
+//                    onItemClicked = {
+//                        currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
+//                    }
+//                )
+//            }
+//        }.asLiveData(Dispatchers.IO)
+
+    val propertyListLiveData: LiveData<List<PropertyViewState>> =
+        propertyRepository.getAllPropertiesWithPhotosEntity().map { propertyEntities ->
+            propertyEntities.map { propertyWithPhotosEntity ->
                 PropertyViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,

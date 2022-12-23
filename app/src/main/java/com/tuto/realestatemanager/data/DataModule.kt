@@ -24,7 +24,8 @@ class DataModule {
             context,
             PropertyDatabase::class.java,
             "property_database"
-        ).build()
+        )
+            .build()
     }
 
     @Provides

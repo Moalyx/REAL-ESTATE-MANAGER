@@ -17,24 +17,35 @@ class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao
 ) : PropertyRepository {
 
-    private val propertiesWithPhotos = listOf(
-        PropertyWithPhotosEntity(
-            PropertyEntity(
-                1,
-                "LOFT",
-                7_500_000,
-                "New-York",
-                2_500
-            ),
-            List(10) {
-                PhotoEntity(
-                    it.toLong(),
-                    1,
-                    "https://pic.le-cdn.com/thumbs/1024x768/04/4/properties/Property-b2660000000001e2000457b5fd0a-31614642.jpg",
-                )
-            }
-        )
-    )
+//    private val propertiesWithPhotos = listOf(
+//        PropertyWithPhotosEntity(
+//            PropertyEntity(
+//                1,
+//                "LOFT",
+//                7_500_000,
+//                "New-York",
+//                2_500,
+//                "au top",
+//                2,
+//                2,
+//                2,
+//                "20/12/2021",
+//                true,
+//                true,
+//                true,
+//                true,
+//                true,
+//                true
+//            ),
+//            List(10) {
+//                PhotoEntity(
+//                    it.toLong(),
+//                    1,
+//                    "https://pic.le-cdn.com/thumbs/1024x768/04/4/properties/Property-b2660000000001e2000457b5fd0a-31614642.jpg",
+//                )
+//            }
+//        )
+//    )
 //
 //
 //            PropertyEntity(
@@ -133,6 +144,8 @@ class PropertyRepositoryImpl @Inject constructor(
 //            )
 //        )
 
+    //////////////////////////PROPERTY
+
     override suspend fun insertProperty(propertyEntity: PropertyEntity) {
         propertyDao.insertProperty(propertyEntity)
     }
@@ -141,11 +154,21 @@ class PropertyRepositoryImpl @Inject constructor(
         propertyDao.updateProperty(propertyEntity)
     }
 
-    override fun getAllProperties(): Flow<List<PropertyWithPhotosEntity>> = flowOf(propertiesWithPhotos)
 
-    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> = flowOf(
-        propertiesWithPhotos.find { it.propertyEntity.id == id }
-    ).filterNotNull()
+
+    //override fun getAllProperties(): Flow<List<PropertyWithPhotosEntity>> = flowOf(propertiesWithPhotos)
+
+    override fun getAllPropertiesWithPhotosEntity(): Flow<List<PropertyWithPhotosEntity>> {
+        return propertyDao.getAllPropertyWithPhotos()
+    }
+
+    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity>{
+        return propertyDao.getPropertyWithPhotosById(id)
+    }
+
+//    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> = flowOf(
+//        propertiesWithPhotos.find { it.propertyEntity.id == id }
+//    ).filterNotNull()
 
     override suspend fun deletePropertyById(id: Long) {
         propertyDao.deletePropertyById(id)

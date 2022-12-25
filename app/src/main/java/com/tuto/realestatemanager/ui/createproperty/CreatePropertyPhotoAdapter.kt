@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.ui.detail
+package com.tuto.realestatemanager.ui.createproperty
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,12 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.tuto.realestatemanager.databinding.ItemPropertyBinding
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
-import com.tuto.realestatemanager.ui.list.PropertyListAdapter
-import com.tuto.realestatemanager.ui.list.PropertyViewState
 
-class PropertyDetailPhotoAdapter : ListAdapter<String, PropertyDetailPhotoAdapter.ViewHolder>(
+class CreatePropertyPhotoAdapter : ListAdapter<String, CreatePropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
@@ -25,11 +22,11 @@ class PropertyDetailPhotoAdapter : ListAdapter<String, PropertyDetailPhotoAdapte
     }
 
     class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(propertyDetailViewState: String) {
+        fun bind(updatePropertyViewState: String) {
 
             Glide
                 .with(binding.itemPropertyPhotoDetail)
-                .load(propertyDetailViewState)
+                .load(updatePropertyViewState)
                 .into(binding.itemPropertyPhotoDetail)
         }
     }

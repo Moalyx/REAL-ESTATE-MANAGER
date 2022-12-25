@@ -1,56 +1,64 @@
-package com.tuto.realestatemanager.ui.createupdateproperty
+package com.tuto.realestatemanager.ui.createproperty
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
-import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
+import com.tuto.realestatemanager.ui.editproperty.EditPropertyPhotoAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
-    companion object{
-        val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
-        fun navigate(context: Context, propertyId: Long): Intent{
-            val intent = Intent(context, CreatePropertyActivity::class.java)
-            intent.putExtra(KEY_PROPERTY_ID, propertyId)
-            return intent
-        }
-    }
+
 
     private lateinit var binding: ActivityCreatePropertyBinding
-    private val viewModel by viewModels<CreateUpdatePropertyViewModel>()
+    private val viewModel by viewModels<CreatePropertyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         setContentView(R.layout.activity_create_property)
-
+        setContentView(R.layout.activity_create_property)
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat" )
-        val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, types )
+        var type = ""
+
+
+
+        val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
+        val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            this,
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, types
+        )
         binding.typeDropdown.setAdapter(dropdownAdapter)
         binding.typeDropdown.threshold
 
         //binding.typeDropdown.getSelectedItem().toString()
 
-        binding.typeDropdown.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
-                viewModel.onTypeSelected(parent.getItemAtPosition(position).toString())
+//        binding.typeDropdown.onItemClickListener =
+//            AdapterView.OnItemClickListener { parent, _, position, _ ->
+//                viewModel.onTypeSelected(parent.getItemAtPosition(position).toString())
+//            }
+
+        binding.typeDropdown.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, _, position, _ ->
+                type = parent.getItemAtPosition(position).toString()
             }
+
         binding.typeDropdown.inputType = InputType.TYPE_NULL
 
-        binding.addPictureButton.setOnClickListener(){
+        binding.addPictureButton.setOnClickListener() {
             Intent(Intent.ACTION_PICK).data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
 
@@ -68,9 +76,9 @@ class CreatePropertyActivity : AppCompatActivity() {
 //        }
 
 
-        binding.saveButton.setOnClickListener(){
+        binding.saveButton.setOnClickListener() {
             viewModel.createProperty(
-                "PENTHOUSE",
+                type,
                 Integer.parseInt(binding.price.text.toString()),
                 binding.country.text.toString(),
                 Integer.parseInt(binding.surface.text.toString()),
@@ -106,6 +114,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 //            DatePickerDialog(this, this, year, month, day).show()
 //        }
 //
-    
+
 
 }

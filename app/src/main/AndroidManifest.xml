@@ -22,7 +22,14 @@
         android:theme="@style/Theme.RealEstateManager"
         tools:targetApi="31">
         <activity
-            android:name=".ui.createupdateproperty.CreatePropertyActivity"
+            android:name=".ui.editproperty.EditPropertyActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ui.createproperty.CreatePropertyActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

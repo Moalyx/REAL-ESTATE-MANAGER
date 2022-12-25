@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.createproperty.CreatePropertyActivity">
+    tools:context=".ui.editproperty.EditPropertyActivity">
 
     <LinearLayout
         android:id="@+id/linear1"
@@ -47,17 +47,18 @@
                 android:id="@+id/type_dropdown"
                 android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                app:endIconMode="clear_text"/>
 
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/type"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:drawableStart="@drawable/ic_round_type"-->
-<!--                android:hint="property type"-->
-<!--                android:textColor="#036A9F"-->
-<!--                android:textSize="15dp" />-->
+            <!--            <com.google.android.material.textfield.TextInputEditText-->
+            <!--                android:id="@+id/type"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:drawableStart="@drawable/ic_round_type"-->
+            <!--                android:hint="property type"-->
+            <!--                android:textColor="#036A9F"-->
+            <!--                android:textSize="15dp" />-->
 
         </com.google.android.material.textfield.TextInputLayout>
 

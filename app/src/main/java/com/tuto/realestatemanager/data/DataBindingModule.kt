@@ -1,5 +1,7 @@
 package com.tuto.realestatemanager.data
 
+import com.tuto.realestatemanager.current_property.CurrentPropertyIdIdRepositoryImpl
+import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.photo.PhotoRepositoryImpl
 import com.tuto.realestatemanager.repository.property.PropertyRepository
@@ -21,4 +23,9 @@ abstract class DataBindingModule {
     @Binds
     @Singleton
     abstract fun bindsPhotoRepository(impl: PhotoRepositoryImpl) : PhotoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsCurrentIdRepository(impl: CurrentPropertyIdIdRepositoryImpl) : CurrentPropertyIdRepository
+
 }

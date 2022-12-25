@@ -2,12 +2,9 @@ package com.tuto.realestatemanager.ui.list
 
 import androidx.lifecycle.*
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.repository.property.PropertyRepository
-import com.tuto.realestatemanager.repository.property.PropertyRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 

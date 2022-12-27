@@ -36,7 +36,7 @@ class PropertyListViewModel @Inject constructor(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
                     price = propertyWithPhotosEntity.propertyEntity.price,
-                    photoList = propertyWithPhotosEntity.photos.map { it.url },
+                    photoList = propertyWithPhotosEntity.photos.map { it.photoUri },
                     county = propertyWithPhotosEntity.propertyEntity.county,
                     onItemClicked = {
                         currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)

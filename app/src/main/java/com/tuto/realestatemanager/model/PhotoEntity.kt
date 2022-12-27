@@ -8,5 +8,5 @@ data class PhotoEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val propertyId: Long,
-    val url: String,
+    val photoUri: String,
 )

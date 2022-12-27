@@ -99,7 +99,7 @@ class EditPropertyActivity : AppCompatActivity() {
                     binding.checkboxSchool.isChecked,
                     binding.checkboxBus.isChecked,
                     binding.checkboxPark.isChecked,
-                    photoUrl = "https://pic.le-cdn.com/thumbs/1024x768/04/8/properties/Property-b2660000000001e2000857b5fd0a-31614642.jpg"
+                    photoUri = "https://pic.le-cdn.com/thumbs/1024x768/04/8/properties/Property-b2660000000001e2000857b5fd0a-31614642.jpg"
                 )
                 finish()
             }

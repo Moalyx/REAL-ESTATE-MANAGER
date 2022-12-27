@@ -38,7 +38,7 @@ class EditPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.id,
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it.url },
+                    propertyWithPhotosEntity.photos.map { it.photoUri },
                     propertyWithPhotosEntity.propertyEntity.county,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
@@ -78,7 +78,7 @@ class EditPropertyViewModel @Inject constructor(
         poiSchool: Boolean,
         poiBus: Boolean,
         poiPark: Boolean,
-        photoUrl: String
+        photoUri: String
     ){
         val saleSince = LocalDate.now().toString()
         val property = PropertyEntity(
@@ -103,7 +103,7 @@ class EditPropertyViewModel @Inject constructor(
 
         val photo = PhotoEntity(id = 0,
             1,
-            photoUrl
+            photoUri
         )
         viewModelScope.launch(Dispatchers.Main) { photoRepository.upDatePhoto(photo) }
     }

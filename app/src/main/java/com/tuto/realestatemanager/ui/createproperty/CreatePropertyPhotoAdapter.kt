@@ -1,11 +1,13 @@
 package com.tuto.realestatemanager.ui.createproperty
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.tuto.realestatemanager.databinding.ItemAddPictureRecyclerviewBinding
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
 
 class CreatePropertyPhotoAdapter : ListAdapter<String, CreatePropertyPhotoAdapter.ViewHolder>(
@@ -14,20 +16,22 @@ class CreatePropertyPhotoAdapter : ListAdapter<String, CreatePropertyPhotoAdapte
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        ItemPropertyPhotoDetailBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        ItemAddPictureRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(updatePropertyViewState: String) {
+    class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(createProperty: String) {
+
 
             Glide
-                .with(binding.itemPropertyPhotoDetail)
-                .load(updatePropertyViewState)
-                .into(binding.itemPropertyPhotoDetail)
+                .with(binding.photo)
+                .load(createProperty)
+                .into(binding.photo)
         }
     }
 

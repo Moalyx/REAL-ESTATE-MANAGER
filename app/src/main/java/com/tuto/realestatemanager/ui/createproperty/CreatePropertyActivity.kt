@@ -1,29 +1,46 @@
 package com.tuto.realestatemanager.ui.createproperty
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.auth.viewmodel.RequestCodes
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyPhotoAdapter
+import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
+
+private const val INTENT_REQUEST_CODE = 100
+private const val PERMISSION_REQUEST_CODE = 200
+private const val RESULT_DATA_OK = 300
 
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
 
-
     private lateinit var binding: ActivityCreatePropertyBinding
     private val viewModel by viewModels<CreatePropertyViewModel>()
+    private var list = mutableListOf<String>()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +49,8 @@ class CreatePropertyActivity : AppCompatActivity() {
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var type = ""
 
+        var type = ""
 
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
@@ -58,9 +75,9 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         binding.typeDropdown.inputType = InputType.TYPE_NULL
 
-        binding.addPictureButton.setOnClickListener() {
-            Intent(Intent.ACTION_PICK).data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
+//        binding.addPictureButton.setOnClickListener() {
+//            Intent(Intent.ACTION_PICK).data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+//        }
 
         //viewModel.onTypeSelected(binding.typeDropdown.text.toString())
 //        try {
@@ -74,6 +91,33 @@ class CreatePropertyActivity : AppCompatActivity() {
 //        }catch (e:NumberFormatException) {
 //            println("not a number");
 //        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Demande de permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
+            )
+        } else {
+            // Permission accordée, on peut lancer l'intent
+
+        }
+
+        viewModel.photo.observe(this){
+            val recyclerView = binding.createUpdatePhotoRecyclerview
+            val adapter = CreatePropertyPhotoAdapter()
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.adapter = adapter
+            adapter.submitList(list)
+
+        }
+
+        binding.addPictureButton.setOnClickListener {
+            launchIntent()
+//            getContent.launch("image/*")
+        }
 
 
         binding.saveButton.setOnClickListener() {
@@ -91,8 +135,8 @@ class CreatePropertyActivity : AppCompatActivity() {
                 binding.checkboxRestaurant.isChecked,
                 binding.checkboxSchool.isChecked,
                 binding.checkboxBus.isChecked,
-                binding.checkboxPark.isChecked,
-                photoUrl = "https://pic.le-cdn.com/thumbs/1024x768/04/8/properties/Property-b2660000000001e2000857b5fd0a-31614642.jpg"
+                binding.checkboxPark.isChecked
+//                photoUrl = "content://com.android.providers.media.documents/document/image%3A160281"
             )
             finish()
 
@@ -101,19 +145,31 @@ class CreatePropertyActivity : AppCompatActivity() {
     }
 
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun configureDatePicker(){
-//        val c = Calendar.getInstance()
-//        val year = c.get(Calendar.YEAR)
-//        val month = c.get(Calendar.MONTH)
-//        val day = c.get(Calendar.DAY_OF_MONTH)
-//        LocalDate.now()
-//
-//
-//        binding.date.setOnClickListener() {
-//            DatePickerDialog(this, this, year, month, day).show()
-//        }
-//
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
+        super.onActivityResult(requestCodes, resultCodes, data)
+        if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
+            val uri: Uri = data.data!!
+            val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
+            list.add(realPath!!)
+            viewModel.createPhoto(realPath)
+
+        }else{
+            Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun launchIntent() {
+        val intent = Intent()
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(intent, "Sélectionnez une photo"), INTENT_REQUEST_CODE)
+    }
+
+//    val getContent: ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+//        list.add(uri.toString())
+//    }
+
 
 
 }

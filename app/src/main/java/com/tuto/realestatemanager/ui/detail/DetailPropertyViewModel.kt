@@ -24,7 +24,7 @@ class DetailPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.id,
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it.url },
+                    propertyWithPhotosEntity.photos.map { it.photoUri },
                     propertyWithPhotosEntity.propertyEntity.county,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,

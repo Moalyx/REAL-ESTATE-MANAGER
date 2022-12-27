@@ -39,6 +39,8 @@ class CreatePropertyViewModel @Inject constructor(
         currentPropertyIdRepository.setCurrentId(id)
     }
 
+    val photo: LiveData<List<PhotoEntity>> = photoRepository.getAllPhoto().asLiveData(Dispatchers.IO)
+
     val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
             propertyRepository.getPropertyById(id).map { propertyWithPhotosEntity ->
@@ -46,7 +48,7 @@ class CreatePropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.id,
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it.url },
+                    propertyWithPhotosEntity.photos.map { it.photoUri },
                     propertyWithPhotosEntity.propertyEntity.county,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
@@ -68,6 +70,10 @@ class CreatePropertyViewModel @Inject constructor(
         view.isChecked = false
         if(boolean) view.isChecked = true
         return view.isChecked
+    }
+
+    fun getPhoto(){
+
     }
 
 
@@ -139,11 +145,20 @@ class CreatePropertyViewModel @Inject constructor(
         )
         viewModelScope.launch(Dispatchers.IO) { propertyRepository.insertProperty(property) }
 
+//        val photo = PhotoEntity(id = 0,
+//            1,
+//            photoUrl
+//        )
+//        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo) }
+    }
+
+    fun createPhoto(photoUrl: String){
         val photo = PhotoEntity(id = 0,
             1,
             photoUrl
         )
-        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo) }
+        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo)}
+
     }
 
 

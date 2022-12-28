@@ -161,30 +161,4 @@ class CreatePropertyViewModel @Inject constructor(
 
     }
 
-
-
-//    fun createPhoto(url: String){
-//        val photo = PhotoEntity(
-//            id = 0,
-//            0,
-//            url
-//        )
-//
-//    }
-
-
-
-//    fun onCreatePropertyOnDatabase(/*type: String, county: String*/){
-//       val property = PropertyEntity(
-//           0,
-//           typeMutableStateFlow.value!!,
-//           10,
-//           priceMutableStateFlow.value!!,
-//           countyMutableStateFlow.value!!,
-//           10
-//       )
-//       viewModelScope.launch { propertyRepository.insertProperty(property) }
-//    }
-
-
 }

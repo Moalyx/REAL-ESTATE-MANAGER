@@ -62,7 +62,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
 
-    //viewbinding
+    //ViewBinding
     implementation 'androidx.databinding:viewbinding:7.3.1'
 
     //Firebase UI
@@ -71,6 +71,10 @@ dependencies {
     //Room
     implementation "androidx.room:room-ktx:2.4.3"
     kapt "androidx.room:room-compiler:2.4.3"
+
+    //Location
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'

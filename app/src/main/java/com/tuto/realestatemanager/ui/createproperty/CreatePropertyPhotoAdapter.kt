@@ -10,23 +10,28 @@ import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ItemAddPictureRecyclerviewBinding
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
 
-class CreatePropertyPhotoAdapter : ListAdapter<String, CreatePropertyPhotoAdapter.ViewHolder>(
+class CreatePropertyPhotoAdapter(
+//    private val listener: OnCreatedPhotoClickListener
+) : ListAdapter<String, CreatePropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        ItemAddPictureRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        ItemAddPictureRecyclerviewBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+
     }
 
     class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(createProperty: String) {
-
 
             Glide
                 .with(binding.photo)
@@ -45,6 +50,10 @@ class CreatePropertyPhotoAdapter : ListAdapter<String, CreatePropertyPhotoAdapte
             oldItem: String,
             newItem: String
         ): Boolean = oldItem == newItem
+    }
+
+    interface OnCreatedPhotoClickListener {
+        fun onPhotoClicked(position: Int) {}
     }
 
 }

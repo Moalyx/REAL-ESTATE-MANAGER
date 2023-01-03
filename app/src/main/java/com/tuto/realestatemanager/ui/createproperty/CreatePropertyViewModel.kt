@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
+import com.tuto.realestatemanager.model.TemporaryPhotoEntity
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
 import com.tuto.realestatemanager.ui.editproperty.UpdatePropertyViewState
@@ -15,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -27,9 +29,9 @@ class CreatePropertyViewModel @Inject constructor(
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository
 
-): ViewModel(){
+) : ViewModel() {
 
-    private val typeMutableStateFlow= MutableStateFlow<String?>(null)
+    private val typeMutableStateFlow = MutableStateFlow<String?>(null)
     private val priceMutableStateFlow = MutableStateFlow<Int?>(null)
     private val countyMutableStateFlow = MutableStateFlow<String?>(null)
     private val surfaceMutableStateFlow = MutableStateFlow<Int?>(null)
@@ -37,11 +39,11 @@ class CreatePropertyViewModel @Inject constructor(
 //    private lateinit var propertyEntity: PropertyEntity
 //    private var propertyId: Long = propertyEntity.id
 
-    fun setPropertyId(id: Long){
+    fun setPropertyId(id: Long) {
         currentPropertyIdRepository.setCurrentId(id)
     }
 
-    val photo: LiveData<List<PhotoEntity>> = photoRepository.getAllPhoto().asLiveData(Dispatchers.IO)
+    val photo: LiveData<List<TemporaryPhotoEntity>> = photoRepository.getAllTemporaryPhoto().asLiveData(Dispatchers.IO)
 
     val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
@@ -68,19 +70,18 @@ class CreatePropertyViewModel @Inject constructor(
             }
         }.asLiveData(Dispatchers.IO)
 
-    fun isChecked(view: CheckBox, boolean: Boolean): Boolean{
+    fun isChecked(view: CheckBox, boolean: Boolean): Boolean {
         view.isChecked = false
-        if(boolean) view.isChecked = true
+        if (boolean) view.isChecked = true
         return view.isChecked
     }
 
-    fun getPhoto(){
+    fun getPhoto() {
 
     }
 
 
-
-    fun onTypeSelected(type: String){
+    fun onTypeSelected(type: String) {
         typeMutableStateFlow.value = type
     }
 
@@ -88,7 +89,7 @@ class CreatePropertyViewModel @Inject constructor(
 //        priceMutableStateFlow.value = price
 //    }
 
-    fun onCountyChanged(county: String){
+    fun onCountyChanged(county: String) {
         countyMutableStateFlow.value = county
     }
 
@@ -124,7 +125,7 @@ class CreatePropertyViewModel @Inject constructor(
         poiSchool: Boolean,
         poiBus: Boolean,
         poiPark: Boolean
-    ){
+    ) {
         val saleSince = LocalDate.now().toString()
         val property = PropertyEntity(
             id = 0,
@@ -145,9 +146,20 @@ class CreatePropertyViewModel @Inject constructor(
             poiPark
         )
         viewModelScope.launch(Dispatchers.IO) {
-            val id = propertyRepository.insertProperty(property)
+            val propertyId = propertyRepository.insertProperty(property)
 
+            val temporaryPhotos = photoRepository.getAllTemporaryPhoto().first()
 
+            for (temporaryPhoto in temporaryPhotos) {
+                photoRepository.insertPhoto(
+                    PhotoEntity(
+                        propertyId = propertyId,
+                        photoUri = temporaryPhoto.photoUri,
+                    )
+                )
+            }
+
+            photoRepository.flushTemporaryPhotos()
         }
 
 
@@ -159,14 +171,10 @@ class CreatePropertyViewModel @Inject constructor(
     }
 
 
-
-    fun createPhoto(photoUrl: String){
-        val photo = PhotoEntity(id = 0,
-            1,
-            photoUrl
-        )
-        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo)}
-
+    fun createTemporaryPhoto(photoUrl: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            photoRepository.insertTemporaryPhoto(TemporaryPhotoEntity(photoUri = photoUrl))
+        }
     }
 
 }

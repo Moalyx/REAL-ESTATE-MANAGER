@@ -2,12 +2,21 @@ package com.tuto.realestatemanager.repository.photo
 
 import com.tuto.realestatemanager.database.PropertyDao
 import com.tuto.realestatemanager.model.PhotoEntity
+import com.tuto.realestatemanager.model.TemporaryPhotoEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PhotoRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao
 ): PhotoRepository {
+    override suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity) {
+        propertyDao.insertTemporaryPhoto(temporaryPhotoEntity)
+    }
+
+    override suspend fun flushTemporaryPhotos() {
+        propertyDao.flushTemporaryPhotos()
+    }
+
     override suspend fun insertPhoto(photoEntity: PhotoEntity) {
         propertyDao.insertPhoto(photoEntity)
     }

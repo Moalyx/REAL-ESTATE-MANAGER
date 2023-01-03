@@ -1,15 +1,9 @@
 package com.tuto.realestatemanager.repository.property
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.tuto.realestatemanager.database.PropertyDao
-import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 
@@ -146,14 +140,13 @@ class PropertyRepositoryImpl @Inject constructor(
 
     //////////////////////////PROPERTY
 
-    override suspend fun insertProperty(propertyEntity: PropertyEntity) {
-        propertyDao.insertProperty(propertyEntity)
+    override suspend fun insertProperty(propertyEntity: PropertyEntity): Long {
+        return propertyDao.insertProperty(propertyEntity)
     }
 
     override suspend fun updateProperty(propertyEntity: PropertyEntity) {
         propertyDao.updateProperty(propertyEntity)
     }
-
 
 
     //override fun getAllProperties(): Flow<List<PropertyWithPhotosEntity>> = flowOf(propertiesWithPhotos)
@@ -162,7 +155,7 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getAllPropertyWithPhotos()
     }
 
-    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity>{
+    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> {
         return propertyDao.getPropertyWithPhotosById(id)
     }
 

@@ -1,30 +1,21 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.InputType
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.auth.viewmodel.RequestCodes
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
-import com.tuto.realestatemanager.ui.editproperty.EditPropertyPhotoAdapter
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -152,7 +143,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             val uri: Uri = data.data!!
             val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
             list.add(realPath!!)
-            viewModel.createPhoto(realPath)
+            viewModel.createTemporaryPhoto(realPath)
 
         }else{
             Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()

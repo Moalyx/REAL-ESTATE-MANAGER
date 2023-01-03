@@ -9,7 +9,6 @@ import androidx.room.Update
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
-import com.tuto.realestatemanager.model.TemporaryPhotoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

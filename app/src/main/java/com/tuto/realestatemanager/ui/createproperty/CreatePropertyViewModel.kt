@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
-import com.tuto.realestatemanager.model.TemporaryPhotoEntity
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
 import com.tuto.realestatemanager.ui.editproperty.UpdatePropertyViewState
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -43,7 +43,8 @@ class CreatePropertyViewModel @Inject constructor(
         currentPropertyIdRepository.setCurrentId(id)
     }
 
-    val photo: LiveData<List<TemporaryPhotoEntity>> = photoRepository.getAllTemporaryPhoto().asLiveData(Dispatchers.IO)
+    private val photosMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
+    val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
 
     val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
@@ -148,18 +149,14 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            val temporaryPhotos = photoRepository.getAllTemporaryPhoto().first()
-
-            for (temporaryPhoto in temporaryPhotos) {
+            for (temporaryPhotoUrl in photosMutableStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,
-                        photoUri = temporaryPhoto.photoUri,
+                        photoUri = temporaryPhotoUrl,
                     )
                 )
             }
-
-            photoRepository.flushTemporaryPhotos()
         }
 
 
@@ -172,8 +169,8 @@ class CreatePropertyViewModel @Inject constructor(
 
 
     fun createTemporaryPhoto(photoUrl: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            photoRepository.insertTemporaryPhoto(TemporaryPhotoEntity(photoUri = photoUrl))
+        photosMutableStateFlow.update {
+            it + photoUrl
         }
     }
 

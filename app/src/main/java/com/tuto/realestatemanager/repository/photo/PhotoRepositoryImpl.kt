@@ -2,7 +2,6 @@ package com.tuto.realestatemanager.repository.photo
 
 import com.tuto.realestatemanager.database.PropertyDao
 import com.tuto.realestatemanager.model.PhotoEntity
-import com.tuto.realestatemanager.model.TemporaryPhotoEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

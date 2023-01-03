@@ -39,7 +39,7 @@ class EditPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map { it.photoUri },
-                    propertyWithPhotosEntity.propertyEntity.county,
+                    propertyWithPhotosEntity.propertyEntity.country,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
                     propertyWithPhotosEntity.propertyEntity.room,

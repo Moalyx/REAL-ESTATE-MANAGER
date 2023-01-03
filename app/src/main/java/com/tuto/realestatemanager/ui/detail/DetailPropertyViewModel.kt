@@ -3,7 +3,6 @@ package com.tuto.realestatemanager.ui.detail
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
-import com.tuto.realestatemanager.current_property.CurrentPropertyIdIdRepositoryImpl
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +24,7 @@ class DetailPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map { it.photoUri },
-                    propertyWithPhotosEntity.propertyEntity.county,
+                    propertyWithPhotosEntity.propertyEntity.country,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
                     propertyWithPhotosEntity.propertyEntity.room,

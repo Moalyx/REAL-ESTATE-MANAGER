@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
-import com.tuto.realestatemanager.databinding.ActivityEditPropertyBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,14 +27,14 @@ class EditPropertyActivity : AppCompatActivity() {
     }
 
     private val viewModel by viewModels<EditPropertyViewModel>()
-    private lateinit var binding: ActivityEditPropertyBinding
+    private lateinit var binding: ActivityCreatePropertyBinding
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityEditPropertyBinding.inflate(layoutInflater)
+        val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         var type = ""
@@ -65,7 +64,7 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
             binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
             binding.bathrooms.setText(it.bathroom.toString(), TextView.BufferType.EDITABLE)
-            binding.country.setText(it.county, TextView.BufferType.EDITABLE)
+            binding.country.setText(it.country, TextView.BufferType.EDITABLE)
 //            if (it.poiAirport) {
 //                binding.checkboxAirport.isChecked = true
 //            }

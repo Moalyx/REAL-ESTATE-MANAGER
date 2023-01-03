@@ -5,7 +5,7 @@ class UpdatePropertyViewState (
     val type: String,
     val price: Int,
     val photoList: List<String>,
-    val county: String,
+    val country: String,
     val surface: Int,
     val description: String,
     val room: Int,

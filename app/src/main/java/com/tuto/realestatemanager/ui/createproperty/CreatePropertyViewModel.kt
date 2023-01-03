@@ -34,6 +34,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val countyMutableStateFlow = MutableStateFlow<String?>(null)
     private val surfaceMutableStateFlow = MutableStateFlow<Int?>(null)
     private val propertyIdMutableStateFlow = MutableStateFlow<Long?>(null)
+//    private lateinit var propertyEntity: PropertyEntity
+//    private var propertyId: Long = propertyEntity.id
 
     fun setPropertyId(id: Long){
         currentPropertyIdRepository.setCurrentId(id)
@@ -49,7 +51,7 @@ class CreatePropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map { it.photoUri },
-                    propertyWithPhotosEntity.propertyEntity.county,
+                    propertyWithPhotosEntity.propertyEntity.country,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
                     propertyWithPhotosEntity.propertyEntity.room,
@@ -121,8 +123,7 @@ class CreatePropertyViewModel @Inject constructor(
         poiResto: Boolean,
         poiSchool: Boolean,
         poiBus: Boolean,
-        poiPark: Boolean,
-        photoUrl: String
+        poiPark: Boolean
     ){
         val saleSince = LocalDate.now().toString()
         val property = PropertyEntity(
@@ -143,14 +144,21 @@ class CreatePropertyViewModel @Inject constructor(
             poiBus,
             poiPark
         )
-        viewModelScope.launch(Dispatchers.IO) { propertyRepository.insertProperty(property) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val id = propertyRepository.insertProperty(property)
+
+
+        }
+
 
 //        val photo = PhotoEntity(id = 0,
-//            1,
+//            property.id,
 //            photoUrl
 //        )
 //        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo) }
     }
+
+
 
     fun createPhoto(photoUrl: String){
         val photo = PhotoEntity(id = 0,

@@ -24,11 +24,10 @@ class LocationRepository @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun getUserLocation(): Flow<Location> = callbackFlow {
-        val locationRequest = LocationRequest.create().apply {
-            interval = TimeUnit.SECONDS.toMillis(UPDATE_INTERVAL_SECS)
-            fastestInterval = TimeUnit.SECONDS.toMillis(FASTEST_UPDATE_INTERVAL_SECS)
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        val locationRequest = LocationRequest.create()
+            .setFastestInterval(FASTEST_UPDATE_INTERVAL_SECS)
+            .setInterval(UPDATE_INTERVAL_SECS)
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
         val callBack = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {

@@ -1,20 +1,25 @@
 package com.tuto.realestatemanager.ui.detail
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
+import androidx.core.app.ActivityCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.gms.maps.*
+import com.tuto.realestatemanager.BuildConfig
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailsPropertyFragment : Fragment(), MenuProvider {
+class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
 
     private var _binding: FragmentDetailsPropertyBinding? = null
     private val binding get() = _binding!!
@@ -28,15 +33,17 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
     ): View {
 
         _binding = FragmentDetailsPropertyBinding.inflate(inflater, container, false)
+        initGoogleMaps()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       // setHasOptionsMenu(true)
+        // setHasOptionsMenu(true)
 
-        (requireActivity() as MenuHost).addMenuProvider(this )
+        (requireActivity() as MenuHost).addMenuProvider(this)
+
 
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
@@ -62,21 +69,42 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             recyclerView.adapter = adapter
             viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) {
                 adapter.submitList(it.photoList)
-
-
-//            Glide.with(requireContext())
-//                .load(it.photo)
-//                .into(binding.propertyPhotoDetail)
-
-//            binding.propertyPhotoDetail?.let { it1 ->
-//                Glide.with(requireContext())
-//                    .load(it.photo)
-//                    .into(it1)
             }
+
+            val zoom = 15
+            val size = "1200x1200"
+            val apiKey = BuildConfig.GOOGLE_PLACES_KEY
+
+            val staticMap =
+                "https://maps.googleapis.com/maps/api/staticmap?center=${it.county}&zoom=$zoom&size=$size&key=$apiKey"
+
+            Glide.with(requireContext())
+                .load(staticMap)
+                .into(binding.staticMap)
 
         }
 
 
+    }
+
+    private fun initGoogleMaps() {
+        val mapFragment: MapFragment = MapFragment.newInstance()
+
+
+        mapFragment.getMapAsync(this);
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            map.isMyLocationEnabled = true
+        }
     }
 
 
@@ -101,10 +129,14 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.edit_property -> startActivity(EditPropertyActivity.navigate(requireContext(), propertyId))
+            R.id.edit_property -> startActivity(
+                EditPropertyActivity.navigate(
+                    requireContext(),
+                    propertyId
+                )
+            )
         }
         return true
     }
-
 
 }

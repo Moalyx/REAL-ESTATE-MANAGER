@@ -49,7 +49,7 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
             propertyId = it.id
             binding.type.text = it.type
-            binding.surface?.text = it.surface.toString()
+            binding.surface.text = it.surface.toString()
             binding.price.text = it.price.toString()
             binding.description.text = it.description
             binding.numberRoom.text = it.room.toString()
@@ -89,8 +89,6 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
 
     private fun initGoogleMaps() {
         val mapFragment: MapFragment = MapFragment.newInstance()
-
-
         mapFragment.getMapAsync(this);
     }
 

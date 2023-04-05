@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
+import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
 import com.tuto.realestatemanager.ui.editproperty.UpdatePropertyViewState
@@ -21,13 +22,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.Collections.emptyList
 import javax.inject.Inject
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
-    private val currentPropertyIdRepository: CurrentPropertyIdRepository
+    private val currentPropertyIdRepository: CurrentPropertyIdRepository,
+    private val autocompleteRepository: AutocompleteRepository
 
 ) : ViewModel() {
 
@@ -44,31 +47,12 @@ class CreatePropertyViewModel @Inject constructor(
     }
 
     private val photosMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
+
     val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
 
-    val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
+    val predictions : LiveData<String> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
-            propertyRepository.getPropertyById(id).map { propertyWithPhotosEntity ->
-                UpdatePropertyViewState(
-                    propertyWithPhotosEntity.propertyEntity.id,
-                    propertyWithPhotosEntity.propertyEntity.type,
-                    propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it.photoUri },
-                    propertyWithPhotosEntity.propertyEntity.country,
-                    propertyWithPhotosEntity.propertyEntity.surface,
-                    propertyWithPhotosEntity.propertyEntity.description,
-                    propertyWithPhotosEntity.propertyEntity.room,
-                    propertyWithPhotosEntity.propertyEntity.bedroom,
-                    propertyWithPhotosEntity.propertyEntity.bathroom,
-                    propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
-                    propertyWithPhotosEntity.propertyEntity.poiTrain,
-                    propertyWithPhotosEntity.propertyEntity.poiAirport,
-                    propertyWithPhotosEntity.propertyEntity.poiResto,
-                    propertyWithPhotosEntity.propertyEntity.poiSchool,
-                    propertyWithPhotosEntity.propertyEntity.poiBus,
-                    propertyWithPhotosEntity.propertyEntity.poiPark
-                )
-            }
+            propertyRepository.getPropertyById(id).flatMapLatest { autocompleteRepository.getAutocompleteResult(it.propertyEntity.country)  }
         }.asLiveData(Dispatchers.IO)
 
     fun isChecked(view: CheckBox, boolean: Boolean): Boolean {

@@ -48,4 +48,6 @@ class DetailPropertyViewModel @Inject constructor(
     }
 
 
+
+
 }

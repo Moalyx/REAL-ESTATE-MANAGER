@@ -1,23 +1,36 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.Manifest
+import android.R.attr
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.InputType
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
+
 
 private const val INTENT_REQUEST_CODE = 100
 private const val PERMISSION_REQUEST_CODE = 200
@@ -30,7 +43,9 @@ class CreatePropertyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreatePropertyBinding
     private val viewModel by viewModels<CreatePropertyViewModel>()
     private var list = mutableListOf<String>()
-
+    private var isFromCamera = false
+    lateinit var currentPhotoPath: String
+    private var uriImageSelected: Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,13 +67,6 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.typeDropdown.setAdapter(dropdownAdapter)
         binding.typeDropdown.threshold
 
-        //binding.typeDropdown.getSelectedItem().toString()
-
-//        binding.typeDropdown.onItemClickListener =
-//            AdapterView.OnItemClickListener { parent, _, position, _ ->
-//                viewModel.onTypeSelected(parent.getItemAtPosition(position).toString())
-//            }
-
         binding.typeDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
                 type = parent.getItemAtPosition(position).toString()
@@ -66,25 +74,9 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         binding.typeDropdown.inputType = InputType.TYPE_NULL
 
-//        binding.addPictureButton.setOnClickListener() {
-//            Intent(Intent.ACTION_PICK).data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-//        }
-
-        //viewModel.onTypeSelected(binding.typeDropdown.text.toString())
-//        try {
-//        viewModel.onPriceChanged(Integer.parseInt(binding.price.text.toString()))
-//        }catch (e:NumberFormatException) {
-//            println("not a number");
-//        }
-        //viewModel.onCountyChanged(binding.country.text.toString())
-//        try {
-//        viewModel.onSurfaceChanged(Integer.parseInt(binding.surface.text.toString()))
-//        }catch (e:NumberFormatException) {
-//            println("not a number");
-//        }
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
+            != PackageManager.PERMISSION_GRANTED
+        ) {
             // Demande de permission
             ActivityCompat.requestPermissions(
                 this,
@@ -96,7 +88,7 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
 
-        viewModel.photo.observe(this){
+        viewModel.photo.observe(this) {
             val recyclerView = binding.createUpdatePhotoRecyclerview
             val adapter = CreatePropertyPhotoAdapter()
             recyclerView.layoutManager = LinearLayoutManager(this)
@@ -110,6 +102,9 @@ class CreatePropertyActivity : AppCompatActivity() {
 //            getContent.launch("image/*")
         }
 
+        binding.takePictureButton.setOnClickListener {
+            pictureIntent()
+        }
 
         binding.saveButton.setOnClickListener() {
             viewModel.createProperty(
@@ -140,27 +135,65 @@ class CreatePropertyActivity : AppCompatActivity() {
     override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
         super.onActivityResult(requestCodes, resultCodes, data)
         if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
+            if(isFromCamera){}
+
+            val photo = intent.extras
             val uri: Uri = data.data!!
             val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
             list.add(realPath!!)
+            list.add(photo.toString())
             viewModel.createTemporaryPhoto(realPath)
 
-        }else{
-            Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "vous n'avez pas les autorisations", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun launchIntent() {
+        isFromCamera = false
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Sélectionnez une photo"), INTENT_REQUEST_CODE)
+        startActivityForResult(
+            Intent.createChooser(intent, "Sélectionnez une photo"), INTENT_REQUEST_CODE
+        )
+    }
+
+    private fun pictureIntent() {
+        isFromCamera = true
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoFile = createImageFile()
+        val uri = Uri.fromFile(photoFile)
+        //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
+
+        //intent.action = Intent.ACTION_CAMERA_BUTTON
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, INTENT_REQUEST_CODE)
+
+
+    }
+
+    // When photo is created, we need to create an image file
+    @SuppressLint("SimpleDateFormat")
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = LocalDate.now().toString()
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        )
+//            .apply {
+//            // Save a file: path for use with CAMERA
+//            currentPhotoPath = absolutePath
+//        }
     }
 
 //    val getContent: ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
 //        list.add(uri.toString())
 //    }
-
 
 
 }

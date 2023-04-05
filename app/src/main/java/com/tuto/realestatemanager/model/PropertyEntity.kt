@@ -12,7 +12,7 @@ class PropertyEntity constructor(
 //    @ColumnInfo(name = "address") val address: String,
 //    @ColumnInfo(name = "address_complement") val addressComplement: String,
 //    @ColumnInfo(name = "city") val city: String,
-//    @ColumnInfo(name = "county") val state: String,
+//    @ColumnInfo(name = "state") val state: String,
 //    @ColumnInfo(name = "zipcode") val zipCode: Int,
     @ColumnInfo(name = "country") val country: String,
     @ColumnInfo(name = "surface") val surface: Int,

@@ -45,19 +45,19 @@
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                 android:id="@+id/type_dropdown"
-                android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:inputType="text" />
 
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/type"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:drawableStart="@drawable/ic_round_type"-->
-<!--                android:hint="property type"-->
-<!--                android:textColor="#036A9F"-->
-<!--                android:textSize="15dp" />-->
+            <!--            <com.google.android.material.textfield.TextInputEditText-->
+            <!--                android:id="@+id/type"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:drawableStart="@drawable/ic_round_type"-->
+            <!--                android:hint="property type"-->
+            <!--                android:textColor="#036A9F"-->
+            <!--                android:textSize="15dp" />-->
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -654,17 +654,41 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/add_picture_button"
-                android:layout_marginTop="12dp"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_gravity="center"
-                android:backgroundTint="#D2B3F8"
-                android:elevation="8dp"
                 android:gravity="center"
-                android:text="Add picture"
-                android:textColor="@color/black" />
+                android:layout_marginEnd="12dp">
+
+                <Button
+                    android:id="@+id/add_picture_button"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="#D2B3F8"
+                    android:elevation="8dp"
+
+                    android:text="Add picture"
+                    android:textColor="@color/black" />
+
+                <Button
+                    android:id="@+id/take_picture_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="#D2B3F8"
+                    android:elevation="8dp"
+
+                    android:layout_marginStart="12dp"
+                    android:text="take picture"
+                    android:textColor="@color/black" />
+
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"

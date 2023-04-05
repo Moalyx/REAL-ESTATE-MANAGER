@@ -53,11 +53,11 @@ interface PropertyDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPhoto(photoEntity: PhotoEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity)
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity)
 
-    @Query("DELETE FROM temporary_photo_table")
-    suspend fun flushTemporaryPhotos()
+//    @Query("DELETE FROM temporary_photo_table")
+//    suspend fun flushTemporaryPhotos()
 
     @Query("DELETE FROM photo_table WHERE id=:id")
     suspend fun deletePhotoById(id: Long)

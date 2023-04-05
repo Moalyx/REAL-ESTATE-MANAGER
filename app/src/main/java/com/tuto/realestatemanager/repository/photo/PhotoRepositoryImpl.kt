@@ -8,13 +8,13 @@ import javax.inject.Inject
 class PhotoRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao
 ): PhotoRepository {
-    override suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity) {
-        propertyDao.insertTemporaryPhoto(temporaryPhotoEntity)
-    }
+//    override suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity) {
+//        propertyDao.insertTemporaryPhoto(temporaryPhotoEntity)
+//    }
 
-    override suspend fun flushTemporaryPhotos() {
-        propertyDao.flushTemporaryPhotos()
-    }
+//    override suspend fun flushTemporaryPhotos() {
+//        propertyDao.flushTemporaryPhotos()
+//    }
 
     override suspend fun insertPhoto(photoEntity: PhotoEntity) {
         propertyDao.insertPhoto(photoEntity)

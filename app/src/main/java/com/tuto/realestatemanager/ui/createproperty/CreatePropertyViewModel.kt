@@ -50,9 +50,10 @@ class CreatePropertyViewModel @Inject constructor(
 
     val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
 
-    val predictions : LiveData<String> =
+    val predictions: LiveData<String> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
-            propertyRepository.getPropertyById(id).flatMapLatest { autocompleteRepository.getAutocompleteResult(it.propertyEntity.country)  }
+            propertyRepository.getPropertyById(id)
+                .flatMapLatest { autocompleteRepository.getAutocompleteResult(it.propertyEntity.country) }
         }.asLiveData(Dispatchers.IO)
 
     fun isChecked(view: CheckBox, boolean: Boolean): Boolean {

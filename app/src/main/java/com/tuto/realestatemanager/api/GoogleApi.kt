@@ -18,7 +18,7 @@ interface GoogleApi {
 //        @Query("city") city: String,
 //        @Query("zipcode") zipcode: Int,
 //        @Query("country") country: String
-    ): Response<GeocodeResponse>
+    ): GeocodeResponse
 
     @GET("maps/api/place/autocomplete/json")
     suspend fun autocompleteResult(

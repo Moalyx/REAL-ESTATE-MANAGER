@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -31,14 +33,14 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
 
-
-private const val INTENT_REQUEST_CODE = 100
-private const val PERMISSION_REQUEST_CODE = 200
-private const val RESULT_DATA_OK = 300
-
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
+    companion object{
+        private const val INTENT_REQUEST_CODE = 100
+        private const val PERMISSION_REQUEST_CODE = 200
+        private const val RESULT_DATA_OK = 300
+    }
 
     private lateinit var binding: ActivityCreatePropertyBinding
     private val viewModel by viewModels<CreatePropertyViewModel>()
@@ -88,6 +90,17 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
 
+
+
+        binding.address.doAfterTextChanged {viewModel.onAddressSearchChanged(it?.toString()) }
+
+        viewModel.predictions.observe(this){
+            Log.d("TAG", "onCreate() called $it" )
+            binding.city.setText(it)
+        }
+
+
+
         viewModel.photo.observe(this) {
             val recyclerView = binding.createUpdatePhotoRecyclerview
             val adapter = CreatePropertyPhotoAdapter()
@@ -96,6 +109,8 @@ class CreatePropertyActivity : AppCompatActivity() {
             adapter.submitList(list)
 
         }
+
+
 
         binding.addPictureButton.setOnClickListener {
             launchIntent()
@@ -160,15 +175,15 @@ class CreatePropertyActivity : AppCompatActivity() {
     }
 
     private fun pictureIntent() {
-        isFromCamera = true
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val photoFile = createImageFile()
-        val uri = Uri.fromFile(photoFile)
-        //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
+            isFromCamera = true
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val photoFile = createImageFile()
+            val uri = Uri.fromFile(photoFile)
+            //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
 
-        //intent.action = Intent.ACTION_CAMERA_BUTTON
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        startActivityForResult(intent, INTENT_REQUEST_CODE)
+            //intent.action = Intent.ACTION_CAMERA_BUTTON
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            startActivityForResult(intent, INTENT_REQUEST_CODE)
 
 
     }

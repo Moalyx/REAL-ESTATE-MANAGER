@@ -17,21 +17,10 @@ class AutocompleteRepositoryImpl @Inject constructor(
     private val googleApi: GoogleApi
 ) : AutocompleteRepository {
 
-    private val autocompleteResultMutableStateFlow = MutableStateFlow<String>("")
 
+    override suspend fun getAutocompleteResult(address: String): String {
 
-    override suspend fun getAutocompleteResult(address: String): Flow<String> {
-
-        val response = googleApi.autocompleteResult(BuildConfig.GOOGLE_PLACES_KEY, address)
-        if (response.isSuccessful){
-            autocompleteResultMutableStateFlow.tryEmit(response.body().toString())
-        }
-        else{
-            println("autocomplete API call error")
-        }
-
-
-            return autocompleteResultMutableStateFlow
+            return googleApi.autocompleteResult(BuildConfig.GOOGLE_PLACES_KEY, address).toString()
     }
 }
 

@@ -8,5 +8,5 @@ import retrofit2.Response
 
 interface AutocompleteRepository {
 
-    suspend fun getAutocompleteResult(address : String) : Flow<String>
+    suspend fun getAutocompleteResult(address : String) : String
 }

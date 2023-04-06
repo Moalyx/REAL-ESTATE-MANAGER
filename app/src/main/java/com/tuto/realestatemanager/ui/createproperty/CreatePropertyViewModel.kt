@@ -14,12 +14,7 @@ import com.tuto.realestatemanager.repository.property.PropertyRepository
 import com.tuto.realestatemanager.ui.editproperty.UpdatePropertyViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
@@ -39,6 +34,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val countyMutableStateFlow = MutableStateFlow<String?>(null)
     private val surfaceMutableStateFlow = MutableStateFlow<Int?>(null)
     private val propertyIdMutableStateFlow = MutableStateFlow<Long?>(null)
+    private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
+
 //    private lateinit var propertyEntity: PropertyEntity
 //    private var propertyId: Long = propertyEntity.id
 
@@ -50,11 +47,13 @@ class CreatePropertyViewModel @Inject constructor(
 
     val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
 
-    val predictions: LiveData<String> =
-        currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
-            propertyRepository.getPropertyById(id)
-                .flatMapLatest { autocompleteRepository.getAutocompleteResult(it.propertyEntity.country) }
-        }.asLiveData(Dispatchers.IO)
+    val predictions: LiveData<String> = addressSearchMutableStateFlow.filterNotNull().mapLatest {
+        autocompleteRepository.getAutocompleteResult(it)
+    }.asLiveData(Dispatchers.IO)
+
+    fun onAddressSearchChanged(address : String?) {
+        addressSearchMutableStateFlow.value = address
+    }
 
     fun isChecked(view: CheckBox, boolean: Boolean): Boolean {
         view.isChecked = false

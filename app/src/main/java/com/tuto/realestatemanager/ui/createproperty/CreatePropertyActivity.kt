@@ -15,14 +15,17 @@ import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
+import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
@@ -36,7 +39,7 @@ import java.util.*
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
-    companion object{
+    companion object {
         private const val INTENT_REQUEST_CODE = 100
         private const val PERMISSION_REQUEST_CODE = 200
         private const val RESULT_DATA_OK = 300
@@ -56,7 +59,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         var type = ""
 
@@ -92,11 +94,33 @@ class CreatePropertyActivity : AppCompatActivity() {
 
 
 
-        binding.address.doAfterTextChanged {viewModel.onAddressSearchChanged(it?.toString()) }
 
-        viewModel.predictions.observe(this){
-            Log.d("TAG", "onCreate() called $it" )
-            binding.city.setText(it)
+
+        binding.address.doAfterTextChanged {
+            viewModel.onAddressSearchChanged(it?.toString())
+            //recyclerview.isVisible
+        }
+
+        val searchView = binding.searchview
+        searchView.setOnQueryTextListener(object : OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                viewModel.onAddressSearchChanged(p0)
+                return false
+            }
+
+        })
+
+        viewModel.predictionListViewState.observe(this) {
+//            Log.d("TAAAG", "onCreate() called $it")
+            val recyclerview: RecyclerView = binding.predictionRecyclerview
+            val adapter = SearchAdapter()
+            recyclerview.layoutManager = LinearLayoutManager(this)
+            recyclerview.adapter = adapter
+            adapter.submitList(it)
         }
 
 
@@ -106,7 +130,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             val adapter = CreatePropertyPhotoAdapter()
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
-            adapter.submitList(list)
+            adapter.submitList(it)
 
         }
 
@@ -150,15 +174,20 @@ class CreatePropertyActivity : AppCompatActivity() {
     override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
         super.onActivityResult(requestCodes, resultCodes, data)
         if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
-            if(isFromCamera){}
+            if (isFromCamera) {
+            }
+            //val description = binding.address.text.toString()
 
-            val photo = intent.extras
+            //val photo = intent.extras
             val uri: Uri = data.data!!
             val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
-            list.add(realPath!!)
-            list.add(photo.toString())
-            viewModel.createTemporaryPhoto(realPath)
-
+            //list.add(realPath!!)
+            //list.add(photo.toString())
+            if(realPath != null){
+                viewModel.createTemporaryPhoto(realPath)
+            }else{
+                Toast.makeText(this, "no photo", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(this, "vous n'avez pas les autorisations", Toast.LENGTH_SHORT).show()
         }
@@ -175,15 +204,15 @@ class CreatePropertyActivity : AppCompatActivity() {
     }
 
     private fun pictureIntent() {
-            isFromCamera = true
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val photoFile = createImageFile()
-            val uri = Uri.fromFile(photoFile)
-            //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
+        isFromCamera = true
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoFile = createImageFile()
+        val uri = Uri.fromFile(photoFile)
+        //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
 
-            //intent.action = Intent.ACTION_CAMERA_BUTTON
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-            startActivityForResult(intent, INTENT_REQUEST_CODE)
+        //intent.action = Intent.ACTION_CAMERA_BUTTON
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, INTENT_REQUEST_CODE)
 
 
     }

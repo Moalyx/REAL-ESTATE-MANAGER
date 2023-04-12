@@ -23,7 +23,7 @@ import javax.inject.Singleton
 class DataModule {
 
     companion object{
-        private const val BASE_URL = "https://maps.googleapis.com/maps/api/geocode/"
+        private const val BASE_URL = "https://maps.googleapis.com/"
     }
 
 

@@ -13,7 +13,7 @@ class RetrofitService {
     companion object{
         private val gson: Gson = GsonBuilder().setLenient().create()
         private val httpClient = OkHttpClient().newBuilder().build()
-        private const val BASE_URL = "https://maps.googleapis.com"
+        private const val BASE_URL = "https://maps.googleapis.com/"
         private val retrofitService: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)

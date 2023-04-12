@@ -1,17 +1,15 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.widget.CheckBox
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.repository.autocomplete.model.PredictionResponse
+import com.tuto.realestatemanager.repository.autocomplete.model.Predictions
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
-import com.tuto.realestatemanager.ui.editproperty.UpdatePropertyViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -47,11 +45,35 @@ class CreatePropertyViewModel @Inject constructor(
 
     val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
 
-    val predictions: LiveData<String> = addressSearchMutableStateFlow.filterNotNull().mapLatest {
-        autocompleteRepository.getAutocompleteResult(it)
-    }.asLiveData(Dispatchers.IO)
+    val predictions: LiveData<PredictionResponse> =
+        addressSearchMutableStateFlow.filterNotNull().mapLatest {
+            autocompleteRepository.getAutocompleteResult(it)
+        }.asLiveData(Dispatchers.IO)
 
-    fun onAddressSearchChanged(address : String?) {
+    val predictionListViewState: LiveData<List<PredictionViewState>> = predictions.map {
+        it.predictions.map { predictions ->
+            PredictionViewState(
+                predictions.structuredFormatting?.mainText.toString(),
+                predictions.structuredFormatting?.secondaryText.toString(),
+                predictions.structuredFormatting?.mainText.toString(),
+                predictions.structuredFormatting?.mainText.toString(),
+                predictions.structuredFormatting?.mainText.toString(),
+                predictions.structuredFormatting?.mainText.toString()
+
+            )
+        }
+//        val predictions = it.results
+//        predictions.map {
+//            var predictionsList = ArrayList<PredictionViewState>()
+//            val predictionViewState = PredictionViewState(it.placeId)
+    }
+
+    fun getAdress(results: Predictions){
+
+    }
+
+
+    fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
     }
 
@@ -137,7 +159,7 @@ class CreatePropertyViewModel @Inject constructor(
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,
-                        photoUri = temporaryPhotoUrl,
+                        photoUri = temporaryPhotoUrl
                     )
                 )
             }

@@ -12,7 +12,7 @@ class AutocompleteRepositoryImpl @Inject constructor(
 
     override suspend fun getAutocompleteResult(address: String): PredictionResponse {
 
-            return googleApi.autocompleteResult(BuildConfig.GOOGLE_AUTOCOMPLETE_KEY, address)
+            return googleApi.autocompleteResult(BuildConfig.GOOGLE_AUTOCOMPLETE_KEY, "48.849920, 2.637041", "50000", address)
     }
 }
 

@@ -4,8 +4,8 @@ import com.tuto.realestatemanager.current_property.CurrentPropertyIdIdRepository
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepositoryImpl
-import com.tuto.realestatemanager.repository.geocode.GeocodeRepository
-import com.tuto.realestatemanager.repository.geocode.GeocodeRepositoryImpl
+import com.tuto.realestatemanager.repository.placedetail.PlaceDetailRepository
+import com.tuto.realestatemanager.repository.placedetail.PlaceDetailRepositoryImpl
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.repository.photo.PhotoRepositoryImpl
 import com.tuto.realestatemanager.repository.property.PropertyRepository
@@ -34,7 +34,7 @@ abstract class DataBindingModule {
 
     @Binds
     @Singleton
-    abstract fun bindsGeocodeRepository(impl: GeocodeRepositoryImpl) : GeocodeRepository
+    abstract fun bindsPlaceDetailRepository(impl: PlaceDetailRepositoryImpl) : PlaceDetailRepository
 
     @Binds
     @Singleton

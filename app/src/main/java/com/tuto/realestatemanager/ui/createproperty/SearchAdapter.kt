@@ -10,7 +10,9 @@ import com.tuto.realestatemanager.databinding.ItemSearchBinding
 import com.tuto.realestatemanager.ui.list.PropertyViewState
 
 
-class SearchAdapter : ListAdapter<PredictionViewState, SearchAdapter.SearchViewHolder>(
+class SearchAdapter(
+    private val listener : OnSearchClickListener
+) : ListAdapter<PredictionViewState, SearchAdapter.SearchViewHolder>(
     SearchDiffCallBack
 ) {
 
@@ -20,13 +22,17 @@ class SearchAdapter : ListAdapter<PredictionViewState, SearchAdapter.SearchViewH
     }
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), listener)
     }
 
     class SearchViewHolder( private val binding: ItemSearchBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind (predictionViewState: PredictionViewState){
+        fun bind (predictionViewState: PredictionViewState, listener: OnSearchClickListener){
             binding.address.text = predictionViewState.address
             binding.complementAddress.text = predictionViewState.complement
+
+            binding.rawSearchview.setOnClickListener{
+                listener.onPhotoClicked(predictionViewState.id)
+            }
 //            binding.zipCode.text = predictionViewState.zipCode
 //            binding.city.text = predictionViewState.city
 //            binding.state.text = predictionViewState.state
@@ -45,6 +51,10 @@ class SearchAdapter : ListAdapter<PredictionViewState, SearchAdapter.SearchViewH
             oldItem: PredictionViewState,
             newItem: PredictionViewState
         ): Boolean = oldItem == newItem
+    }
+
+    interface OnSearchClickListener {
+        fun onPhotoClicked(id : String) {}
     }
 
 

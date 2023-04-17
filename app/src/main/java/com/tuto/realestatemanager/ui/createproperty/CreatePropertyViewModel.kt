@@ -3,19 +3,24 @@ package com.tuto.realestatemanager.ui.createproperty
 import android.widget.CheckBox
 import androidx.lifecycle.*
 import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.model.CreateTempPhoto
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.repository.autocomplete.model.Predictions
 import com.tuto.realestatemanager.repository.photo.PhotoRepository
+import com.tuto.realestatemanager.repository.placedetail.PlaceDetailRepository
 import com.tuto.realestatemanager.repository.property.PropertyRepository
+import com.tuto.realestemanager.repository.placedetail.model.PlaceDetailResponse
+import com.tuto.realestemanager.repository.placedetail.model.PlaceResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
+import java.util.Collections.indexOfSubList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +28,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val autocompleteRepository: AutocompleteRepository
+    private val autocompleteRepository: AutocompleteRepository,
+    private val placeDetailRepository: PlaceDetailRepository
 
 ) : ViewModel() {
 
@@ -33,6 +39,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val surfaceMutableStateFlow = MutableStateFlow<Int?>(null)
     private val propertyIdMutableStateFlow = MutableStateFlow<Long?>(null)
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
+    private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
 
 //    private lateinit var propertyEntity: PropertyEntity
 //    private var propertyId: Long = propertyEntity.id
@@ -41,11 +48,133 @@ class CreatePropertyViewModel @Inject constructor(
         currentPropertyIdRepository.setCurrentId(id)
     }
 
-    private val photosMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
+    //private val photoMutableStateFlow = MutableStateFlow<List<String>>()
+    private val photosUrlMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
+    private val photosTitleMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
+    var createTempPhotoMutableStateFlow = MutableStateFlow<CreateTempPhoto?>(null)
 
-    val photo: LiveData<List<String>> = photosMutableStateFlow.asLiveData(Dispatchers.IO)
+    //    val photo: LiveData<CreateTempPhoto> = createTempPhotoMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
+    val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)
 
-    val predictions: LiveData<PredictionResponse> =
+    fun createTemporaryPhoto(photoUrl: String?/*, photoTitle : String?*/) {
+
+
+        photosUrlMutableStateFlow.update {
+            it + photoUrl!!
+        }
+//        photosTitleMutableStateFlow.update {
+//            it + photoTitle!!
+//        }
+
+//        val listTempPhoto = arrayListOf<CreateTempPhoto>()
+//        listTempPhoto.add( createTempPhotoMutableStateFlow.value = CreateTempPhoto(photosUrlMutableStateFlow.value, photosTitleMutableStateFlow.value))
+//
+
+    }
+
+//    fun createTemporaryPhoto(photoUrl: String?, photoTitle : String?) {
+//
+//    }
+
+    private val placeDetailAddress: LiveData<PlaceDetailResponse> =
+        placeIdMutableStateFlow.filterNotNull().mapLatest {
+            placeDetailRepository.getAdressById(it)
+        }.asLiveData(Dispatchers.IO)
+
+    val placeDetailViewState: LiveData<PlaceDetailViewState> = placeDetailAddress.map {
+        PlaceDetailViewState(
+            getStreetNumber(it.placeResult!!),
+            getStreetAdress(it.placeResult!!),
+            getCity(it.placeResult!!),
+            getZipcode(it.placeResult!!),
+            getState(it.placeResult!!),
+            getCountry(it.placeResult!!)
+
+//            it.placeResult?.adrAddress.toString(),
+//            it.placeResult?.adrAddress.toString(),
+//            it.placeResult?.adrAddress.toString(),
+//            it.placeResult?.adrAddress.toString(),
+//            it.placeResult?.adrAddress.toString(),
+//            it.placeResult?.adrAddress.toString()
+
+//            it.result?.addressComponents?.get(0)?.longName.toString(),
+//            it.result?.addressComponents?.get(1)?.longName.toString(),
+//            it.result?.addressComponents?.get(2)?.longName.toString(),
+//            it.result?.addressComponents?.get(3)?.longName.toString(),
+//            it.result?.addressComponents?.get(4)?.longName.toString(),
+//            it.result?.addressComponents?.get(5)?.longName.toString()
+        )
+    }
+
+    fun getStreetNumber(placeResult: PlaceResult) : String{
+        var streetNumber = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.get(0).equals("street_number")){
+                streetNumber = result.longName.toString()
+
+            }
+        }
+        return streetNumber
+    }
+
+    private fun getStreetAdress(placeResult: PlaceResult) : String{
+        var streetAddress = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.equals("route")){
+                streetAddress = result.longName.toString()
+
+            }
+        }
+        return streetAddress
+    }
+
+    private fun getCity(placeResult: PlaceResult) : String{
+        var city = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.get(0).equals("locality")){
+                city = result.longName.toString()
+
+            }
+        }
+        return city
+    }
+
+    private fun getState(placeResult: PlaceResult) : String{
+        var state = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.get(0).equals("administrative_area_level_2")){
+                state = result.longName.toString()
+
+            }
+        }
+        return state
+    }
+
+    private fun getCountry(placeResult: PlaceResult) : String{
+        var country = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.get(0).equals("country")){
+                country = result.longName.toString()
+
+            }
+        }
+        return country
+    }
+
+    private fun getZipcode(placeResult: PlaceResult) : String{
+        var zipcode = ""
+        for(result in placeResult.addressComponents){
+            if (result.types.get(0).equals("postal_code")){
+                zipcode = result.longName.toString()
+
+            }
+        }
+        return zipcode
+    }
+
+
+
+    private val predictions: LiveData<PredictionResponse> =
         addressSearchMutableStateFlow.filterNotNull().mapLatest {
             autocompleteRepository.getAutocompleteResult(it)
         }.asLiveData(Dispatchers.IO)
@@ -58,7 +187,8 @@ class CreatePropertyViewModel @Inject constructor(
                 predictions.structuredFormatting?.mainText.toString(),
                 predictions.structuredFormatting?.mainText.toString(),
                 predictions.structuredFormatting?.mainText.toString(),
-                predictions.structuredFormatting?.mainText.toString()
+                predictions.structuredFormatting?.mainText.toString(),
+                predictions.placeId!!
 
             )
         }
@@ -68,8 +198,12 @@ class CreatePropertyViewModel @Inject constructor(
 //            val predictionViewState = PredictionViewState(it.placeId)
     }
 
-    fun getAdress(results: Predictions){
+    fun getAdress(results: Predictions) {
 
+    }
+
+    fun onGetAutocompleteAddressId(id: String) {
+        placeIdMutableStateFlow.value = id
     }
 
 
@@ -155,7 +289,7 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhotoUrl in photosMutableStateFlow.value) {
+            for (temporaryPhotoUrl in photosUrlMutableStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,
@@ -173,11 +307,5 @@ class CreatePropertyViewModel @Inject constructor(
 //        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo) }
     }
 
-
-    fun createTemporaryPhoto(photoUrl: String) {
-        photosMutableStateFlow.update {
-            it + photoUrl
-        }
-    }
 
 }

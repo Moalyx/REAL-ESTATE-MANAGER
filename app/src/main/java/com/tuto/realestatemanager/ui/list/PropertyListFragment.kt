@@ -13,7 +13,7 @@ import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PropertyListFragment : Fragment(), MenuProvider {
+class PropertyListFragment : Fragment()/*, MenuProvider*/ {
 
     private var _binding: FragmentPropertyListBinding? = null
     private val binding: FragmentPropertyListBinding get() = _binding!!
@@ -46,21 +46,21 @@ class PropertyListFragment : Fragment(), MenuProvider {
 
     }
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//        menuInflater.inflate(R.menu.edit_property_menu, menu)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.edit_property -> startActivity(
-                Intent(
-                    context,
-                    CreatePropertyActivity::class.java
-                )
-            )
-        }
-        return true
-    }
+//    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+////        menuInflater.inflate(R.menu.edit_property_menu, menu)
+//    }
+//
+//    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//        when (menuItem.itemId) {
+//            R.id.edit_property -> startActivity(
+//                Intent(
+//                    context,
+//                    CreatePropertyActivity::class.java
+//                )
+//            )
+//        }
+//        return true
+//    }
 
 
 }

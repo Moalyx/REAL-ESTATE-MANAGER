@@ -1,40 +1,37 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.Manifest
-import android.R.attr
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.InputType
-import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
+import androidx.core.net.toUri
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
+import com.tuto.realestatemanager.databinding.ItemAddPictureRecyclerviewBinding
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
+
 
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
@@ -59,6 +56,9 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        val recyclerViewBinding = ItemAddPictureRecyclerviewBinding.inflate(layoutInflater)
+//        setContentView(recyclerViewBinding.root)
 
         var type = ""
 
@@ -92,10 +92,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
 
-
-
-
-
         binding.address.doAfterTextChanged {
             viewModel.onAddressSearchChanged(it?.toString())
             //recyclerview.isVisible
@@ -114,14 +110,31 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         })
 
+        viewModel.placeDetailViewState.observe(this){
+            //binding.address.setText(it.number + it.address)
+            binding.complement.setText(it.address)
+            binding.zipcode.setText(it.zipCode)
+            binding.state.setText(it.state)
+            binding.country.setText(it.country)
+            binding.city.setText(it.city)
+        }
+
         viewModel.predictionListViewState.observe(this) {
 //            Log.d("TAAAG", "onCreate() called $it")
             val recyclerview: RecyclerView = binding.predictionRecyclerview
-            val adapter = SearchAdapter()
+            val adapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener{
+                override fun onPhotoClicked(id: String) {
+                    viewModel.onGetAutocompleteAddressId(id)
+                }
+            })
             recyclerview.layoutManager = LinearLayoutManager(this)
             recyclerview.adapter = adapter
             adapter.submitList(it)
         }
+
+//        recyclerViewBinding.photoTitle.doAfterTextChanged {
+//            viewModel.createTemporaryPhoto(null, it.toString())
+//        }
 
 
 
@@ -134,8 +147,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
 
-
-
         binding.addPictureButton.setOnClickListener {
             launchIntent()
 //            getContent.launch("image/*")
@@ -143,6 +154,7 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         binding.takePictureButton.setOnClickListener {
             pictureIntent()
+            //capturePhoto()
         }
 
         binding.saveButton.setOnClickListener() {
@@ -174,20 +186,28 @@ class CreatePropertyActivity : AppCompatActivity() {
     override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
         super.onActivityResult(requestCodes, resultCodes, data)
         if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
-            if (isFromCamera) {
-            }
+            val uri: Uri = data.data!!
+//            if (isFromCamera) {
+
+//                val photo = intent.extras
+//                viewModel.createTemporaryPhoto(photo.toString())
+
+//            }else{
+                val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
+                viewModel.createTemporaryPhoto(realPath!!)
+//            }
             //val description = binding.address.text.toString()
 
             //val photo = intent.extras
-            val uri: Uri = data.data!!
-            val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
+
+
             //list.add(realPath!!)
             //list.add(photo.toString())
-            if(realPath != null){
-                viewModel.createTemporaryPhoto(realPath)
-            }else{
-                Toast.makeText(this, "no photo", Toast.LENGTH_SHORT).show()
-            }
+//            if(realPath != null){
+//                viewModel.createTemporaryPhoto(realPath)
+//            }else{
+//                Toast.makeText(this, "no photo", Toast.LENGTH_SHORT).show()
+//            }
         } else {
             Toast.makeText(this, "vous n'avez pas les autorisations", Toast.LENGTH_SHORT).show()
         }
@@ -206,15 +226,55 @@ class CreatePropertyActivity : AppCompatActivity() {
     private fun pictureIntent() {
         isFromCamera = true
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val photoFile = createImageFile()
-        val uri = Uri.fromFile(photoFile)
+        if (intent.resolveActivity(this.packageManager) != null) {
+            try {
+
+                val tempFile = File.createTempFile("my_app", ".jpg")
+                val fileName = tempFile.absolutePath.toUri()
+                val uri = Uri.fromFile(tempFile)
+                // Créer un fichier pour stocker la photo capturée
+//                fichierPhoto.createNewFile()
+//                val urix = fichierPhoto.toURI()
+
+                // Passer l'URI du fichier comme extra pour l'intention de la caméra
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileName)
+
+                // Lancer l'activité de la caméra avec une demande de résultat
+                this.startActivityForResult(intent, 0)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+//        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        val photoFile = createImageFile()
+//        val uri = Uri.fromFile(photoFile)
         //uriImageSelected = FileProvider.getUriForFile(this, "", photoFile)
 
         //intent.action = Intent.ACTION_CAMERA_BUTTON
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        //startActivityForResult(intent, INTENT_REQUEST_CODE)
+
+
+    }
+
+    fun capturePhoto() {
+
+        val tempFile = File.createTempFile("my_app", ".jpg")
+        val fileName = tempFile.absolutePath
+        val uri = Uri.fromFile(tempFile)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
         startActivityForResult(intent, INTENT_REQUEST_CODE)
 
-
+//        val photoFile = createImageFile()
+//        val uri = Uri.fromFile(photoFile)
+//        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+//            putExtra(MediaStore.EXTRA_OUTPUT, uri)
+//        }
+//        if (intent.resolveActivity(packageManager) != null) {
+//            startActivityForResult(intent, 0)
+//        }
     }
 
     // When photo is created, we need to create an image file
@@ -229,10 +289,10 @@ class CreatePropertyActivity : AppCompatActivity() {
             ".jpg", /* suffix */
             storageDir /* directory */
         )
-//            .apply {
-//            // Save a file: path for use with CAMERA
-//            currentPhotoPath = absolutePath
-//        }
+            .apply {
+            // Save a file: path for use with CAMERA
+            currentPhotoPath = absolutePath
+        }
     }
 
 //    val getContent: ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->

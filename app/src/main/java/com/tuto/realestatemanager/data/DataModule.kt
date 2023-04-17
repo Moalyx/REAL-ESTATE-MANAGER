@@ -13,9 +13,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -51,8 +53,14 @@ class DataModule {
     @Provides
     @Singleton
     fun provideGoogleApi() : GoogleApi {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
         val gson: Gson = GsonBuilder().setLenient().create()
-        val httpClient = OkHttpClient().newBuilder().build()
+        val httpClient = OkHttpClient().newBuilder()
+            .addInterceptor(interceptor)
+            .connectTimeout(10, TimeUnit.SECONDS).
+            readTimeout(10, TimeUnit.SECONDS).build()
+
         val retrofitService: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)

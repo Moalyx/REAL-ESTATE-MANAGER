@@ -31,7 +31,7 @@ class SearchAdapter(
             binding.complementAddress.text = predictionViewState.complement
 
             binding.rawSearchview.setOnClickListener{
-                listener.onPhotoClicked(predictionViewState.id)
+                listener.onPredictionClicked(predictionViewState.id)
             }
 //            binding.zipCode.text = predictionViewState.zipCode
 //            binding.city.text = predictionViewState.city
@@ -54,7 +54,7 @@ class SearchAdapter(
     }
 
     interface OnSearchClickListener {
-        fun onPhotoClicked(id : String) {}
+        fun onPredictionClicked(id : String) {}
     }
 
 

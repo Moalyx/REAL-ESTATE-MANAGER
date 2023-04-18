@@ -339,6 +339,22 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
+                <SearchView
+                    android:id="@+id/searchview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:queryHint="address search" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/prediction_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:ellipsize="end"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/title_address"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -366,20 +382,9 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <SearchView
-                    android:id="@+id/searchview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/prediction_recyclerview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:ellipsize="end"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp" />
+
+
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/title_complement"

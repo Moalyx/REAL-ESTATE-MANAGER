@@ -16,15 +16,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.core.widget.doAfterTextChanged
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
-import com.tuto.realestatemanager.databinding.ItemAddPictureRecyclerviewBinding
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -92,10 +90,10 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
 
-        binding.address.doAfterTextChanged {
-            viewModel.onAddressSearchChanged(it?.toString())
-            //recyclerview.isVisible
-        }
+//        binding.address.doAfterTextChanged {
+//            viewModel.onAddressSearchChanged(it?.toString())
+//            //recyclerview.isVisible
+//        }
 
         val searchView = binding.searchview
         searchView.setOnQueryTextListener(object : OnQueryTextListener{
@@ -107,12 +105,13 @@ class CreatePropertyActivity : AppCompatActivity() {
                 viewModel.onAddressSearchChanged(p0)
                 return false
             }
-
         })
 
+
+
         viewModel.placeDetailViewState.observe(this){
-            //binding.address.setText(it.number + it.address)
-            binding.complement.setText(it.address)
+            binding.address.setText("${it.number} ${it.address}")
+            //binding.complement.setText(it.number + " " +  it.address)
             binding.zipcode.setText(it.zipCode)
             binding.state.setText(it.state)
             binding.country.setText(it.country)
@@ -123,8 +122,11 @@ class CreatePropertyActivity : AppCompatActivity() {
 //            Log.d("TAAAG", "onCreate() called $it")
             val recyclerview: RecyclerView = binding.predictionRecyclerview
             val adapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener{
-                override fun onPhotoClicked(id: String) {
+                override fun onPredictionClicked(id: String) {
                     viewModel.onGetAutocompleteAddressId(id)
+                    binding.searchview.clearFocus()
+                    searchView.setQuery("", false)
+                    binding.predictionRecyclerview.isVisible
                 }
             })
             recyclerview.layoutManager = LinearLayoutManager(this)

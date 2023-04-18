@@ -89,89 +89,68 @@ class CreatePropertyViewModel @Inject constructor(
             getZipcode(it.placeResult!!),
             getState(it.placeResult!!),
             getCountry(it.placeResult!!)
-
-//            it.placeResult?.adrAddress.toString(),
-//            it.placeResult?.adrAddress.toString(),
-//            it.placeResult?.adrAddress.toString(),
-//            it.placeResult?.adrAddress.toString(),
-//            it.placeResult?.adrAddress.toString(),
-//            it.placeResult?.adrAddress.toString()
-
-//            it.result?.addressComponents?.get(0)?.longName.toString(),
-//            it.result?.addressComponents?.get(1)?.longName.toString(),
-//            it.result?.addressComponents?.get(2)?.longName.toString(),
-//            it.result?.addressComponents?.get(3)?.longName.toString(),
-//            it.result?.addressComponents?.get(4)?.longName.toString(),
-//            it.result?.addressComponents?.get(5)?.longName.toString()
         )
     }
 
-    fun getStreetNumber(placeResult: PlaceResult) : String{
+    fun getStreetNumber(placeResult: PlaceResult): String {
         var streetNumber = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.get(0).equals("street_number")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("street_number")) {
                 streetNumber = result.longName.toString()
-
             }
         }
         return streetNumber
     }
 
-    private fun getStreetAdress(placeResult: PlaceResult) : String{
+    private fun getStreetAdress(placeResult: PlaceResult): String {
         var streetAddress = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.equals("route")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("route")) {
                 streetAddress = result.longName.toString()
-
             }
         }
         return streetAddress
     }
 
-    private fun getCity(placeResult: PlaceResult) : String{
+    private fun getCity(placeResult: PlaceResult): String {
         var city = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.get(0).equals("locality")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("locality")) {
                 city = result.longName.toString()
-
             }
         }
         return city
     }
 
-    private fun getState(placeResult: PlaceResult) : String{
+    private fun getState(placeResult: PlaceResult): String {
         var state = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.get(0).equals("administrative_area_level_2")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("administrative_area_level_2")) {
                 state = result.longName.toString()
-
             }
         }
         return state
     }
 
-    private fun getCountry(placeResult: PlaceResult) : String{
+    private fun getCountry(placeResult: PlaceResult): String {
         var country = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.get(0).equals("country")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("country")) {
                 country = result.longName.toString()
-
             }
         }
         return country
     }
 
-    private fun getZipcode(placeResult: PlaceResult) : String{
+    private fun getZipcode(placeResult: PlaceResult): String {
         var zipcode = ""
-        for(result in placeResult.addressComponents){
-            if (result.types.get(0).equals("postal_code")){
+        for (result in placeResult.addressComponents) {
+            if (result.types.get(0).equals("postal_code")) {
                 zipcode = result.longName.toString()
-
             }
         }
         return zipcode
     }
-
 
 
     private val predictions: LiveData<PredictionResponse> =
@@ -192,14 +171,6 @@ class CreatePropertyViewModel @Inject constructor(
 
             )
         }
-//        val predictions = it.results
-//        predictions.map {
-//            var predictionsList = ArrayList<PredictionViewState>()
-//            val predictionViewState = PredictionViewState(it.placeId)
-    }
-
-    fun getAdress(results: Predictions) {
-
     }
 
     fun onGetAutocompleteAddressId(id: String) {
@@ -298,14 +269,5 @@ class CreatePropertyViewModel @Inject constructor(
                 )
             }
         }
-
-
-//        val photo = PhotoEntity(id = 0,
-//            property.id,
-//            photoUrl
-//        )
-//        viewModelScope.launch(Dispatchers.Main) { photoRepository.insertPhoto(photo) }
     }
-
-
 }

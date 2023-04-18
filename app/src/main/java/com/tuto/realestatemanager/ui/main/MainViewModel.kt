@@ -2,7 +2,7 @@ package com.tuto.realestatemanager.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.tuto.realestatemanager.current_property.CurrentPropertyIdIdRepositoryImpl
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdIdRepositoryImpl
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull

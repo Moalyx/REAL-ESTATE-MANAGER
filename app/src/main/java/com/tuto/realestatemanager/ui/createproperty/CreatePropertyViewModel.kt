@@ -1,35 +1,39 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.widget.CheckBox
-import androidx.lifecycle.*
-import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
+import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
+import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
+import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.model.CreateTempPhoto
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
-import com.tuto.realestatemanager.repository.autocomplete.AutocompleteRepository
-import com.tuto.realestatemanager.repository.autocomplete.model.PredictionResponse
-import com.tuto.realestatemanager.repository.autocomplete.model.Predictions
-import com.tuto.realestatemanager.repository.photo.PhotoRepository
-import com.tuto.realestatemanager.repository.placedetail.PlaceDetailRepository
-import com.tuto.realestatemanager.repository.property.PropertyRepository
-import com.tuto.realestemanager.repository.placedetail.model.PlaceDetailResponse
-import com.tuto.realestemanager.repository.placedetail.model.PlaceResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
-import java.util.Collections.indexOfSubList
 import javax.inject.Inject
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
+    private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase,
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val autocompleteRepository: AutocompleteRepository,
-    private val placeDetailRepository: PlaceDetailRepository
+    private val autocompleteRepository: AutocompleteRepository
 
 ) : ViewModel() {
 
@@ -76,82 +80,22 @@ class CreatePropertyViewModel @Inject constructor(
 //
 //    }
 
-    private val placeDetailAddress: LiveData<PlaceDetailResponse> =
+    private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow.filterNotNull().mapLatest {
-            placeDetailRepository.getAdressById(it)
-        }.asLiveData(Dispatchers.IO)
+            getPlaceAddressComponentsUseCase.invoke(it)
+        }.filterNotNull()
+            .asLiveData(Dispatchers.IO)
 
     val placeDetailViewState: LiveData<PlaceDetailViewState> = placeDetailAddress.map {
         PlaceDetailViewState(
-            getStreetNumber(it.placeResult!!),
-            getStreetAdress(it.placeResult!!),
-            getCity(it.placeResult!!),
-            getZipcode(it.placeResult!!),
-            getState(it.placeResult!!),
-            getCountry(it.placeResult!!)
+            number = it.streetNumber,
+            address = it.fullAddress,
+            city = it.city,
+            zipCode = it.zipCode,
+            state = it.state,
+            country = it.country,
         )
     }
-
-    fun getStreetNumber(placeResult: PlaceResult): String {
-        var streetNumber = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("street_number")) {
-                streetNumber = result.longName.toString()
-            }
-        }
-        return streetNumber
-    }
-
-    private fun getStreetAdress(placeResult: PlaceResult): String {
-        var streetAddress = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("route")) {
-                streetAddress = result.longName.toString()
-            }
-        }
-        return streetAddress
-    }
-
-    private fun getCity(placeResult: PlaceResult): String {
-        var city = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("locality")) {
-                city = result.longName.toString()
-            }
-        }
-        return city
-    }
-
-    private fun getState(placeResult: PlaceResult): String {
-        var state = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("administrative_area_level_2")) {
-                state = result.longName.toString()
-            }
-        }
-        return state
-    }
-
-    private fun getCountry(placeResult: PlaceResult): String {
-        var country = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("country")) {
-                country = result.longName.toString()
-            }
-        }
-        return country
-    }
-
-    private fun getZipcode(placeResult: PlaceResult): String {
-        var zipcode = ""
-        for (result in placeResult.addressComponents) {
-            if (result.types.get(0).equals("postal_code")) {
-                zipcode = result.longName.toString()
-            }
-        }
-        return zipcode
-    }
-
 
     private val predictions: LiveData<PredictionResponse> =
         addressSearchMutableStateFlow.filterNotNull().mapLatest {

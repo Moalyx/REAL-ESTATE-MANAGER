@@ -2,7 +2,7 @@ package com.tuto.realestatemanager.ui.utils
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.tuto.realestatemanager.api.GoogleApi
+import com.tuto.realestatemanager.data.api.GoogleApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,7 +20,7 @@ class RetrofitService {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
-        fun googleApi() : GoogleApi{
+        fun googleApi() : GoogleApi {
             return retrofitService.create(GoogleApi::class.java)
         }
 

@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
-import com.tuto.realestatemanager.repository.photo.PhotoRepository
-import com.tuto.realestatemanager.repository.property.PropertyRepository
+import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
+import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull

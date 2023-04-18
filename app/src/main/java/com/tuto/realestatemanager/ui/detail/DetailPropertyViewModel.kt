@@ -3,8 +3,8 @@ package com.tuto.realestatemanager.ui.detail
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
-import com.tuto.realestatemanager.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.repository.property.PropertyRepository
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

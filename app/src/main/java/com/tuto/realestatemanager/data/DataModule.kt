@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.tuto.realestatemanager.api.GoogleApi
-import com.tuto.realestatemanager.database.PropertyDao
-import com.tuto.realestatemanager.database.PropertyDatabase
+import com.tuto.realestatemanager.data.api.GoogleApi
+import com.tuto.realestatemanager.data.database.PropertyDao
+import com.tuto.realestatemanager.data.database.PropertyDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

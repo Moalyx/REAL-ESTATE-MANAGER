@@ -1,6 +1,6 @@
 package com.tuto.realestatemanager.model
 
-data class CreateTempPhoto(
+data class TemporaryPhoto(
     val uri: String?,
     val title : String?
 )

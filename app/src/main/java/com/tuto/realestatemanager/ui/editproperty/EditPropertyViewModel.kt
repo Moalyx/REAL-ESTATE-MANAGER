@@ -39,7 +39,13 @@ class EditPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map {it ->  it.photoUri },
+                    propertyWithPhotosEntity.propertyEntity.address,
+                    propertyWithPhotosEntity.propertyEntity.city,
+                    propertyWithPhotosEntity.propertyEntity.zipCode,
+                    propertyWithPhotosEntity.propertyEntity.state,
                     propertyWithPhotosEntity.propertyEntity.country,
+                    propertyWithPhotosEntity.propertyEntity.lat,
+                    propertyWithPhotosEntity.propertyEntity.lng,
                     propertyWithPhotosEntity.propertyEntity.surface,
                     propertyWithPhotosEntity.propertyEntity.description,
                     propertyWithPhotosEntity.propertyEntity.room,
@@ -66,8 +72,14 @@ class EditPropertyViewModel @Inject constructor(
         id: Long,
         type: String,
         price: Int,
-        county: String,
+        address : String,
+        city : String,
+        state : String,
+        zipcode : Int,
+        country: String,
         surface: Int,
+        lat : Double,
+        lng : Double,
         description: String,
         room: Int,
         bedroom: Int,
@@ -85,8 +97,14 @@ class EditPropertyViewModel @Inject constructor(
             id,
             type,
             price,
-            county,
+            address,
+            city,
+            state,
+            zipcode,
+            country,
             surface,
+            lat,
+            lng,
             description,
             room,
             bedroom,
@@ -101,11 +119,11 @@ class EditPropertyViewModel @Inject constructor(
         )
         viewModelScope.launch(Dispatchers.IO) { propertyRepository.updateProperty(property) }
 
-        val photo = PhotoEntity(id = 0,
-            1,
-            photoUri
-        )
-        viewModelScope.launch(Dispatchers.Main) { photoRepository.upDatePhoto(photo) }
+//        val photo = PhotoEntity(id = 0,
+//            property.id,
+//            photoUri
+//        )
+//        viewModelScope.launch(Dispatchers.Main) { photoRepository.upDatePhoto(photo) }
     }
 
 }

@@ -32,7 +32,7 @@ class PropertyListAdapter(private val context: Context) : ListAdapter<PropertyVi
 
             Glide
                 .with(binding.propertyPhoto)
-                .load(propertyViewState.photoList.first())
+                .load(propertyViewState.photoList.first().photoUri)
                 .into(binding.propertyPhoto)
         }
     }

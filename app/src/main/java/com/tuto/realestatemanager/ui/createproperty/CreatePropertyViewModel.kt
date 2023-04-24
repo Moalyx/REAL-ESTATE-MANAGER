@@ -11,17 +11,15 @@ import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepos
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
-import com.tuto.realestatemanager.model.CreateTempPhoto
+import com.tuto.realestatemanager.model.TemporaryPhoto
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
@@ -33,7 +31,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val autocompleteRepository: AutocompleteRepository
+    private val autocompleteRepository: AutocompleteRepository,
+    temporaryPhotoRepository: TemporaryPhotoRepository
 
 ) : ViewModel() {
 
@@ -44,6 +43,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val propertyIdMutableStateFlow = MutableStateFlow<Long?>(null)
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
+    private val photoEntityMutableStateFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
 
 //    private lateinit var propertyEntity: PropertyEntity
 //    private var propertyId: Long = propertyEntity.id
@@ -55,7 +55,7 @@ class CreatePropertyViewModel @Inject constructor(
     //private val photoMutableStateFlow = MutableStateFlow<List<String>>()
     private val photosUrlMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
     private val photosTitleMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
-    var createTempPhotoMutableStateFlow = MutableStateFlow<CreateTempPhoto?>(null)
+    var temporaryPhotoMutableStateFlow = MutableStateFlow<TemporaryPhoto?>(null)
 
     //    val photo: LiveData<CreateTempPhoto> = createTempPhotoMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
     val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)
@@ -76,9 +76,15 @@ class CreatePropertyViewModel @Inject constructor(
 
     }
 
+
+
 //    fun createTemporaryPhoto(photoUrl: String?, photoTitle : String?) {
 //
 //    }
+
+    fun onGetAutocompleteAddressId(id: String) {
+        placeIdMutableStateFlow.value = id
+    }
 
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow.filterNotNull().mapLatest {
@@ -94,7 +100,19 @@ class CreatePropertyViewModel @Inject constructor(
             zipCode = it.zipCode,
             state = it.state,
             country = it.country,
+            lat = it.lat,
+            lng = it.lng
+
+            //todo rajouter latlng ici modifier le use case pour y ajouter latlng
         )
+    }
+
+    val temporaryPhoto : LiveData<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList().asLiveData(Dispatchers.IO)
+
+    val tempphoto: Flow<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList()
+
+    fun onAddressSearchChanged(address: String?) {
+        addressSearchMutableStateFlow.value = address
     }
 
     private val predictions: LiveData<PredictionResponse> =
@@ -117,14 +135,10 @@ class CreatePropertyViewModel @Inject constructor(
         }
     }
 
-    fun onGetAutocompleteAddressId(id: String) {
-        placeIdMutableStateFlow.value = id
-    }
 
 
-    fun onAddressSearchChanged(address: String?) {
-        addressSearchMutableStateFlow.value = address
-    }
+
+
 
     fun isChecked(view: CheckBox, boolean: Boolean): Boolean {
         view.isChecked = false
@@ -166,11 +180,21 @@ class CreatePropertyViewModel @Inject constructor(
 //        return true
 //    }
 
+    fun createPhoto(temporaryPhoto: List<TemporaryPhoto>){
+        photoEntityMutableStateFlow.value = temporaryPhoto
+    }
+
     fun createProperty(
         type: String,
         price: Int,
-        county: String,
+        address : String,
+        city : String,
+        state : String,
+        zipcode : Int,
+        country: String,
         surface: Int,
+        lat : Double,
+        lng : Double,
         description: String,
         room: Int,
         bedroom: Int,
@@ -187,8 +211,14 @@ class CreatePropertyViewModel @Inject constructor(
             id = 0,
             type,
             price,
-            county,
+            address,
+            city,
+            state,
+            zipcode,
+            country,
             surface,
+            lat,
+            lng,
             description,
             room,
             bedroom,
@@ -204,11 +234,12 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhotoUrl in photosUrlMutableStateFlow.value) {
+            for (temporaryPhoto in photoEntityMutableStateFlow.value/*photosUrlMutableStateFlow.value*/) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,
-                        photoUri = temporaryPhotoUrl
+                        photoUri = temporaryPhoto.uri!!,
+                        photoTitle = temporaryPhoto.title!!
                     )
                 )
             }

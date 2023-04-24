@@ -1,22 +1,25 @@
 package com.tuto.realestatemanager.model
 
+import android.location.Location
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.android.gms.maps.model.LatLng
 
 @Entity(tableName = "property_table")
 class PropertyEntity constructor(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "price") val price: Int,
-//    @ColumnInfo(name = "address") val address: String,
+    @ColumnInfo(name = "address") val address: String,
 //    @ColumnInfo(name = "address_complement") val addressComplement: String,
-//    @ColumnInfo(name = "city") val city: String,
-//    @ColumnInfo(name = "state") val state: String,
-//    @ColumnInfo(name = "zipcode") val zipCode: Int,
+    @ColumnInfo(name = "city") val city: String,
+    @ColumnInfo(name = "state") val state: String,
+    @ColumnInfo(name = "zipcode") val zipCode: Int,
     @ColumnInfo(name = "country") val country: String,
     @ColumnInfo(name = "surface") val surface: Int,
-//    @ColumnInfo(name = "property_location") val latLng: LatLng,
+    @ColumnInfo(name = "property_location_lat") val lat: Double,
+    @ColumnInfo(name = "property_location_lng") val lng: Double,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "room") val room: Int,
     @ColumnInfo(name = "bedroom") val bedroom: Int,

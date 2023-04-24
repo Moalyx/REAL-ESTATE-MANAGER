@@ -10,6 +10,8 @@ import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepositoryImpl
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepositoryImpl
+import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
+import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -39,5 +41,9 @@ abstract class DataBindingModule {
     @Binds
     @Singleton
     abstract fun bindsAutocompleteRepository(impl : AutocompleteRepositoryImpl) : AutocompleteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsTemporaryPhotoRepository(impl : TemporaryPhotoRepositoryImpl) : TemporaryPhotoRepository
 
 }

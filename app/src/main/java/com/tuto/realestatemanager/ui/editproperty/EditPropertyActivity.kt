@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.component4
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -26,8 +27,9 @@ class EditPropertyActivity : AppCompatActivity() {
         }
     }
 
+    private var lat: Double = 0.0
+    private var lng: Double = 0.0
     private val viewModel by viewModels<EditPropertyViewModel>()
-    private lateinit var binding: ActivityCreatePropertyBinding
 
 
 
@@ -56,18 +58,21 @@ class EditPropertyActivity : AppCompatActivity() {
         viewModel.setPropertyId(propertyId)
 
         viewModel.detailPropertyLiveData.observe(this) {
-            binding.typeDropdown.setText(it.type, TextView.BufferType.EDITABLE)
+            binding.typeDropdown.setText(it.type)
             binding.description.setText(it.description, TextView.BufferType.EDITABLE)
-            binding.price.setText(it.price.toString(), TextView.BufferType.EDITABLE)
+            binding.price.setText(it.price.toString())
             binding.surface.setText(it.surface.toString(), TextView.BufferType.EDITABLE).toString()
             binding.rooms.setText(it.room.toString(), TextView.BufferType.EDITABLE)
             binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
-            binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
+//            binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
             binding.bathrooms.setText(it.bathroom.toString(), TextView.BufferType.EDITABLE)
+            binding.address.setText(it.address, TextView.BufferType.EDITABLE)
+            binding.city.setText(it.city, TextView.BufferType.EDITABLE)
+            binding.state.setText(it.state, TextView.BufferType.EDITABLE)
+            binding.zipcode.setText(it.zipcode.toString())
             binding.country.setText(it.country, TextView.BufferType.EDITABLE)
-//            if (it.poiAirport) {
-//                binding.checkboxAirport.isChecked = true
-//            }
+            lat = it.lat
+            lng = it.lng
             viewModel.isChecked(binding.checkboxAirport, it.poiAirport)
             viewModel.isChecked(binding.checkboxBus, it.poiBus)
             viewModel.isChecked(binding.checkboxPark, it.poiPark)
@@ -86,8 +91,14 @@ class EditPropertyActivity : AppCompatActivity() {
                     propertyId,
                     type,
                     Integer.parseInt(binding.price.text.toString()),
+                    binding.address.text.toString(),
+                    binding.city.text.toString(),
+                    binding.state.text.toString(),
+                    Integer.parseInt(binding.zipcode.text.toString()),
                     binding.country.text.toString(),
                     Integer.parseInt(binding.surface.text.toString()),
+                    lat,
+                    lng,
                     binding.description.text.toString(),
                     Integer.parseInt(binding.rooms.text.toString()),
                     Integer.parseInt(binding.bedrooms.text.toString()),

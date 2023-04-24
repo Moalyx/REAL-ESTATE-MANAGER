@@ -21,8 +21,12 @@ import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
+import com.tuto.realestatemanager.ui.addphoto.AddPhotoDialogFragment
+import com.tuto.realestatemanager.ui.list.PropertyListFragment
+import com.tuto.realestatemanager.ui.main.MainActivity
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -35,7 +39,7 @@ import java.util.*
 class CreatePropertyActivity : AppCompatActivity() {
 
     companion object {
-        private const val INTENT_REQUEST_CODE = 100
+        const val INTENT_REQUEST_CODE = 100
         private const val PERMISSION_REQUEST_CODE = 200
         private const val RESULT_DATA_OK = 300
     }
@@ -46,6 +50,8 @@ class CreatePropertyActivity : AppCompatActivity() {
     private var isFromCamera = false
     lateinit var currentPhotoPath: String
     private var uriImageSelected: Uri? = null
+    private var lat: Double = 0.0
+    private var lng: Double = 0.0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,11 +60,10 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-//        val recyclerViewBinding = ItemAddPictureRecyclerviewBinding.inflate(layoutInflater)
-//        setContentView(recyclerViewBinding.root)
-
+        
         var type = ""
+
+
 
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
@@ -116,6 +121,10 @@ class CreatePropertyActivity : AppCompatActivity() {
             binding.state.setText(it.state)
             binding.country.setText(it.country)
             binding.city.setText(it.city)
+            binding.complement.setText(it.lat.toString() + it.lng.toString())
+            lat = it.lat
+            lng = it.lng
+            //todo ici recup  le latlng avec la variable latlng ligne 61 et la mettre ligne 173 pour creer la propertyentity
         }
 
         viewModel.predictionListViewState.observe(this) {
@@ -140,17 +149,29 @@ class CreatePropertyActivity : AppCompatActivity() {
 
 
 
-        viewModel.photo.observe(this) {
+//        viewModel.photo.observe(this) {
+//            val recyclerView = binding.createUpdatePhotoRecyclerview
+//            val adapter = CreatePropertyPhotoAdapter()
+//            recyclerView.layoutManager = LinearLayoutManager(this)
+//            recyclerView.adapter = adapter
+//            adapter.submitList(it)
+//        }
+
+        viewModel.temporaryPhoto.observe(this) {
             val recyclerView = binding.createUpdatePhotoRecyclerview
-            val adapter = CreatePropertyPhotoAdapter()
+            val adapter = CreatePropertyPhotoAdapterTwo()
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
             adapter.submitList(it)
-
+            viewModel.createPhoto(it)
         }
 
         binding.addPictureButton.setOnClickListener {
-            launchIntent()
+            supportFragmentManager.beginTransaction()
+                .replace(binding.container.id, AddPhotoDialogFragment())
+                .addToBackStack("AddPhotoDialogFragment")
+                .commit()
+            //launchIntent()
 //            getContent.launch("image/*")
         }
 
@@ -163,8 +184,14 @@ class CreatePropertyActivity : AppCompatActivity() {
             viewModel.createProperty(
                 type,
                 Integer.parseInt(binding.price.text.toString()),
+                binding.address.text.toString(),
+                binding.city.text.toString(),
+                binding.state.text.toString(),
+                Integer.parseInt(binding.zipcode.text.toString()),
                 binding.country.text.toString(),
                 Integer.parseInt(binding.surface.text.toString()),
+                lat,
+                lng,
                 binding.description.text.toString(),
                 Integer.parseInt(binding.rooms.text.toString()),
                 Integer.parseInt(binding.bedrooms.text.toString()),
@@ -175,55 +202,55 @@ class CreatePropertyActivity : AppCompatActivity() {
                 binding.checkboxSchool.isChecked,
                 binding.checkboxBus.isChecked,
                 binding.checkboxPark.isChecked
-//                photoUrl = "content://com.android.providers.media.documents/document/image%3A160281"
+
             )
-            finish()
+            startActivity(Intent(this, MainActivity::class.java))
 
         }
 
     }
 
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
-        super.onActivityResult(requestCodes, resultCodes, data)
-        if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
-            val uri: Uri = data.data!!
-//            if (isFromCamera) {
+//    @Deprecated("Deprecated in Java")
+//    override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
+//        super.onActivityResult(requestCodes, resultCodes, data)
+//        if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
+//            val uri: Uri = data.data!!
+////            if (isFromCamera) {
+//
+////                val photo = intent.extras
+////                viewModel.createTemporaryPhoto(photo.toString())
+//
+////            }else{
+//                val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
+//                viewModel.createTemporaryPhoto(realPath!!)
+////            }
+//            //val description = binding.address.text.toString()
+//
+//            //val photo = intent.extras
+//
+//
+//            //list.add(realPath!!)
+//            //list.add(photo.toString())
+////            if(realPath != null){
+////                viewModel.createTemporaryPhoto(realPath)
+////            }else{
+////                Toast.makeText(this, "no photo", Toast.LENGTH_SHORT).show()
+////            }
+//        } else {
+//            Toast.makeText(this, "vous n'avez pas les autorisations", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
-//                val photo = intent.extras
-//                viewModel.createTemporaryPhoto(photo.toString())
-
-//            }else{
-                val realPath: String? = RealPathUtil.getRealPathFromURI_API19(this, uri)
-                viewModel.createTemporaryPhoto(realPath!!)
-//            }
-            //val description = binding.address.text.toString()
-
-            //val photo = intent.extras
-
-
-            //list.add(realPath!!)
-            //list.add(photo.toString())
-//            if(realPath != null){
-//                viewModel.createTemporaryPhoto(realPath)
-//            }else{
-//                Toast.makeText(this, "no photo", Toast.LENGTH_SHORT).show()
-//            }
-        } else {
-            Toast.makeText(this, "vous n'avez pas les autorisations", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun launchIntent() {
-        isFromCamera = false
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(
-            Intent.createChooser(intent, "Sélectionnez une photo"), INTENT_REQUEST_CODE
-        )
-    }
+//    private fun launchIntent() {
+//        isFromCamera = false
+//        val intent = Intent()
+//        intent.type = "image/*"
+//        intent.action = Intent.ACTION_GET_CONTENT
+//        startActivityForResult(
+//            Intent.createChooser(intent, "Sélectionnez une photo"), INTENT_REQUEST_CODE
+//        )
+//    }
 
     private fun pictureIntent() {
         isFromCamera = true

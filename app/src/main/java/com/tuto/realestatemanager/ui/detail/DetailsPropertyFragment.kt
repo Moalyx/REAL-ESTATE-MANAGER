@@ -55,7 +55,11 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
             binding.numberRoom.text = it.room.toString()
             binding.numberBathroom.text = it.bathroom.toString()
             binding.numberBedroom.text = it.bedroom.toString()
-            binding.country.text = it.county
+            binding.address.text = it.address
+            binding.city.text = it.city
+            binding.zipcode.text = it.zipcode.toString()
+            binding.state.text = it.state
+            binding.country.text = it.country
             viewmodel.isVisible(binding.poiAirport, it.poiAirport)
             viewmodel.isVisible(binding.poiBus, it.poiBus)
             viewmodel.isVisible(binding.poiPark, it.poiPark)
@@ -76,7 +80,7 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
             val apiKey = BuildConfig.GOOGLE_PLACES_KEY
 
             val staticMap =
-                "https://maps.googleapis.com/maps/api/staticmap?center=${it.county}&zoom=$zoom&size=$size&key=$apiKey"
+                "https://maps.googleapis.com/maps/api/staticmap?center=${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}&markers=${it.address}&zoom=$zoom&size=$size&key=$apiKey"
 
             Glide.with(requireContext())
                 .load(staticMap)

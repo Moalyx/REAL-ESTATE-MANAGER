@@ -369,6 +369,13 @@
                     android:hint="apartment 123" />
 
                 <TextView
+                    android:id="@+id/zipcode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:hint="80022" />
+
+                <TextView
                     android:id="@+id/city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -376,11 +383,11 @@
                     android:hint="Denver" />
 
                 <TextView
-                    android:id="@+id/zipcode"
+                    android:id="@+id/state"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:hint="80022" />
+                    android:hint="Ile de France" />
 
                 <TextView
                     android:id="@+id/country"

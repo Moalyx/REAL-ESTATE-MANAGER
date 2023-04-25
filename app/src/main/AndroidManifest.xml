@@ -36,7 +36,12 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAa9_11Zeo_Z8QGCOpPxZcig2DSeBTDn68"
+            />
         <activity
             android:name=".ui.detail.DetailActivity"
             android:exported="false" />

@@ -19,7 +19,7 @@ import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
+class DetailsPropertyFragment : Fragment(), MenuProvider {
 
     private var _binding: FragmentDetailsPropertyBinding? = null
     private val binding get() = _binding!!
@@ -33,7 +33,6 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
     ): View {
 
         _binding = FragmentDetailsPropertyBinding.inflate(inflater, container, false)
-        initGoogleMaps()
         return binding.root
     }
 
@@ -90,25 +89,6 @@ class DetailsPropertyFragment : Fragment(), OnMapReadyCallback, MenuProvider {
 
 
     }
-
-    private fun initGoogleMaps() {
-        val mapFragment: MapFragment = MapFragment.newInstance()
-        mapFragment.getMapAsync(this);
-    }
-
-    override fun onMapReady(map: GoogleMap) {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            map.isMyLocationEnabled = true
-        }
-    }
-
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        inflater.inflate(R.menu.edit_property_menu, menu)

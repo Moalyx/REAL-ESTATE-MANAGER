@@ -49,6 +49,15 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_bias="0.0" />
 
+    <FrameLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"/>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"

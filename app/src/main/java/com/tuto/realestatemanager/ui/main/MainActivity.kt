@@ -14,6 +14,7 @@ import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity.Companion.navigate
+import com.tuto.realestatemanager.ui.map.MapFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,14 +32,27 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
-        
-        if(savedInstanceState == null){
+
+        binding.bottomNav?.setOnItemSelectedListener {
+            when (it.itemId) {
+
+                R.id.map -> supportFragmentManager.beginTransaction()
+                    .replace(binding.mapContainer!!.id, MapFragment()).commit()
+
+                R.id.list -> supportFragmentManager.beginTransaction()
+                    .replace(binding.mainContainerDetail!!.id, DetailsPropertyFragment()).commit()
+
+            }
+            true
+        }
+
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainContainerList.id, PropertyListFragment())
                 .commit()
         }
 
-        if(binding.mainContainerDetail != null && supportFragmentManager.findFragmentById(binding.mainContainerDetail.id) == null){
+        if (binding.mainContainerDetail != null && supportFragmentManager.findFragmentById(binding.mainContainerDetail.id) == null) {
             supportFragmentManager.beginTransaction()
                 .add(
                     binding.mainContainerDetail.id,
@@ -47,11 +61,19 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        viewmodel.navigateSingleLiveEvent.observe(this){
-            when(it){
-                MainViewAction.NavigateToDetailActivity -> startActivity(Intent(this, DetailActivity::class.java))
+        viewmodel.navigateSingleLiveEvent.observe(this) {
+            when (it) {
+                MainViewAction.NavigateToDetailActivity -> startActivity(
+                    Intent(
+                        this,
+                        DetailActivity::class.java
+                    )
+                )
             }
         }
+
+
+
     }
 
     override fun onResume() {

@@ -33,14 +33,14 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
 
-        binding.bottomNav?.setOnItemSelectedListener {
+        binding.bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
 
                 R.id.map -> supportFragmentManager.beginTransaction()
-                    .replace(binding.mapContainer!!.id, MapFragment()).commit()
+                    .replace(binding.mainContainerList.id, MapFragment()).commit()
 
                 R.id.list -> supportFragmentManager.beginTransaction()
-                    .replace(binding.mainContainerDetail!!.id, DetailsPropertyFragment()).commit()
+                    .replace(binding.mainContainerList.id, PropertyListFragment()).commit()
 
             }
             true
@@ -59,6 +59,19 @@ class MainActivity : AppCompatActivity() {
                     DetailsPropertyFragment()
                 )
                 .commit()
+
+            binding.bottomNav.setOnItemSelectedListener {
+                when (it.itemId) {
+
+                    R.id.map -> supportFragmentManager.beginTransaction()
+                        .replace(binding.mainContainerList.id, MapFragment()).commit()
+
+                    R.id.list -> supportFragmentManager.beginTransaction()
+                        .replace(binding.mainContainerList.id, PropertyListFragment()).commit()
+
+                }
+                true
+            }
         }
 
         viewmodel.navigateSingleLiveEvent.observe(this) {

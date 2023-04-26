@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
@@ -103,13 +104,11 @@ class CreatePropertyViewModel @Inject constructor(
             lat = it.lat,
             lng = it.lng
 
-            //todo rajouter latlng ici modifier le use case pour y ajouter latlng
         )
     }
 
+    private val temporaryPhotoMutableStateFlow2 = temporaryPhotoRepository.getTemporaryPhotoList().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000, 0), emptyList())
     val temporaryPhoto : LiveData<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList().asLiveData(Dispatchers.IO)
-
-    val tempphoto: Flow<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList()
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
@@ -234,7 +233,7 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhoto in photoEntityMutableStateFlow.value/*photosUrlMutableStateFlow.value*/) {
+            for (temporaryPhoto in temporaryPhotoMutableStateFlow2.value/*photosUrlMutableStateFlow.value*/) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,

@@ -25,9 +25,9 @@ class EditPropertyViewModel @Inject constructor(
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository
 
-): ViewModel() {
+) : ViewModel() {
 
-    fun setPropertyId(id: Long){
+    fun setPropertyId(id: Long) {
         currentPropertyIdRepository.setCurrentId(id)
     }
 
@@ -38,7 +38,7 @@ class EditPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.id,
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map {it ->  it.photoUri },
+                    propertyWithPhotosEntity.photos.map { it.photoUri },
                     propertyWithPhotosEntity.propertyEntity.address,
                     propertyWithPhotosEntity.propertyEntity.city,
                     propertyWithPhotosEntity.propertyEntity.zipCode,
@@ -62,9 +62,9 @@ class EditPropertyViewModel @Inject constructor(
             }
         }.asLiveData(Dispatchers.IO)
 
-    fun isChecked(view: CheckBox, boolean: Boolean): Boolean{
+    fun isChecked(view: CheckBox, boolean: Boolean): Boolean {
         view.isChecked = false
-        if(boolean) view.isChecked = true
+        if (boolean) view.isChecked = true
         return view.isChecked
     }
 
@@ -72,14 +72,14 @@ class EditPropertyViewModel @Inject constructor(
         id: Long,
         type: String,
         price: Int,
-        address : String,
-        city : String,
-        state : String,
-        zipcode : Int,
+        address: String,
+        city: String,
+        state: String,
+        zipcode: Int,
         country: String,
         surface: Int,
-        lat : Double,
-        lng : Double,
+        lat: Double,
+        lng: Double,
         description: String,
         room: Int,
         bedroom: Int,
@@ -91,7 +91,7 @@ class EditPropertyViewModel @Inject constructor(
         poiBus: Boolean,
         poiPark: Boolean,
         photoUri: String
-    ){
+    ) {
         val saleSince = LocalDate.now().toString()
         val property = PropertyEntity(
             id,

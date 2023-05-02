@@ -54,12 +54,12 @@ class MapFragment(
             //map.isMyLocationEnabled = true
             //propertyRepository.getAllPropertiesWithPhotosEntity()
 
-            val point = LatLng(48.866667,2.333333)
-            map.animateCamera(CameraUpdateFactory.zoomIn())
-            val camera : CameraPosition = CameraPosition.Builder().target(point).zoom(14.0F).bearing(0F).tilt(30F).build()
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
-
-            map.addMarker(MarkerOptions().position(point))
+//            val point = LatLng(48.866667,2.333333)
+//            map.animateCamera(CameraUpdateFactory.zoomIn())
+//            val camera : CameraPosition = CameraPosition.Builder().target(point).zoom(14.0F).bearing(0F).tilt(30F).build()
+//            map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
+//
+//            map.addMarker(MarkerOptions().position(point))
 
             viewModel.mapViewStateList.observe(viewLifecycleOwner){
 

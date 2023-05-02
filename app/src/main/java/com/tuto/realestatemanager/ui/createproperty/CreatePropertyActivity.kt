@@ -24,7 +24,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
-import com.tuto.realestatemanager.ui.addphoto.AddPhotoDialogFragment
+import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
+import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.main.MainActivity
 import com.tuto.realestatemanager.ui.utils.RealPathUtil
@@ -58,7 +59,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_property)
 
-        val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
+        binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
         var type = ""
@@ -167,15 +168,19 @@ class CreatePropertyActivity : AppCompatActivity() {
         }
 
         binding.addPictureButton.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(binding.container.id, AddPhotoDialogFragment())
-                .addToBackStack("AddPhotoDialogFragment")
-                .commit()
+//            supportFragmentManager.beginTransaction()
+//                .replace(binding.container.id, AddPhotoDialogFragment())
+//                .addToBackStack("AddPhotoDialogFragment")
+//                .commit()
+            startActivity(Intent(this, AddPhotoActivity::class.java))
+
             //launchIntent()
 //            getContent.launch("image/*")
         }
 
         binding.takePictureButton.setOnClickListener {
+            startActivity(Intent(this, AddPictureCameraActivity::class.java))
+
             pictureIntent()
             //capturePhoto()
         }

@@ -233,7 +233,7 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhoto in temporaryPhotoMutableStateFlow2.value/*photosUrlMutableStateFlow.value*/) {
+            for (temporaryPhoto in /*temporaryPhotoMutableStateFlow2.value*/photoEntityMutableStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,

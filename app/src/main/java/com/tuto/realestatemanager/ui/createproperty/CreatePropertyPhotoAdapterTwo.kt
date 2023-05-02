@@ -13,9 +13,7 @@ import com.tuto.realestatemanager.model.TemporaryPhoto
 
 class CreatePropertyPhotoAdapterTwo(
     //private val listener: OnPhotoClickListener
-) : ListAdapter<TemporaryPhoto, CreatePropertyPhotoAdapterTwo.ViewHolder>(
-    PropertyDiffCallback
-) {
+) : ListAdapter<TemporaryPhoto, CreatePropertyPhotoAdapterTwo.ViewHolder>(PropertyDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         ItemAddPictureRecyclerviewBinding.inflate(
@@ -27,33 +25,17 @@ class CreatePropertyPhotoAdapterTwo(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
-
     }
 
-
-    inner class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) :
-        RecyclerView.ViewHolder(binding.root)/*,View.OnClickListener*/ {
-        fun bind(tempPhoto: TemporaryPhoto/*, listener : CreatePropertyPhotoAdapter.OnPhotoClickListener*/) {
-
-
+    class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(tempPhoto: TemporaryPhoto) {
             Glide
                 .with(binding.photo)
                 .load(tempPhoto.uri)
                 .into(binding.photo)
 
-            binding.photoTitle.setText(tempPhoto.title)
-
-            //binding.photoTitle.setOnClickListener{listener.onPhotoClicked(tempPhoto.uri)}
-
-
+            binding.photoTitle.text = tempPhoto.title
         }
-
-//        override fun onClick(p0: View?) {
-//            val position: Int = adapterPosition
-//            if (position != RecyclerView.NO_POSITION) listener.onPhotoClicked(position)
-//        }
-
-
     }
 
     object PropertyDiffCallback : DiffUtil.ItemCallback<TemporaryPhoto>() {
@@ -67,11 +49,6 @@ class CreatePropertyPhotoAdapterTwo(
             newItem: TemporaryPhoto
         ): Boolean = oldItem == newItem
     }
-
-//    interface OnPhotoClickListener {
-//        fun onPhotoClicked(position: Int) {}
-//    }
-
 }
 
 

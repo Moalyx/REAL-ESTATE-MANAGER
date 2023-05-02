@@ -14,17 +14,20 @@ import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
-import com.tuto.realestatemanager.model.TemporaryPhoto
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
+import com.tuto.realestatemanager.model.TemporaryPhoto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Collections.emptyList
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
@@ -44,7 +47,6 @@ class CreatePropertyViewModel @Inject constructor(
     private val propertyIdMutableStateFlow = MutableStateFlow<Long?>(null)
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
-    private val photoEntityMutableStateFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
 
 //    private lateinit var propertyEntity: PropertyEntity
 //    private var propertyId: Long = propertyEntity.id
@@ -78,7 +80,6 @@ class CreatePropertyViewModel @Inject constructor(
     }
 
 
-
 //    fun createTemporaryPhoto(photoUrl: String?, photoTitle : String?) {
 //
 //    }
@@ -107,8 +108,8 @@ class CreatePropertyViewModel @Inject constructor(
         )
     }
 
-    private val temporaryPhotoMutableStateFlow2 = temporaryPhotoRepository.getTemporaryPhotoList().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000, 0), emptyList())
-    val temporaryPhoto : LiveData<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList().asLiveData(Dispatchers.IO)
+    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList()
+    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> = temporaryPhotoStateFlow.asLiveData()
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
@@ -133,10 +134,6 @@ class CreatePropertyViewModel @Inject constructor(
             )
         }
     }
-
-
-
-
 
 
     fun isChecked(view: CheckBox, boolean: Boolean): Boolean {
@@ -179,21 +176,17 @@ class CreatePropertyViewModel @Inject constructor(
 //        return true
 //    }
 
-    fun createPhoto(temporaryPhoto: List<TemporaryPhoto>){
-        photoEntityMutableStateFlow.value = temporaryPhoto
-    }
-
     fun createProperty(
         type: String,
         price: Int,
-        address : String,
-        city : String,
-        state : String,
-        zipcode : Int,
+        address: String,
+        city: String,
+        state: String,
+        zipcode: Int,
         country: String,
         surface: Int,
-        lat : Double,
-        lng : Double,
+        lat: Double,
+        lng: Double,
         description: String,
         room: Int,
         bedroom: Int,
@@ -233,12 +226,12 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhoto in /*temporaryPhotoMutableStateFlow2.value*/photoEntityMutableStateFlow.value) {
+            for (temporaryPhoto in temporaryPhotoStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = propertyId,
-                        photoUri = temporaryPhoto.uri!!,
-                        photoTitle = temporaryPhoto.title!!
+                        photoUri = temporaryPhoto.uri,
+                        photoTitle = temporaryPhoto.title
                     )
                 )
             }

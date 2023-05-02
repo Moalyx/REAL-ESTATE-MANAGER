@@ -32,22 +32,12 @@
         app:layout_constraintTop_toBottomOf="@id/main_ImageView_photo"
         />
 
-    <Button
-        android:id="@+id/main_Button_picture_with_contracts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Take picture with Contracts"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_Button_picture"
-        />
-
     <EditText
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="please enter a title for the picture"
-        app:layout_constraintTop_toBottomOf="@id/main_Button_picture_with_contracts"
+        app:layout_constraintTop_toBottomOf="@id/main_Button_picture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:backgroundTint="@color/black"/>

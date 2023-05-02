@@ -11,9 +11,14 @@ class AddPictureCameraViewModel @Inject constructor(
     private val temporaryPhotoRepository: TemporaryPhotoRepository
 ) : ViewModel() {
 
-    fun onAddTemporaryPhoto(title: String, uri :String){
-        temporaryPhotoRepository.onAddTemporaryPhoto(TemporaryPhoto(title, uri ))
+    fun onAddTemporaryPhoto(title: String?, uri: String?) {
+        if (title != null && uri != null) {
+            temporaryPhotoRepository.onAddTemporaryPhoto(
+                TemporaryPhoto(
+                    title = title,
+                    uri = uri,
+                )
+            )
+        }
     }
-
-
 }

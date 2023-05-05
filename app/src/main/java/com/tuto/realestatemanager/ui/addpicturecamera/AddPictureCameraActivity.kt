@@ -44,8 +44,10 @@ class AddPictureCameraActivity : AppCompatActivity() {
             }
         }
 
+        launchIntentCamera()
+
         binding.mainButtonPicture.setOnClickListener {
-            launchIntentCamera()
+
         }
 
         binding.addPictureButton.setOnClickListener {

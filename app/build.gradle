@@ -83,6 +83,20 @@ dependencies {
     //For Testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
+
+    testImplementation "io.mockk:mockk:1.12.7"
+    testImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.25'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
+    androidTestImplementation 'androidx.test:core:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+
 }
 
 // Allow references to generated code

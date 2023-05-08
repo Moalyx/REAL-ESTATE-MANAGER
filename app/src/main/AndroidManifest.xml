@@ -19,23 +19,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RealEstateManager"
         tools:targetApi="31">
+
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="" />
+        <activity
+            android:name=".ui.search.SearchPropertyActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".ui.addpicturecamera.AddPictureCameraActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".ui.addphoto.AddPhotoActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".ui.editproperty.EditPropertyActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".ui.createproperty.CreatePropertyActivity"
-            android:exported="false"
-            />
-
+            android:exported="false" />
         <activity
             android:name=".ui.detail.DetailActivity"
             android:exported="false" />

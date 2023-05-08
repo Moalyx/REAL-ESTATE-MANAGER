@@ -23,7 +23,7 @@ class PropertyListAdapter(private val context: Context) : ListAdapter<PropertyVi
     class ViewHolder(private val binding: ItemPropertyBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
         fun bind(propertyViewState: PropertyViewState) {
             binding.propertyType.text = propertyViewState.type
-            binding.propertyCounty.text = propertyViewState.county
+            binding.propertyCounty.text = propertyViewState.country
             binding.propertyPrice.text = propertyViewState.price.toString()
             binding.itemProperty.setOnClickListener {
                 propertyViewState.onItemClicked.invoke()

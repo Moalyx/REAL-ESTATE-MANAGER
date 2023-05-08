@@ -1,20 +1,19 @@
 package com.tuto.realestatemanager.ui.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
-import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
-import com.tuto.realestatemanager.ui.list.PropertyListFragment
+import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
 import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
-import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity.Companion.navigate
+import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.map.MapFragment
+import com.tuto.realestatemanager.ui.search.SearchPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -103,6 +102,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.edit_property -> startActivity(navigate(this, 1))
+            R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
+
+
         }
         return true
     }

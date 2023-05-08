@@ -37,9 +37,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
     private val photosUrlMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
 
-
     val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)
-
 
     fun onGetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id

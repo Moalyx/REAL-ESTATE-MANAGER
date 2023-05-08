@@ -17,8 +17,10 @@ import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.ui.createproperty.CreatePropertyViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 
 class CreatePropertyViewModelTest {
 
@@ -72,8 +74,6 @@ class CreatePropertyViewModelTest {
     val propertyRepository: PropertyRepository = mockk()
 
     val photoRepository: PhotoRepository = mockk()
-
-    val currentPropertyIdRepository: CurrentPropertyIdRepository = mockk()
 
     val autocompleteRepository: AutocompleteRepository = mockk()
 
@@ -147,6 +147,19 @@ class CreatePropertyViewModelTest {
 
         coEvery { autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE) } returns PredictionResponse()
     }
+
+
+    @Test
+    fun nominal_case() = runTest {
+
+
+
+    }
+
+
+    }
+
+
 
 
 }

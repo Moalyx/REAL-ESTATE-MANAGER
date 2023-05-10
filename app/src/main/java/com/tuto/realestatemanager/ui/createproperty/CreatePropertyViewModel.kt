@@ -6,6 +6,7 @@ import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionR
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
+import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.model.PhotoEntity
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
+import java.time.Clock
 import java.time.LocalDate
 import java.util.Collections.emptyList
 import javax.inject.Inject
@@ -29,21 +31,18 @@ class CreatePropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val autocompleteRepository: AutocompleteRepository,
-    temporaryPhotoRepository: TemporaryPhotoRepository
-
+    private val clock: Clock,
+    private val coroutineDispatchersProvider : CoroutineDispatchersProvider,
+    temporaryPhotoRepository: TemporaryPhotoRepository,
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
-    private val photosUrlMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
-
-    val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)//todo : pas utilisé a delete plus tard
 
     fun onGetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow.filterNotNull().mapLatest {
             getPlaceAddressComponentsUseCase.invoke(it)
@@ -63,11 +62,9 @@ class CreatePropertyViewModel @Inject constructor(
         )
     }
 
-    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
-        temporaryPhotoRepository.getTemporaryPhotoList()
+    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList()
 
-    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
-        temporaryPhotoStateFlow.asLiveData()
+    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> = temporaryPhotoStateFlow.asLiveData()
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
@@ -117,36 +114,35 @@ class CreatePropertyViewModel @Inject constructor(
         poiBus: Boolean,
         poiPark: Boolean
     ) {
-        val saleSince = LocalDate.now().toString()
+        val saleSince = LocalDate.now(clock).toString()
         val dateOfSale = "estate available for sale"
         val property = PropertyEntity(
-            id = 0,
-            type,
-            price,
-            address,
-            city,
-            state,
-            zipcode,
-            country,
-            surface,
-            lat,
-            lng,
-            description,
-            room,
-            bedroom,
-            bathroom,
-            agent,
-            isSold,
-            dateOfSale,
-            saleSince,
-            poiTrain,
-            poiAirport,
-            poiResto,
-            poiSchool,
-            poiBus,
-            poiPark
+            type = type,
+            price = price,
+            address = address,
+            city = city,
+            state = state,
+            zipCode = zipcode,
+            country = country,
+            surface = surface,
+            lat = lat,
+            lng = lng,
+            description = description,
+            room = room,
+            bedroom = bedroom,
+            bathroom = bathroom,
+            agent = agent,
+            propertySold = isSold,
+            propertyOnSaleSince = dateOfSale,
+            propertyDateOfSale = saleSince,
+            poiTrain = poiTrain,
+            poiAirport = poiAirport,
+            poiResto = poiResto,
+            poiSchool = poiSchool,
+            poiBus = poiBus,
+            poiPark = poiPark
         )
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(coroutineDispatchersProvider.io) {
             val propertyId = propertyRepository.insertProperty(property)
 
             for (temporaryPhoto in temporaryPhotoStateFlow.value) {

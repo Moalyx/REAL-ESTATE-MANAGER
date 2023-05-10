@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
 
 @Entity(tableName = "property_table")
-class PropertyEntity constructor(
+data class PropertyEntity constructor(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "price") val price: Int,

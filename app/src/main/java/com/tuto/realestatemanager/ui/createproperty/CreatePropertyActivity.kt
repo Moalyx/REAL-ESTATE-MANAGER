@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
@@ -23,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityCreatePropertyBinding
     private val viewModel by viewModels<CreatePropertyViewModel>()
     private var lat: Double = 0.0
     private var lng: Double = 0.0
@@ -33,7 +31,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_property)
 
-        binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
+        val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         var type = ""
@@ -77,19 +75,18 @@ class CreatePropertyActivity : AppCompatActivity() {
             lng = it.lng
         }
 
+        val searchAdapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
+            override fun onPredictionClicked(id: String) {
+                viewModel.onGetAutocompleteAddressId(id)
+                binding.searchview.clearFocus()
+                searchView.setQuery("", false)
+                binding.predictionRecyclerview.isVisible
+            }
+        })
+        binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.predictionRecyclerview.adapter = searchAdapter
         viewModel.predictionListViewState.observe(this) {
-            val recyclerview: RecyclerView = binding.predictionRecyclerview
-            val adapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
-                override fun onPredictionClicked(id: String) {
-                    viewModel.onGetAutocompleteAddressId(id)
-                    binding.searchview.clearFocus()
-                    searchView.setQuery("", false)
-                    binding.predictionRecyclerview.isVisible
-                }
-            })
-            recyclerview.layoutManager = LinearLayoutManager(this)
-            recyclerview.adapter = adapter
-            adapter.submitList(it)
+            searchAdapter.submitList(it)
         }
 
         val adapter = CreatePropertyPhotoAdapterTwo()
@@ -139,4 +136,4 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
     }
-    }
+}

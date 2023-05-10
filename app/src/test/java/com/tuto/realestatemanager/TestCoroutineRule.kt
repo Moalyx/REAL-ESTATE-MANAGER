@@ -1,5 +1,7 @@
 package com.tuto.realestatemanager
 
+import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.*
@@ -9,7 +11,7 @@ import org.junit.runners.model.Statement
 
 class TestCoroutineRule : TestRule {
 
-    val testCoroutineDispatcher = StandardTestDispatcher()
+    private val testCoroutineDispatcher = StandardTestDispatcher()
     private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
     override fun apply(base: Statement, description: Description): Statement = object : Statement() {
@@ -23,12 +25,12 @@ class TestCoroutineRule : TestRule {
         }
     }
 
-//    fun runTest(block: suspend TestScope.() -> Unit) = testCoroutineScope.runTest {
-//        block()
-//    }
-//
-//    fun getTestCoroutineDispatcherProvider() = mockk<CoroutineDispatcherProvider> {
-//        every { main } returns testCoroutineDispatcher
-//        every { io } returns testCoroutineDispatcher
-//    }
+    fun runTest(block: suspend TestScope.() -> Unit) = testCoroutineScope.runTest {
+        block()
+    }
+
+    fun getTestCoroutineDispatcherProvider() = mockk<CoroutineDispatchersProvider> {
+        every { main } returns testCoroutineDispatcher
+        every { io } returns testCoroutineDispatcher
+    }
 }

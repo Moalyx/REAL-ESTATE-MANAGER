@@ -1,10 +1,12 @@
 package com.tuto.realestatemanager.ui.editproperty
 
+import com.tuto.realestatemanager.model.PhotoEntity
+
 class UpdatePropertyViewState(
     val id: Long,
     val type: String,
     val price: Int,
-    val photoList: List<String>,
+    val photoList: List<PhotoEntity>, //todo changer en photoentity puis change adapter
     val address: String,
     val city: String,
     val zipcode: Int,

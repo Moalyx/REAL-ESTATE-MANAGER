@@ -610,24 +610,23 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/title_agent"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
+                    android:layout_marginTop="12dp"
                     app:boxBackgroundColor="#D2B3F8"
-                    app:endIconMode="dropdown_menu"
-                    app:endIconTint="#673AB7"
-                    app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                    app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:endIconMode="clear_text"
+                    app:endIconTint="#673AB7">
 
-                    <AutoCompleteTextView
-                        android:id="@+id/add_edit_offer_closure_date"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/agent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Agent in charge" />
+                        android:layout_gravity="center"
+                        android:drawableStart="@drawable/ic_baseline_person_24"
+                        android:hint="Agent in charge"
+                        android:textSize="15dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -660,6 +659,7 @@
                         android:id="@+id/date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_baseline_date_range_24"
                         android:layout_gravity="center"
                         android:hint="date of publication"
                         android:inputType="date"
@@ -730,6 +730,15 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="150dp"
                     android:background="@color/black" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_sale_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#673AB7"
+                    android:layout_gravity="center"
+                    android:text="Property Sold"
+                    android:textStyle="bold"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

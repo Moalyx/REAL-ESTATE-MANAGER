@@ -2,31 +2,26 @@ package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.provider.MediaStore
+import android.provider.MediaStore.Video.Thumbnails.getThumbnail
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.viewModels
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.dynamic.IObjectWrapper
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.MapFragment
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
-import com.tuto.realestatemanager.ui.list.PropertyListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
-class MapFragment(
-)  : SupportMapFragment(), OnMapReadyCallback {
+class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private val viewModel by viewModels<MapViewModel>()
 
@@ -39,7 +34,7 @@ class MapFragment(
 
     private fun initGoogleMaps() {
         val mapFragment: MapFragment = MapFragment.newInstance()
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this)
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -51,32 +46,40 @@ class MapFragment(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //map.isMyLocationEnabled = true
-            //propertyRepository.getAllPropertiesWithPhotosEntity()
+            map.isMyLocationEnabled = true
+        }
 
-            val point = LatLng(48.866667,2.333333)
+        map.isMyLocationEnabled = true
+        map.uiSettings.isMyLocationButtonEnabled = true
+        //map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+
+        viewModel.userLocation.observe(this) { location ->
+            val point = LatLng(location.latitude, location.longitude)
             map.animateCamera(CameraUpdateFactory.zoomIn())
-            val camera : CameraPosition = CameraPosition.Builder().target(point).zoom(12.0F).bearing(0F).tilt(30F).build()
+            val camera: CameraPosition =
+                CameraPosition.Builder().target(point).zoom(12.0F).bearing(0F).tilt(30F).build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
 
+            viewModel.mapViewStateList.observe(viewLifecycleOwner) {
 
-//
-//            map.addMarker(MarkerOptions().position(point))
-
-            viewModel.mapViewStateList.observe(viewLifecycleOwner){
-
-
-
-                for (property in it){
-                   val marker = map.addMarker(MarkerOptions()
-                       .position(LatLng(property.propertyEntity.lat, property.propertyEntity.lng))
-                       .title(property.propertyEntity.description)
-                       .snippet(property.propertyEntity.address)
-                   )
-                    if(marker != null){
+                for (property in it) {
+//                    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver , Uri.parse(
+//                        property.photos[0].photoUri))
+                    val marker = map.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    property.propertyEntity.lat,
+                                    property.propertyEntity.lng
+                                )
+                            )
+                            .title(property.propertyEntity.description)
+                            .snippet(property.propertyEntity.address)
+//                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    )
+                    if (marker != null) {
                         marker.tag = property.propertyEntity.id
                     }
-
                 }
             }
         }

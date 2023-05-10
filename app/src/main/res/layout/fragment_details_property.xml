@@ -10,57 +10,72 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-<!--        <TextView-->
-<!--            android:id="@+id/property_type"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginTop="24dp"-->
-<!--            android:hint="PENTHOUSE"-->
-<!--            android:textAlignment="center"-->
-<!--            android:textColor="@color/purple_500"-->
-<!--            android:textSize="35sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/property_type"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="center"-->
+        <!--            android:layout_marginTop="24dp"-->
+        <!--            android:hint="PENTHOUSE"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textColor="@color/purple_500"-->
+        <!--            android:textSize="35sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <androidx.recyclerview.widget.RecyclerView
-            android:background="#E0D1FA"
             android:id="@+id/media_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
             android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:background="#E0D1FA"
+            android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_media_recyclerview" />
 
-        <TextView
-            android:id="@+id/title_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="Description"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/media_recyclerview" />
-
-        <TextView
-            android:id="@+id/description"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            android:hint="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-            android:textSize="15dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_description" />
+            android:elevation="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Description"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/media_recyclerview" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:hint="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                android:textSize="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_description" />
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
 
         <ImageView
             android:id="@+id/separator1"
@@ -193,7 +208,6 @@
                 android:background="#A9A9A9"
                 app:layout_constraintTop_toBottomOf="@id/linear2" />
 
-
             <LinearLayout
                 android:id="@+id/linear3"
                 android:layout_width="wrap_content"
@@ -270,7 +284,7 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="20dp"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -325,8 +339,130 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/title_agent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableStart="@drawable/ic_baseline_person_24"
+                    android:gravity="center"
+                    android:text="Agent in charge"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description" />
+
+                <TextView
+                    android:id="@+id/agent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:hint="Mike"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title_surface" />
+
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/separator2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/sale_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableStart="@drawable/money"
+                    android:gravity="center"
+                    android:text="Sale status"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:hint="available for sale"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title_surface" />
+
+                <TextView
+                    android:id="@+id/sale_since"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableStart="@drawable/ic_baseline_date_range_24"
+                    android:gravity="center"
+                    android:text="On-sale date "
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description" />
+
+                <TextView
+                    android:id="@+id/on_sale_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:hint="23/02/2023"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title_surface" />
+
+                <TextView
+                    android:id="@+id/date_of_sale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableStart="@drawable/ic_baseline_date_range_24"
+                    android:gravity="center"
+                    android:text="Date of sale"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description" />
+
+                <TextView
+                    android:id="@+id/sold_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:hint="not yet sold"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title_surface" />
+
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/separator3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="12dp"
+                android:background="#A9A9A9"
+                app:layout_constraintBottom_toTopOf="@id/linear4"/>
+
 
             <LinearLayout
                 android:id="@+id/linear4"
@@ -336,7 +472,7 @@
                 android:layout_marginTop="12dp"
                 android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator2"
+                app:layout_constraintTop_toBottomOf="@id/linear6"
 
                 >
 
@@ -407,18 +543,18 @@
                 app:layout_constraintStart_toStartOf="@id/linear3"
                 app:layout_constraintTop_toTopOf="@id/linear4">
 
-<!--                <com.google.android.gms.maps.MapView-->
-<!--                    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--                    xmlns:map="http://schemas.android.com/apk/res-auto"-->
-<!--                    android:id="@+id/detail_fragment_map"-->
-<!--                    android:name="com.google.android.gms.maps.MapFragment"-->
-<!--                    android:layout_width="150dp"-->
-<!--                    android:layout_height="150dp" />-->
+                <!--                <com.google.android.gms.maps.MapView-->
+                <!--                    xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--                    xmlns:map="http://schemas.android.com/apk/res-auto"-->
+                <!--                    android:id="@+id/detail_fragment_map"-->
+                <!--                    android:name="com.google.android.gms.maps.MapFragment"-->
+                <!--                    android:layout_width="150dp"-->
+                <!--                    android:layout_height="150dp" />-->
 
                 <ImageView
                     android:id="@+id/static_map"
                     android:layout_width="150dp"
-                    android:layout_height="150dp"/>
+                    android:layout_height="150dp" />
 
             </LinearLayout>
 

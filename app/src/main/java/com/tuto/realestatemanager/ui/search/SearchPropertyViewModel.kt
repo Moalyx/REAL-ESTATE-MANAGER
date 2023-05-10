@@ -19,7 +19,7 @@ class SearchPropertyViewModel @Inject constructor(
         return SearchRepository.getParametersFlow().asLiveData(Dispatchers.IO)
     }
 
-    fun setParameters(searchParameters: SearchParameters){
+    fun setParameters(searchParameters: SearchParameters?){
         SearchRepository.setParameters(searchParameters)
     }
 

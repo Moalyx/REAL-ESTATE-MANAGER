@@ -22,7 +22,7 @@ import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+@AndroidEntryPoint //TODO FRAGMENT A DELETE CAR PAS UTILISE ET REMPLACE PAR ACTIVITY
 class AddPhotoDialogFragment : Fragment() {
 
     companion object {

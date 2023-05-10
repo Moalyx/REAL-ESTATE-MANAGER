@@ -20,19 +20,19 @@ class PropertyListViewModel @Inject constructor(
     searchRepository: SearchRepository
 ) : ViewModel() {
 
-
     private val propertyListLiveData: LiveData<List<PropertyWithPhotosEntity>> =
         propertyRepository.getAllPropertiesWithPhotosEntity()
             .asLiveData(Dispatchers.IO)
+
     private val searchParametersLiveData: LiveData<SearchParameters?> =
-        searchRepository.getParametersFlow().asLiveData(Dispatchers.IO)
+        searchRepository.getParametersFlow().asLiveData()
 
     private val propertyListMediatorLiveData = MediatorLiveData<List<PropertyViewState>>().apply {
-        addSource(propertyListLiveData) {
-            combine(it, searchParametersLiveData.value)
+        addSource(propertyListLiveData) { propertiesWithPhotoEntity ->
+            combine(propertiesWithPhotoEntity, searchParametersLiveData.value)
         }
-        addSource(searchParametersLiveData) {
-            combine(propertyListLiveData.value, it)
+        addSource(searchParametersLiveData) { searchParameters ->
+            combine(propertyListLiveData.value, searchParameters)
         }
     }
 
@@ -53,7 +53,7 @@ class PropertyListViewModel @Inject constructor(
                         propertyWithPhotosEntity.propertyEntity.type,
                         propertyWithPhotosEntity.propertyEntity.price,
                         propertyWithPhotosEntity.photos.map { it },
-                        propertyWithPhotosEntity.propertyEntity.country,
+                        propertyWithPhotosEntity.propertyEntity.city,
                         onItemClicked = {
                             currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
                         }
@@ -85,7 +85,7 @@ class PropertyListViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
                     propertyWithPhotosEntity.photos.map { it },
-                    propertyWithPhotosEntity.propertyEntity.country,
+                    propertyWithPhotosEntity.propertyEntity.city,
                     onItemClicked = {
                         currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
                     }

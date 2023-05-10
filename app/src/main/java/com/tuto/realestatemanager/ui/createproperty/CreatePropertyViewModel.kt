@@ -37,7 +37,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
     private val photosUrlMutableStateFlow = MutableStateFlow<List<String>>(emptyList())
 
-    val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)
+    val photo: LiveData<List<String>> = photosUrlMutableStateFlow.asLiveData(Dispatchers.IO)//todo : pas utilisé a delete plus tard
 
     fun onGetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
@@ -108,6 +108,8 @@ class CreatePropertyViewModel @Inject constructor(
         room: Int,
         bedroom: Int,
         bathroom: Int,
+        agent: String,
+        isSold: Boolean,
         poiTrain: Boolean,
         poiAirport: Boolean,
         poiResto: Boolean,
@@ -116,6 +118,7 @@ class CreatePropertyViewModel @Inject constructor(
         poiPark: Boolean
     ) {
         val saleSince = LocalDate.now().toString()
+        val dateOfSale = "estate available for sale"
         val property = PropertyEntity(
             id = 0,
             type,
@@ -132,6 +135,9 @@ class CreatePropertyViewModel @Inject constructor(
             room,
             bedroom,
             bathroom,
+            agent,
+            isSold,
+            dateOfSale,
             saleSince,
             poiTrain,
             poiAirport,

@@ -10,9 +10,9 @@ class SearchRepository @Inject constructor() {
 
     private val searchParametersMutableStateFlow = MutableStateFlow<SearchParameters?>(null)
 
-    fun getParametersFlow() : Flow<SearchParameters?> = searchParametersMutableStateFlow
+    fun getParametersFlow(): Flow<SearchParameters?> = searchParametersMutableStateFlow
 
-    fun setParameters(searchParameters: SearchParameters){
+    fun setParameters(searchParameters: SearchParameters?) {
         searchParametersMutableStateFlow.value = searchParameters
     }
 

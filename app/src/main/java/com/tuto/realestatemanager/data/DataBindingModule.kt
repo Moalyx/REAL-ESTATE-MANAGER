@@ -46,4 +46,5 @@ abstract class DataBindingModule {
     @Singleton
     abstract fun bindsTemporaryPhotoRepository(impl : TemporaryPhotoRepositoryImpl) : TemporaryPhotoRepository
 
+
 }

@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.widget.AdapterView
@@ -9,6 +10,8 @@ import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.databinding.ActivitySearchPropertyBinding
 import com.tuto.realestatemanager.model.SearchParameters
+import com.tuto.realestatemanager.ui.list.PropertyListFragment
+import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -75,7 +78,8 @@ class SearchPropertyActivity : AppCompatActivity() {
                     binding.checkboxPark.isChecked
                 )
             )
-            onBackPressed()
+            startActivity(Intent(this, MainActivity::class.java ))
+            //onBackPressed()
         }
     }
 }

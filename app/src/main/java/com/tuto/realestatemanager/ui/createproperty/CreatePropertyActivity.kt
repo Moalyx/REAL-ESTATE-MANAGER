@@ -125,6 +125,8 @@ class CreatePropertyActivity : AppCompatActivity() {
                 Integer.parseInt(binding.rooms.text.toString()),
                 Integer.parseInt(binding.bedrooms.text.toString()),
                 Integer.parseInt(binding.bathrooms.text.toString()),
+                binding.agent.text.toString(),
+                binding.checkboxSaleStatus.isChecked,
                 binding.checkboxtrTrain.isChecked,
                 binding.checkboxAirport.isChecked,
                 binding.checkboxRestaurant.isChecked,
@@ -137,4 +139,4 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         }
     }
-}
+    }

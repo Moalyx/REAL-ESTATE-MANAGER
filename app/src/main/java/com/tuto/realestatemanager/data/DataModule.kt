@@ -2,6 +2,8 @@ package com.tuto.realestatemanager.data
 
 import android.content.Context
 import androidx.room.Room
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.tuto.realestatemanager.data.api.GoogleApi
@@ -69,5 +71,10 @@ class DataModule {
 
         return retrofitService.create(GoogleApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
 
 }

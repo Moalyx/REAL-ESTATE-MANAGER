@@ -13,6 +13,7 @@ import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity.Companion.navigate
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.map.MapFragment
+import com.tuto.realestatemanager.ui.mortgagecalcultator.MortgageCalculatorActivity
 import com.tuto.realestatemanager.ui.search.SearchPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -83,9 +84,6 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-
-
-
     }
 
     override fun onResume() {
@@ -101,12 +99,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.edit_property -> startActivity(navigate(this, 1))
+            R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
             R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
-
-
         }
         return true
     }
-
 }

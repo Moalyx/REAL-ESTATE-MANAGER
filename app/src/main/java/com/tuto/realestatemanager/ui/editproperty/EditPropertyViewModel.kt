@@ -10,8 +10,11 @@ import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
+import com.tuto.realestatemanager.model.TemporaryPhoto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class EditPropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
-    private val currentPropertyIdRepository: CurrentPropertyIdRepository
+    private val currentPropertyIdRepository: CurrentPropertyIdRepository,
+    private val temporaryPhotoRepository: TemporaryPhotoRepository
 
 ) : ViewModel() {
 
@@ -38,7 +42,7 @@ class EditPropertyViewModel @Inject constructor(
                     propertyWithPhotosEntity.propertyEntity.id,
                     propertyWithPhotosEntity.propertyEntity.type,
                     propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it.photoUri },
+                    propertyWithPhotosEntity.photos.map { it },
                     propertyWithPhotosEntity.propertyEntity.address,
                     propertyWithPhotosEntity.propertyEntity.city,
                     propertyWithPhotosEntity.propertyEntity.zipCode,
@@ -68,6 +72,12 @@ class EditPropertyViewModel @Inject constructor(
         return view.isChecked
     }
 
+    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
+        temporaryPhotoRepository.getTemporaryPhotoList() //TODO A IMPLEMENTER
+
+    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
+        temporaryPhotoStateFlow.asLiveData() // TODO A IMPLEMENTER
+
     fun updateProperty(
         id: Long,
         type: String,
@@ -84,15 +94,17 @@ class EditPropertyViewModel @Inject constructor(
         room: Int,
         bedroom: Int,
         bathroom: Int,
+        agent: String,
+        isSold: Boolean,
         poiTrain: Boolean,
+        saleSince: String,
         poiAirport: Boolean,
         poiResto: Boolean,
         poiSchool: Boolean,
         poiBus: Boolean,
-        poiPark: Boolean,
-        photoUri: String
+        poiPark: Boolean
     ) {
-        val saleSince = LocalDate.now().toString()
+        val dateOfSale = LocalDate.now().toString()
         val property = PropertyEntity(
             id,
             type,
@@ -109,6 +121,9 @@ class EditPropertyViewModel @Inject constructor(
             room,
             bedroom,
             bathroom,
+            agent,
+            isSold,
+            dateOfSale,
             saleSince,
             poiTrain,
             poiAirport,
@@ -117,7 +132,20 @@ class EditPropertyViewModel @Inject constructor(
             poiBus,
             poiPark
         )
-        viewModelScope.launch(Dispatchers.IO) { propertyRepository.updateProperty(property) }
+        viewModelScope.launch(Dispatchers.IO) {
+            propertyRepository.updateProperty(property)
+
+
+            for (temporaryPhoto in temporaryPhotoStateFlow.value) {
+                photoRepository.insertPhoto(
+                    PhotoEntity(
+                        propertyId = id,
+                        photoUri = temporaryPhoto.uri,
+                        photoTitle = temporaryPhoto.title
+                    )
+                )
+            }
+        }
 
 //        val photo = PhotoEntity(id = 0,
 //            property.id,

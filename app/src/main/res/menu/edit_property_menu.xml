@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/bank_loan"
+        android:title="Bank loan"
+        android:icon="@drawable/dollar_full"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/edit_property"
         android:title="edit property"
         android:icon="@drawable/ic_baseline_edit_24"

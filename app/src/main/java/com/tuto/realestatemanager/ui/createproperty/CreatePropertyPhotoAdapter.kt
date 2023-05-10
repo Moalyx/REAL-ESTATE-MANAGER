@@ -14,7 +14,7 @@ import com.tuto.realestatemanager.model.PhotoEntity
 
 class CreatePropertyPhotoAdapter(
     //private val listener: OnPhotoClickListener
-) : ListAdapter<String, CreatePropertyPhotoAdapter.ViewHolder>(
+) : ListAdapter<PhotoEntity, CreatePropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
@@ -33,13 +33,15 @@ class CreatePropertyPhotoAdapter(
 
     inner class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) :
         RecyclerView.ViewHolder(binding.root)/*,View.OnClickListener*/ {
-        fun bind(createProperty: String) {
+        fun bind(photo: PhotoEntity) {
 
 
             Glide
                 .with(binding.photo)
-                .load(createProperty)
+                .load(photo)
                 .into(binding.photo)
+
+            binding.photoTitle.text = photo.photoTitle
 
         }
 
@@ -51,15 +53,15 @@ class CreatePropertyPhotoAdapter(
 
     }
 
-    object PropertyDiffCallback : DiffUtil.ItemCallback<String>() {
+    object PropertyDiffCallback : DiffUtil.ItemCallback<PhotoEntity>() {
         override fun areItemsTheSame(
-            oldItem: String,
-            newItem: String
-        ): Boolean = oldItem.get(index = 0) == newItem.get(index = 0)
+            oldItem: PhotoEntity,
+            newItem: PhotoEntity
+        ): Boolean = oldItem.photoUri == newItem.photoUri
 
         override fun areContentsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: PhotoEntity,
+            newItem: PhotoEntity
         ): Boolean = oldItem == newItem
     }
 

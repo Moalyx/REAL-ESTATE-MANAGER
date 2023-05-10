@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
+import com.tuto.realestatemanager.model.PhotoEntity
 
-class EditPropertyPhotoAdapter : ListAdapter<String, EditPropertyPhotoAdapter.ViewHolder>(
+class EditPropertyPhotoAdapter : ListAdapter<PhotoEntity, EditPropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
@@ -22,24 +23,27 @@ class EditPropertyPhotoAdapter : ListAdapter<String, EditPropertyPhotoAdapter.Vi
     }
 
     class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(updatePropertyViewState: String) {
+        fun bind(photo: PhotoEntity) {
 
             Glide
                 .with(binding.itemPropertyPhotoDetail)
-                .load(updatePropertyViewState)
+                .load(photo.photoUri)
                 .into(binding.itemPropertyPhotoDetail)
+
+            binding.itemPropertyPhotoTitle.text = photo.photoTitle
+
         }
     }
 
-    object PropertyDiffCallback : DiffUtil.ItemCallback<String>() {
+    object PropertyDiffCallback : DiffUtil.ItemCallback<PhotoEntity>() {
         override fun areItemsTheSame(
-            oldItem: String,
-            newItem: String
-        ): Boolean = oldItem.get(index = 0) == newItem.get(index = 0)
+            oldItem: PhotoEntity,
+            newItem: PhotoEntity
+        ): Boolean = oldItem.photoUri== newItem.photoUri
 
         override fun areContentsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: PhotoEntity,
+            newItem: PhotoEntity
         ): Boolean = oldItem == newItem
     }
 

@@ -17,12 +17,14 @@ data class PropertyDetailViewState(
     val room: Int,
     val bathroom: Int,
     val bedroom: Int,
+    val agent: String,
+    val isSold: Boolean,
     val saleSince: String,
+    val saleDate: String,
     val poiTrain: Boolean,
     val poiAirport: Boolean,
     val poiResto: Boolean,
     val poiSchool: Boolean,
     val poiBus: Boolean,
     val poiPark: Boolean
-) {
-}
+)

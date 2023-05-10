@@ -17,6 +17,7 @@ import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class DetailsPropertyFragment : Fragment(), MenuProvider {
@@ -43,8 +44,6 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
         (requireActivity() as MenuHost).addMenuProvider(this)
 
-
-
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
             propertyId = it.id
             binding.type.text = it.type
@@ -59,6 +58,15 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             binding.zipcode.text = it.zipcode.toString()
             binding.state.text = it.state
             binding.country.text = it.country
+            binding.onSaleDate.text = it.saleSince
+            binding.agent.text = it.agent
+            if (!it.isSold) {
+                binding.status.text = "Available for sale"
+                binding.soldDate.text = it.saleDate
+            }else{
+                binding.status.text = "SOLD"
+                binding.soldDate.text = LocalDate.now().toString()
+            }
             viewmodel.isVisible(binding.poiAirport, it.poiAirport)
             viewmodel.isVisible(binding.poiBus, it.poiBus)
             viewmodel.isVisible(binding.poiPark, it.poiPark)

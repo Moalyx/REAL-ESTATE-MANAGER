@@ -71,9 +71,9 @@ class EditPropertyActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-//        viewModel.photoEntity.observe(this) {
-//            adapter.submitList(it)
-//        }
+        viewModel.getPhoto.observe(this) {
+            adapter.submitList(it)
+        }
 
         viewModel.detailPropertyLiveData.observe(this) {
             binding.typeDropdown.setText(it.type)
@@ -82,7 +82,6 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.surface.setText(it.surface.toString(), TextView.BufferType.EDITABLE).toString()
             binding.rooms.setText(it.room.toString(), TextView.BufferType.EDITABLE)
             binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
-//            binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
             binding.bathrooms.setText(it.bathroom.toString(), TextView.BufferType.EDITABLE)
             binding.address.setText(it.address, TextView.BufferType.EDITABLE)
             binding.city.setText(it.city, TextView.BufferType.EDITABLE)
@@ -90,6 +89,7 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.zipcode.setText(it.zipcode.toString())
             binding.country.setText(it.country, TextView.BufferType.EDITABLE)
             binding.date.setText(it.saleSince)
+            binding.agent.setText(it.agent)
             lat = it.lat
             lng = it.lng
             viewModel.isChecked(binding.checkboxAirport, it.poiAirport)
@@ -98,8 +98,9 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxSchool, it.poiSchool)
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
             viewModel.isChecked(binding.checkboxtrTrain, it.poiTrain)
+            viewModel.isChecked(binding.checkboxSaleStatus,it.isSold)
 
-            adapter.submitList(it.photoList) //todo momentanement commenté pour trouver une solution
+            //adapter.submitList(it.photoList) //todo momentanement commenté pour trouver une solution
 
             binding.saveButton.setOnClickListener {
                 viewModel.updateProperty(

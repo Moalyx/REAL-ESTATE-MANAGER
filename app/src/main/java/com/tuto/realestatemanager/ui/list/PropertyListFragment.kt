@@ -33,14 +33,14 @@ class PropertyListFragment : Fragment()/*, MenuProvider*/ {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView: RecyclerView = binding.recyclerview
-        val adapter = this.context?.let { PropertyListAdapter(it) }
+        val adapter = PropertyListAdapter()
         //recyclerView.layoutManager = GridLayoutManager(context,2)
         recyclerView.adapter = adapter
 //        viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
 //            adapter?.submitList(it)
 //        }
         viewModel.getPropertiesLiveData.observe(viewLifecycleOwner) {
-            adapter?.submitList(it)
+            adapter.submitList(it)
         }
 
         binding.createProperty.setOnClickListener {

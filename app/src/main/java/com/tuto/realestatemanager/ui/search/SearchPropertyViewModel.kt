@@ -7,21 +7,19 @@ import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.model.SearchParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchPropertyViewModel @Inject constructor(
-    val SearchRepository : SearchRepository
+    private val SearchRepository: SearchRepository
 ) : ViewModel() {
 
-    fun getParametersLiveData() : LiveData<SearchParameters?> {
+    fun getParametersLiveData(): LiveData<SearchParameters?> {
         return SearchRepository.getParametersFlow().asLiveData(Dispatchers.IO)
     }
 
-    fun setParameters(searchParameters: SearchParameters?){
+    fun setParameters(searchParameters: SearchParameters?) {
         SearchRepository.setParameters(searchParameters)
     }
-
 
 }

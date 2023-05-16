@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
@@ -29,7 +28,7 @@ class CreatePropertyActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_property)
+        //setContentView(R.layout.activity_create_property)
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -89,7 +88,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             searchAdapter.submitList(it)
         }
 
-        val adapter = CreatePropertyPhotoAdapterTwo()
+        val adapter = CreatePropertyPhotoAdapter()
         binding.createUpdatePhotoRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.createUpdatePhotoRecyclerview.adapter = adapter
 

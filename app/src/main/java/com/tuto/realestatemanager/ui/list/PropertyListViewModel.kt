@@ -11,6 +11,7 @@ import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,10 +51,10 @@ class PropertyListViewModel @Inject constructor(
                 propertiesWithPhotosEntity.map { propertyWithPhotosEntity ->
                     PropertyViewState(
                         id = propertyWithPhotosEntity.propertyEntity.id,
-                        propertyWithPhotosEntity.propertyEntity.type,
-                        propertyWithPhotosEntity.propertyEntity.price,
-                        propertyWithPhotosEntity.photos.map { it },
-                        propertyWithPhotosEntity.propertyEntity.city,
+                        type = propertyWithPhotosEntity.propertyEntity.type,
+                        price = propertyWithPhotosEntity.propertyEntity.price,
+                        photoList = propertyWithPhotosEntity.photos.map { it },
+                        city = propertyWithPhotosEntity.propertyEntity.city,
                         onItemClicked = {
                             currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
                         }
@@ -82,10 +83,10 @@ class PropertyListViewModel @Inject constructor(
             propertyListMediatorLiveData.value = filteredList.map { propertyWithPhotosEntity ->
                 PropertyViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
-                    propertyWithPhotosEntity.propertyEntity.type,
-                    propertyWithPhotosEntity.propertyEntity.price,
-                    propertyWithPhotosEntity.photos.map { it },
-                    propertyWithPhotosEntity.propertyEntity.city,
+                    type = propertyWithPhotosEntity.propertyEntity.type,
+                    price = propertyWithPhotosEntity.propertyEntity.price,
+                    photoList = propertyWithPhotosEntity.photos.map { it },
+                    city = propertyWithPhotosEntity.propertyEntity.city,
                     onItemClicked = {
                         currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
                     }
@@ -251,7 +252,7 @@ class PropertyListViewModel @Inject constructor(
 //                    type = propertyWithPhotosEntity.propertyEntity.type,
 //                    price = propertyWithPhotosEntity.propertyEntity.price,
 //                    photoList = propertyWithPhotosEntity.photos.map { it },
-//                    county = propertyWithPhotosEntity.propertyEntity.country,
+//                    city = propertyWithPhotosEntity.propertyEntity.city,
 //                    onItemClicked = {
 //                        currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
 //                    }

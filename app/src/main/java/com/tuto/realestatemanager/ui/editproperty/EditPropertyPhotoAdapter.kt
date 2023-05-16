@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
 import com.tuto.realestatemanager.model.PhotoEntity
 
-class EditPropertyPhotoAdapter : ListAdapter<PhotoEntity, EditPropertyPhotoAdapter.ViewHolder>(
+class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
@@ -23,7 +23,7 @@ class EditPropertyPhotoAdapter : ListAdapter<PhotoEntity, EditPropertyPhotoAdapt
     }
 
     class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(photo: PhotoEntity) {
+        fun bind(photo: EditPropertyPhotoViewState) {
 
             Glide
                 .with(binding.itemPropertyPhotoDetail)
@@ -35,15 +35,15 @@ class EditPropertyPhotoAdapter : ListAdapter<PhotoEntity, EditPropertyPhotoAdapt
         }
     }
 
-    object PropertyDiffCallback : DiffUtil.ItemCallback<PhotoEntity>() {
+    object PropertyDiffCallback : DiffUtil.ItemCallback<EditPropertyPhotoViewState>() {
         override fun areItemsTheSame(
-            oldItem: PhotoEntity,
-            newItem: PhotoEntity
+            oldItem: EditPropertyPhotoViewState,
+            newItem: EditPropertyPhotoViewState
         ): Boolean = oldItem.photoUri== newItem.photoUri
 
         override fun areContentsTheSame(
-            oldItem: PhotoEntity,
-            newItem: PhotoEntity
+            oldItem: EditPropertyPhotoViewState,
+            newItem: EditPropertyPhotoViewState
         ): Boolean = oldItem == newItem
     }
 

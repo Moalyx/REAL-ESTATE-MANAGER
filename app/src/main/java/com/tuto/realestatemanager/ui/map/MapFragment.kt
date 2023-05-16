@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -18,6 +19,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.tuto.realestatemanager.ui.detail.DetailActivity
+import com.tuto.realestatemanager.ui.main.MainViewAction
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -81,6 +84,22 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
                         marker.tag = property.propertyEntity.id
                     }
                 }
+
+                map.setOnMarkerClickListener {
+//                    viewModel.navigateSingleLiveEvent.observe(this) { //todo verifier pourquoi cela ne fonctionne pas
+//                        when (it) {
+//                            MapViewAction.NavigateToDetailActivity -> startActivity(
+//                                Intent(
+//                                    requireContext(),
+//                                    DetailActivity::class.java
+//                                )
+//                            )
+//                        }
+//                    }
+                    startActivity(Intent(this.requireContext(), DetailActivity::class.java))
+                    return@setOnMarkerClickListener true
+                }
+
             }
         }
     }

@@ -1,25 +1,28 @@
-package com.tuto.realestatemanager.ui
+package com.tuto.realestatemanager.ui.createproperty
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.TestCoroutineRule
 import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
+import com.tuto.realestatemanager.data.repository.autocomplete.model.Predictions
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
+import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
+import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
-import com.tuto.realestatemanager.ui.createproperty.CreatePropertyViewModel
 import io.mockk.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runCurrent
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 
 
@@ -59,7 +62,7 @@ class CreatePropertyViewModelTest {
         private const val PLACE_ID = "0"
 
         //FOR PHOTOREPOSITORY
-        private const val PHOTO_ID = 0
+        private const val PHOTO_ID = 0L
         private const val PHOTO_URI = "PHOTO_URI"
         private const val PHOTO_TITLE = "PHOTO_TITLE"
 
@@ -100,8 +103,8 @@ class CreatePropertyViewModelTest {
             coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider(),
             temporaryPhotoRepository = temporaryPhotoRepository,
         )
-//
-//
+
+
 //        coEvery { getPlaceAddressComponentsUseCase.invoke(PLACE_ID) } returns
 //            AddressComponentsEntity(
 //                "12",
@@ -129,6 +132,43 @@ class CreatePropertyViewModelTest {
     }
 
     @Test
+    fun getPredictions() = testCoroutineRule.runTest {
+
+        val predictionResponse = PredictionResponse(
+            ArrayList<Predictions>()
+
+        )
+
+
+//        coEvery { getPlaceAddressComponentsUseCase.invoke(PLACE_ID) } returns
+//                AddressComponentsEntity(
+//                    "12",
+//                    ADDRESS,
+//                    CITY,
+//                    STATE,
+//                    "75000",
+//                    COUNTRY,
+//                    LAT,
+//                    LNG
+//                )
+        coEvery { autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE) } returns predictionResponse
+
+        //when
+
+//        createPropertyViewModel.onGetAutocompleteAddressId(INPUT_AUTOCOMPLETE)
+
+        //createPropertyViewModel.predictions
+        runCurrent()
+
+        coVerify {
+            autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE)
+        }
+        confirmVerified(propertyRepository)
+
+    }
+
+
+    @Test
     fun nominal_case() = testCoroutineRule.runTest {
         // Given
         val propertyEntity = PropertyEntity(
@@ -149,8 +189,8 @@ class CreatePropertyViewModelTest {
             bathroom = BATHROOM,
             agent = AGENT,
             propertySold = IS_PROPERTY_SOLD,
-            propertyOnSaleSince = SOLD_AT,
-            propertyDateOfSale = SALESINCE,
+            propertyOnSaleSince = SALESINCE,
+            propertyDateOfSale = SOLD_AT,
             poiTrain = POITRAIN,
             poiAirport = POIAIRPORT,
             poiResto = POIRESTO,
@@ -193,4 +233,89 @@ class CreatePropertyViewModelTest {
         }
         confirmVerified(propertyRepository)
     }
+
+    @Test
+    fun getPropertyFromRepository() = testCoroutineRule.runTest {
+        // Given
+        val propertyEntity = PropertyEntity(
+            id = PROPERTY_ID,
+            type = TYPE,
+            price = PRICE,
+            address = ADDRESS,
+            city = CITY,
+            state = STATE,
+            zipCode = ZIPCODE,
+            country = COUNTRY,
+            surface = SURFACE,
+            lat = LAT,
+            lng = LNG,
+            description = DESCRIPTION,
+            room = ROOM,
+            bedroom = BEDROOM,
+            bathroom = BATHROOM,
+            agent = AGENT,
+            propertySold = IS_PROPERTY_SOLD,
+            propertyOnSaleSince = SALESINCE,
+            propertyDateOfSale = SOLD_AT,
+            poiTrain = POITRAIN,
+            poiAirport = POIAIRPORT,
+            poiResto = POIRESTO,
+            poiSchool = POISCHOOL,
+            poiBus = POIBUS,
+            poiPark = POIPARK
+        )
+        coEvery { propertyRepository.insertProperty(propertyEntity) } returns NEW_PROPERTY_ID
+
+        val photoEntity = PhotoEntity(
+            PHOTO_ID,
+            NEW_PROPERTY_ID,
+            PHOTO_URI,
+            PHOTO_TITLE
+        )
+
+        coEvery {
+            photoRepository.insertPhoto(photoEntity)
+        } just runs
+
+        // When
+        createPropertyViewModel.createProperty(
+            type = TYPE,
+            price = PRICE,
+            address = ADDRESS,
+            city = CITY,
+            state = STATE,
+            zipcode = ZIPCODE,
+            country = COUNTRY,
+            surface = SURFACE,
+            lat = LAT,
+            lng = LNG,
+            description = DESCRIPTION,
+            room = ROOM,
+            bedroom = BEDROOM,
+            bathroom = BATHROOM,
+            agent = AGENT,
+            isSold = IS_PROPERTY_SOLD,
+            poiTrain = POITRAIN,
+            poiAirport = POIAIRPORT,
+            poiResto = POIRESTO,
+            poiSchool = POISCHOOL,
+            poiBus = POIBUS,
+            poiPark = POIPARK,
+        )
+        runCurrent()
+
+        // Then
+        coVerify() {
+            propertyRepository.insertProperty(propertyEntity)
+
+        }
+
+        coVerify() {
+            photoRepository.insertPhoto(photoEntity)
+        }
+//        confirmVerified(propertyRepository)
+//        confirmVerified(photoRepository)
+    }
+
+
 }

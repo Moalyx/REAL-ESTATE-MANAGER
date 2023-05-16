@@ -78,7 +78,7 @@ class SearchPropertyActivity : AppCompatActivity() {
                     binding.checkboxPark.isChecked
                 )
             )
-            startActivity(Intent(this, MainActivity::class.java ))
+            startActivity(Intent(this, MainActivity::class.java))
             //onBackPressed()
         }
     }

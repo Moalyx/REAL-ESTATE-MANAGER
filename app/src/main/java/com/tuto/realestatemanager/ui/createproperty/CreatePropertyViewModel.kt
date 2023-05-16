@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import java.time.Clock
 import java.time.LocalDate
-import java.util.Collections.emptyList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -133,8 +132,8 @@ class CreatePropertyViewModel @Inject constructor(
             bathroom = bathroom,
             agent = agent,
             propertySold = isSold,
-            propertyOnSaleSince = dateOfSale,
-            propertyDateOfSale = saleSince,
+            propertyOnSaleSince = saleSince,
+            propertyDateOfSale = dateOfSale,
             poiTrain = poiTrain,
             poiAirport = poiAirport,
             poiResto = poiResto,

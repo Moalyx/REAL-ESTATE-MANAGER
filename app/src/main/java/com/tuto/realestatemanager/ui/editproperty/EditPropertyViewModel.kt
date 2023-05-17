@@ -38,22 +38,36 @@ class EditPropertyViewModel @Inject constructor(
 
     private val getRegisteredPhoto: LiveData<List<PhotoEntity>> =
         photoRepository.getAllPhoto().asLiveData(Dispatchers.IO)
+
     private val getAddedPhoto: LiveData<List<TemporaryPhoto>> =
         temporaryPhotoRepository.getTemporaryPhotoList().asLiveData(Dispatchers.Main)
+
+    private val currentPropertyId: LiveData<Long> =
+        currentPropertyIdRepository.currentIdFlow.filterNotNull().asLiveData(Dispatchers.IO)
 
     private val getAllPhotoMediatorLiveData: MediatorLiveData<List<EditPropertyPhotoViewState>> =
         MediatorLiveData<List<EditPropertyPhotoViewState>>().apply {
 
             addSource(getRegisteredPhoto) { oldPhoto ->
-                combine(oldPhoto, getAddedPhoto.value)
+                combine(oldPhoto, getAddedPhoto.value, currentPropertyId.value)
             }
 
             addSource(getAddedPhoto) { addedPhoto ->
-                combine(getRegisteredPhoto.value, addedPhoto)
+                combine(getRegisteredPhoto.value, addedPhoto, currentPropertyId.value)
             }
+
+            addSource(currentPropertyId) { currentPropertyId ->
+                combine(getRegisteredPhoto.value, getAddedPhoto.value, currentPropertyId)
+            }
+
+
         }
 
-    private fun combine(registeredPhoto: List<PhotoEntity>?, addedPhoto: List<TemporaryPhoto>?) {
+    private fun combine(
+        registeredPhoto: List<PhotoEntity>?,
+        addedPhoto: List<TemporaryPhoto>?,
+        currentPropertyId: Long?
+    ) {
         registeredPhoto ?: return
 
 
@@ -65,11 +79,53 @@ class EditPropertyViewModel @Inject constructor(
                     photoUri = photo.photoUri,
                 )
             }
-             updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
+            updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
 
-        } else {
-            getAllPhotoMediatorLiveData.value = toViewState(registeredPhoto, addedPhoto)
+        }else{
+
+            val photoList = mutableListOf<EditPropertyPhotoViewState>()
+            //photoList.clear()
+
+//            for (photo in registeredPhoto) {
+//                photoList.add(
+//                    EditPropertyPhotoViewState(
+//                        photoTitle = photo.photoTitle,
+//                        photoUri = photo.photoUri,
+//
+//                        )
+//                )
+//            }
+            for (photo in addedPhoto) {
+                photoList.add(
+                    EditPropertyPhotoViewState(
+                        photoTitle = photo.title,
+                        photoUri = photo.uri
+
+                    )
+                )
+            }
+
+            updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
+
+            addedPhotoMutableList = addedPhoto as MutableList<TemporaryPhoto>
+
+
+            getAllPhotoMediatorLiveData.value = photoList
         }
+
+//            for (temporaryPhoto in addedPhoto!!/*temporaryPhotoStateFlow.value*/) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
+//                viewModelScope.launch {
+//                    photoRepository.insertPhoto(
+//                        PhotoEntity(
+//                            propertyId = currentPropertyId!!,
+//                            photoUri = temporaryPhoto.uri,
+//                            photoTitle = temporaryPhoto.title
+//                        )
+//                    )
+//                }
+//            }
+//            getAllPhotoMediatorLiveData.value = toViewState(registeredPhoto, addedPhoto)
+
     }
 
     private fun toViewState(
@@ -152,11 +208,11 @@ class EditPropertyViewModel @Inject constructor(
         return view.isChecked
     }
 
-    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
-        temporaryPhotoRepository.getTemporaryPhotoList() //TODO A IMPLEMENTER
-
-    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
-        temporaryPhotoStateFlow.asLiveData() // TODO A IMPLEMENTER
+//    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
+//        temporaryPhotoRepository.getTemporaryPhotoList() //TODO A IMPLEMENTER
+//
+//    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
+//        temporaryPhotoStateFlow.asLiveData() // TODO A IMPLEMENTER
 
     fun updateProperty(
         id: Long,
@@ -216,7 +272,7 @@ class EditPropertyViewModel @Inject constructor(
             propertyRepository.updateProperty(property)
 
 
-            for (temporaryPhoto in temporaryPhotoStateFlow.value) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
+            for (temporaryPhoto in addedPhotoMutableList/*temporaryPhotoStateFlow.value*/) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = id,

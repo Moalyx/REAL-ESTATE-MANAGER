@@ -28,6 +28,7 @@ class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPro
             Glide
                 .with(binding.itemPropertyPhotoDetail)
                 .load(photo.photoUri)
+                .centerCrop()
                 .into(binding.itemPropertyPhotoDetail)
 
             binding.itemPropertyPhotoTitle.text = photo.photoTitle

@@ -28,6 +28,7 @@ class PropertyDetailPhotoAdapter : ListAdapter<PhotoEntity, PropertyDetailPhotoA
             Glide
                 .with(binding.itemPropertyPhotoDetail)
                 .load(propertyPhotoViewState.photoUri)
+                .centerCrop()
                 .into(binding.itemPropertyPhotoDetail)
 
             binding.itemPropertyPhotoTitle.text = propertyPhotoViewState.photoTitle

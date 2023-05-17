@@ -19,6 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class EditPropertyActivity : AppCompatActivity() {
 
+    private var type = ""
+
     companion object {
         const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
         fun navigate(context: Context, propertyId: Long): Intent {
@@ -37,8 +39,6 @@ class EditPropertyActivity : AppCompatActivity() {
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        var type = ""
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
@@ -64,7 +64,6 @@ class EditPropertyActivity : AppCompatActivity() {
         binding.takePictureButton.setOnClickListener {
             startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
-
 
         val adapter = EditPropertyPhotoAdapter()
         val recyclerView: RecyclerView = binding.createUpdatePhotoRecyclerview

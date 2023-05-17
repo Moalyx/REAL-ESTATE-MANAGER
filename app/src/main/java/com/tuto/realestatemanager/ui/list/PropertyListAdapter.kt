@@ -31,6 +31,7 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
                 .with(binding.propertyPhoto)
                 //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
                 .load(propertyViewState.photoList[1].photoUri)
+                .centerCrop()
                 .into(binding.propertyPhoto)
         }
     }

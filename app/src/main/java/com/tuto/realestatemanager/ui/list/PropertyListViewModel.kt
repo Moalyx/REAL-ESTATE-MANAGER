@@ -4,20 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.bumptech.glide.util.Util
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
+import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
     propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
+    private val priceConverterRepository: PriceConverterRepository,
     searchRepository: SearchRepository
 ) : ViewModel() {
 
@@ -25,23 +30,31 @@ class PropertyListViewModel @Inject constructor(
         propertyRepository.getAllPropertiesWithPhotosEntity()
             .asLiveData(Dispatchers.IO)
 
+    private val currentMoneyLiveData: LiveData<Boolean> =
+        priceConverterRepository.getCurrentMoneyLiveData.asLiveData(Dispatchers.IO)
+
     private val searchParametersLiveData: LiveData<SearchParameters?> =
-        searchRepository.getParametersFlow().asLiveData()
+        searchRepository.getParametersFlow().asLiveData(Dispatchers.IO)
 
     private val propertyListMediatorLiveData = MediatorLiveData<List<PropertyViewState>>().apply {
         addSource(propertyListLiveData) { propertiesWithPhotoEntity ->
-            combine(propertiesWithPhotoEntity, searchParametersLiveData.value)
+            combine(propertiesWithPhotoEntity, searchParametersLiveData.value, currentMoneyLiveData.value)
         }
         addSource(searchParametersLiveData) { searchParameters ->
-            combine(propertyListLiveData.value, searchParameters)
+            combine(propertyListLiveData.value, searchParameters, currentMoneyLiveData.value)
         }
+        addSource(currentMoneyLiveData) { currentMoney ->
+            combine(propertyListLiveData.value, searchParametersLiveData.value, currentMoney)
+        }
+
     }
 
     val getPropertiesLiveData: LiveData<List<PropertyViewState>> = propertyListMediatorLiveData
 
     private fun combine(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>?,
-        searchParameters: SearchParameters?
+        searchParameters: SearchParameters?,
+        currentMoney: Boolean?
     ) {
 
         if (propertiesWithPhotosEntity == null) return
@@ -52,7 +65,7 @@ class PropertyListViewModel @Inject constructor(
                     PropertyViewState(
                         id = propertyWithPhotosEntity.propertyEntity.id,
                         type = propertyWithPhotosEntity.propertyEntity.type,
-                        price = propertyWithPhotosEntity.propertyEntity.price,
+                        price = convertMoney("${propertyWithPhotosEntity.propertyEntity.price}", currentMoney!!),
                         photoList = propertyWithPhotosEntity.photos.map { it },
                         city = propertyWithPhotosEntity.propertyEntity.city,
                         onItemClicked = {
@@ -84,7 +97,7 @@ class PropertyListViewModel @Inject constructor(
                 PropertyViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
-                    price = propertyWithPhotosEntity.propertyEntity.price,
+                    price = propertyWithPhotosEntity.propertyEntity.price.toString(),
                     photoList = propertyWithPhotosEntity.photos.map { it },
                     city = propertyWithPhotosEntity.propertyEntity.city,
                     onItemClicked = {
@@ -93,6 +106,20 @@ class PropertyListViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun convertMoney(price: String, moneyStatus: Boolean): String{
+        val decimalFormat = DecimalFormat("#,###.#")
+        val formatPrice: String = decimalFormat.format(price.toInt()).toString()
+        var convertPrice = ""
+        if(moneyStatus){
+            convertPrice = "$formatPrice $"
+        }else{
+            convertPrice = decimalFormat.format(Utils.convertDollarToEuro(price.toInt())).toString() + " €"
+        }
+
+        return convertPrice
+
     }
 
     private fun compareType(

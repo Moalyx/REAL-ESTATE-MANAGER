@@ -10,7 +10,6 @@ import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.databinding.ActivitySearchPropertyBinding
 import com.tuto.realestatemanager.model.SearchParameters
-import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +18,7 @@ class SearchPropertyActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<SearchPropertyViewModel>()
     private lateinit var binding: ActivitySearchPropertyBinding
-    private var type = ""
+    private var type: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

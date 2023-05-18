@@ -10,7 +10,6 @@ import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
 import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
-import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity.Companion.navigate
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.map.MapFragment
 import com.tuto.realestatemanager.ui.mortgagecalcultator.MortgageCalculatorActivity
@@ -21,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewmodel by viewModels<MainViewModel>()
+    private var isConversionToDollars = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,11 +97,25 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    //val listFragment = supportFragmentManager.findFragmentById(PropertyListFragment().id) as? ListFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
             R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
+            R.id.currency -> {
+                updateMenuIcon(item)
+                viewmodel.converterPrice()
+            }
         }
         return true
+    }
+
+    private fun updateMenuIcon(item: MenuItem) {
+        if (isConversionToDollars) {
+            item.setIcon(R.drawable.dollar)
+        } else {
+            item.setIcon(R.drawable.euro)
+        }
     }
 }

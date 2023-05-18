@@ -5,7 +5,7 @@
     <item
         android:id="@+id/bank_loan"
         android:title="Bank loan"
-        android:icon="@drawable/dollar_full"
+        android:icon="@drawable/currency"
         app:showAsAction="always"
         />
 
@@ -20,6 +20,13 @@
         android:id="@+id/search_property"
         android:title="search property"
         android:icon="@drawable/ic_baseline_search_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/currency"
+        android:title="search property"
+        android:icon="@drawable/dollar"
         app:showAsAction="always"
         />
 

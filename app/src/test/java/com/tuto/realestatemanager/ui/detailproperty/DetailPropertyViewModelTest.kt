@@ -1,8 +1,9 @@
 package com.tuto.realestatemanager.ui.detailproperty
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.tuto.realestatemanager.TestCoroutineRule
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
@@ -12,14 +13,13 @@ import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.observeForTesting
 import com.tuto.realestatemanager.ui.detail.DetailPropertyViewModel
 import com.tuto.realestatemanager.ui.detail.PropertyDetailViewState
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -70,7 +70,7 @@ class DetailPropertyViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val currentIdStateFlow =
-        MutableStateFlow<Long>(0)
+        MutableStateFlow<Long>(0L)
 
     private val currentPropertyIdRepository: CurrentPropertyIdRepository = mockk()
     private val propertyRepository: PropertyRepository = mockk()
@@ -129,8 +129,7 @@ class DetailPropertyViewModelTest {
         currentIdStateFlow.value = 0L
 
 
-        //propertyDetailViewStateMutableLiveData. value = PropertyDetailViewState(
-        val propertyDetailViewState = PropertyDetailViewState(
+        propertyDetailViewStateMutableLiveData.value = PropertyDetailViewState(
             getPropertyWithPhoto.propertyEntity.id,
             getPropertyWithPhoto.propertyEntity.type,
             getPropertyWithPhoto.propertyEntity.price,
@@ -169,8 +168,6 @@ class DetailPropertyViewModelTest {
             currentPropertyIdRepository = currentPropertyIdRepository,
             propertyRepository = propertyRepository
         )
-        //every { detailPropertyViewModel.detailPropertyLiveData } returns propertyDetailViewStateMutableLiveData as LiveData<PropertyDetailViewState>
-
 
     }
 
@@ -179,46 +176,65 @@ class DetailPropertyViewModelTest {
     fun nominal_case() = testCoroutineRule.runTest {
 
         //GIVEN
-        val propertyDetailViewState = PropertyDetailViewState(
-            getPropertyWithPhoto.propertyEntity.id,
-            getPropertyWithPhoto.propertyEntity.type,
-            getPropertyWithPhoto.propertyEntity.price,
-            getPropertyWithPhoto.photos,
-            getPropertyWithPhoto.propertyEntity.address,
-            getPropertyWithPhoto.propertyEntity.city,
-            getPropertyWithPhoto.propertyEntity.zipCode,
-            getPropertyWithPhoto.propertyEntity.state,
-            getPropertyWithPhoto.propertyEntity.country,
-            getPropertyWithPhoto.propertyEntity.surface,
-            getPropertyWithPhoto.propertyEntity.description,
-            getPropertyWithPhoto.propertyEntity.room,
-            getPropertyWithPhoto.propertyEntity.bathroom,
-            getPropertyWithPhoto.propertyEntity.bedroom,
-            getPropertyWithPhoto.propertyEntity.agent,
-            getPropertyWithPhoto.propertyEntity.propertySold,
-            getPropertyWithPhoto.propertyEntity.propertyOnSaleSince,
-            getPropertyWithPhoto.propertyEntity.propertyDateOfSale,
-            getPropertyWithPhoto.propertyEntity.poiTrain,
-            getPropertyWithPhoto.propertyEntity.poiAirport,
-            getPropertyWithPhoto.propertyEntity.poiResto,
-            getPropertyWithPhoto.propertyEntity.poiSchool,
-            getPropertyWithPhoto.propertyEntity.poiBus,
-            getPropertyWithPhoto.propertyEntity.poiPark,
+
+        currentIdStateFlow.value = 0L
+
+        val getPropertyWithPhoto = PropertyWithPhotosEntity(
+            propertyEntity = PropertyEntity(
+                id = PROPERTY_ID,
+                type = TYPE,
+                price = PRICE,
+                address = ADDRESS,
+                city = CITY,
+                state = STATE,
+                zipCode = ZIPCODE,
+                country = COUNTRY,
+                surface = SURFACE,
+                lat = LAT,
+                lng = LNG,
+                description = DESCRIPTION,
+                room = ROOM,
+                bedroom = BEDROOM,
+                bathroom = BATHROOM,
+                agent = AGENT,
+                propertySold = IS_PROPERTY_SOLD,
+                propertyOnSaleSince = SALESINCE,
+                propertyDateOfSale = SOLD_AT,
+                poiTrain = POITRAIN,
+                poiAirport = POIAIRPORT,
+                poiResto = POIRESTO,
+                poiSchool = POISCHOOL,
+                poiBus = POIBUS,
+                poiPark = POIPARK
+            ),
+            photos = listOf(
+                PhotoEntity(
+                    id = PHOTO_ID,
+                    propertyId = PROPERTY_PHOTO_ID,
+                    photoUri = PHOTO_URI,
+                    photoTitle = PHOTO_TITLE
+                )
+            )
         )
 
-        detailPropertyViewModel.detailPropertyLiveData.run {
-            val result = detailPropertyViewModel.detailPropertyLiveData
+        coEvery { currentPropertyIdRepository.currentIdFlow } returns flowOf(0L)
+        coEvery { propertyRepository.getPropertyById(0L) } returns flowOf(getPropertyWithPhoto)
 
-            assertEquals(result, propertyDetailViewState)
+        //WHEN
+        detailPropertyViewModel.detailPropertyLiveData.observeForTesting(this) {
+
+            //THEN
+            assertThat(it.value).isEqualTo(getPropertyDetailViewState())
+            //assertEquals(getPropertyDetailViewState(), it.value)
+
         }
 
         coVerify { propertyRepository.getPropertyById(currentIdStateFlow.value) }
         coVerify { currentPropertyIdRepository.currentIdFlow }
 
-
     }
 
-    fun getPropertyDetailViewState(): PropertyDetailViewState {
+    private fun getPropertyDetailViewState(): PropertyDetailViewState {
         return PropertyDetailViewState(
             getPropertyWithPhoto.propertyEntity.id,
             getPropertyWithPhoto.propertyEntity.type,
@@ -247,7 +263,7 @@ class DetailPropertyViewModelTest {
         )
     }
 
-    val getPropertyWithPhoto = PropertyWithPhotosEntity(
+    private val getPropertyWithPhoto = PropertyWithPhotosEntity(
         propertyEntity = PropertyEntity(
             id = PROPERTY_ID,
             type = TYPE,

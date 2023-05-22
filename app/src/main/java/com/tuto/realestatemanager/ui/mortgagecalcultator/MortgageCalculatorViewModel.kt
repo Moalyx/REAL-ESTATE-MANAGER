@@ -15,37 +15,40 @@ class MortgageCalculatorViewModel @Inject constructor(
     private val mortgageCalculatorRepository: MortgageCalculatorRepository
 ) : ViewModel() {
 
-    private val getAmount: LiveData<Double>  = mortgageCalculatorRepository.getAmount().asLiveData(Dispatchers.IO)
-    private val getRate: LiveData<Double>  = mortgageCalculatorRepository.getRate().asLiveData(Dispatchers.IO)
-    private val getDuration: LiveData<Int>  = mortgageCalculatorRepository.getDuration().asLiveData(Dispatchers.IO)
+    private val getAmount: LiveData<Double> =
+        mortgageCalculatorRepository.getAmount().asLiveData(Dispatchers.IO)
+    private val getRate: LiveData<Double> =
+        mortgageCalculatorRepository.getRate().asLiveData(Dispatchers.IO)
+    private val getDuration: LiveData<Int> =
+        mortgageCalculatorRepository.getDuration().asLiveData(Dispatchers.IO)
 
 
-    fun getRate(): LiveData<Double>{
+    fun getRate(): LiveData<Double> {
         return mortgageCalculatorRepository.getRate().asLiveData(Dispatchers.IO)
     }
 
-    fun getDuration(): LiveData<Int>{
+    fun getDuration(): LiveData<Int> {
         return mortgageCalculatorRepository.getDuration().asLiveData(Dispatchers.IO)
     }
 
     private val monthlyPayment = MediatorLiveData<Int>().apply {
 
-        addSource(getAmount){getAmount ->
+        addSource(getAmount) { getAmount ->
             combine(getAmount, getRate.value!!, getDuration.value!!)
         }
 
-        addSource(getRate){getRate ->
+        addSource(getRate) { getRate ->
             combine(getAmount.value!!, getRate, getDuration.value!!)
         }
 
-        addSource(getDuration){getDuration ->
+        addSource(getDuration) { getDuration ->
             combine(getAmount.value!!, getRate.value!!, getDuration)
         }
     }
 
-    private fun combine(amount: Double, rate: Double, duration: Int){
+    private fun combine(amount: Double, rate: Double, duration: Int) {
 
-        if(amount == null || rate == null || duration == null){
+        if (amount == null || rate == null || duration == null) {
             return
         }
 
@@ -53,7 +56,8 @@ class MortgageCalculatorViewModel @Inject constructor(
         val currentRate: Double = (rate / 100) / 12
         val time: Int = duration * 12
 
-        val monthlyFee = (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
+        val monthlyFee =
+            (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
 
         monthlyPayment.value = monthlyFee
     }
@@ -61,25 +65,20 @@ class MortgageCalculatorViewModel @Inject constructor(
     val getMonthlyPayment = monthlyPayment
 
 
-
-
-
-
-
-    fun setAmount(amount: Double){
+    fun setAmount(amount: Double) {
         mortgageCalculatorRepository.setAmount(amount)
     }
 
-    fun setRate(rate: Double){
-        mortgageCalculatorRepository.setRate(rate)
+    fun setRate(rate: String) {
+        if (rate == "") {
+            mortgageCalculatorRepository.setRate(0.0.toString())
+        } else
+            mortgageCalculatorRepository.setRate(rate)
     }
 
-    fun setDuration(duration: Int){
+    fun setDuration(duration: Int) {
         mortgageCalculatorRepository.setDuration(duration)
     }
-
-
-
 
 
 //    fun setMortgageParameters(amount: Double, proposedRate: Double, years: Int){

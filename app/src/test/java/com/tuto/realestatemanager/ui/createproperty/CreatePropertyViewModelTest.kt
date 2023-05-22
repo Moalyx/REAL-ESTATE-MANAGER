@@ -68,6 +68,13 @@ class CreatePropertyViewModelTest {
 
         //FOR AUTOCOMPLETEREPOSITORY
         private const val INPUT_AUTOCOMPLETE = "3"
+
+        //FOR TEMPORARYPHOTO
+        private const val PHOTO_1_TITLE = "PHOTO_1_TITLE"
+        private const val PHOTO_1_URI = "PHOTO_1_URI"
+        private const val PHOTO_2_TITLE = "PHOTO_1_TITLE"
+        private const val PHOTO_2_URI = "PHOTO_1_URI"
+
     }
 
     @get:Rule
@@ -76,7 +83,8 @@ class CreatePropertyViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val temporaryPhotosMutableStateFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
+    private val temporaryPhotosMutableStateFlow =
+        MutableStateFlow<List<TemporaryPhoto>>(emptyList())
 
     private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase = mockk()
     private val propertyRepository: PropertyRepository = mockk()
@@ -89,7 +97,21 @@ class CreatePropertyViewModelTest {
     @Before
     fun setUp() {
 
+        val temporaryPhoto = listOf(
+            TemporaryPhoto(
+                title = PHOTO_1_TITLE,
+                uri = PHOTO_1_URI
+            ),
+            TemporaryPhoto(
+                title = PHOTO_2_TITLE,
+                uri = PHOTO_2_URI
+            )
+        )
+        temporaryPhotosMutableStateFlow.value = temporaryPhoto
+
         every { temporaryPhotoRepository.getTemporaryPhotoList() } returns temporaryPhotosMutableStateFlow
+
+
 
         createPropertyViewModel = CreatePropertyViewModel(
             getPlaceAddressComponentsUseCase = getPlaceAddressComponentsUseCase,
@@ -170,6 +192,7 @@ class CreatePropertyViewModelTest {
 
     @Test
     fun nominal_case() = testCoroutineRule.runTest {
+
         // Given
         val propertyEntity = PropertyEntity(
             id = PROPERTY_ID,
@@ -267,15 +290,26 @@ class CreatePropertyViewModelTest {
         coEvery { propertyRepository.insertProperty(propertyEntity) } returns NEW_PROPERTY_ID
 
         val photoEntity = PhotoEntity(
-            PHOTO_ID,
+            0,
             NEW_PROPERTY_ID,
-            PHOTO_URI,
-            PHOTO_TITLE
+            PHOTO_1_URI,
+            PHOTO_1_TITLE
         )
 
-        coEvery {
+        coJustRun {
             photoRepository.insertPhoto(photoEntity)
-        } just runs
+        }
+
+        val photoEntity2 = PhotoEntity(
+            0,
+            NEW_PROPERTY_ID,
+            PHOTO_2_URI,
+            PHOTO_2_TITLE
+        )
+
+        coJustRun {
+            photoRepository.insertPhoto(photoEntity2)
+        }
 
         // When
         createPropertyViewModel.createProperty(
@@ -312,9 +346,11 @@ class CreatePropertyViewModelTest {
 
         coVerify() {
             photoRepository.insertPhoto(photoEntity)
+            photoRepository.insertPhoto(photoEntity2)
         }
-//        confirmVerified(propertyRepository)
-//        confirmVerified(photoRepository)
+
+        confirmVerified(propertyRepository)
+        confirmVerified(photoRepository)
     }
 
 

@@ -42,11 +42,11 @@ class MortgageCalculatorActivity : AppCompatActivity() {
 
 
         binding.rate.doAfterTextChanged {
-            if (it.toString() == "") {
-                viewModel.setRate(0.0)
-            }else{
-                viewModel.setRate(it.toString().toDouble())
-            }
+//            if (it.toString() == "") {
+//                viewModel.setRate(0.0) //todo algo reporter dans le viewmodel
+//            }else{
+                viewModel.setRate(it.toString())
+//            }
         }
 
         binding.totalAmount.doAfterTextChanged {

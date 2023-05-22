@@ -70,6 +70,9 @@ class EditPropertyViewModel @Inject constructor(
     ) {
         registeredPhoto ?: return
 
+        val photoList = mutableListOf<EditPropertyPhotoViewState>()
+        photoList.clear()
+
 
 
         if (addedPhoto == null) {
@@ -79,22 +82,24 @@ class EditPropertyViewModel @Inject constructor(
                     photoUri = photo.photoUri,
                 )
             }
-            updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
+            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
         }else{
 
-            val photoList = mutableListOf<EditPropertyPhotoViewState>()
-            //photoList.clear()
+            photoList.clear()
 
-//            for (photo in registeredPhoto) {
-//                photoList.add(
-//                    EditPropertyPhotoViewState(
-//                        photoTitle = photo.photoTitle,
-//                        photoUri = photo.photoUri,
-//
-//                        )
-//                )
-//            }
+
+
+            for (photo in registeredPhoto) {
+                photoList.add(
+                    EditPropertyPhotoViewState(
+                        photoTitle = photo.photoTitle,
+                        photoUri = photo.photoUri,
+
+                        )
+                )
+            }
+
             for (photo in addedPhoto) {
                 photoList.add(
                     EditPropertyPhotoViewState(
@@ -105,9 +110,9 @@ class EditPropertyViewModel @Inject constructor(
                 )
             }
 
-            updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
+            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
-            addedPhotoMutableList = addedPhoto as MutableList<TemporaryPhoto>
+            addedPhotoMutableList = addedPhoto.toMutableList()
 
 
             getAllPhotoMediatorLiveData.value = photoList
@@ -154,9 +159,9 @@ class EditPropertyViewModel @Inject constructor(
             )
         }
 
-        updatedRegisteredPhotoMutableList = registeredPhoto as MutableList<PhotoEntity>
+        updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
-        addedPhotoMutableList = addedPhoto as MutableList<TemporaryPhoto>
+        addedPhotoMutableList = addedPhoto.toMutableList()
 
 
         return photoList

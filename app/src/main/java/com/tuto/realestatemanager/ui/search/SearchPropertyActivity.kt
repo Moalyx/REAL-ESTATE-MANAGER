@@ -62,12 +62,11 @@ class SearchPropertyActivity : AppCompatActivity() {
         binding.validateParametersButton.setOnClickListener {
 
             viewModel.setParameters(
-                SearchParameters(
                     type,
-                    Integer.parseInt(binding.priceMin.text.toString()),
-                    Integer.parseInt(binding.priceMax.text.toString()),
-                    Integer.parseInt(binding.surfaceMinimum.text.toString()),
-                    Integer.parseInt(binding.surfaceMaximum.text.toString()),
+                    binding.priceMin.text.toString(),
+                    binding.priceMax.text.toString(),
+                    binding.surfaceMinimum.text.toString(),
+                    binding.surfaceMaximum.text.toString(),
                     binding.city.text.toString(),
                     binding.checkboxtrTrain.isChecked,
                     binding.checkboxAirport.isChecked,
@@ -75,7 +74,7 @@ class SearchPropertyActivity : AppCompatActivity() {
                     binding.checkboxSchool.isChecked,
                     binding.checkboxBus.isChecked,
                     binding.checkboxPark.isChecked
-                )
+
             )
             startActivity(Intent(this, MainActivity::class.java))
             //onBackPressed()

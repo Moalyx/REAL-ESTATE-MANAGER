@@ -23,8 +23,8 @@ class MortgageCalculatorRepository @Inject constructor() {
         this.amount.value = amount
     }
 
-    fun setRate(rate: Double) {
-        this.rate.value = rate
+    fun setRate(rate: String) {
+        this.rate.value = rate.toDouble()
     }
 
     fun setDuration(duration: Int) {

@@ -2,14 +2,14 @@ package com.tuto.realestatemanager.ui.list
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
-import androidx.core.view.MenuProvider
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
-import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
+import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

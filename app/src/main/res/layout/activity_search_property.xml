@@ -108,7 +108,7 @@
             android:layout_gravity="center"
             android:drawableStart="@drawable/ic_baseline_attach_money_24"
             android:hint="price minimum"
-            android:inputType="number"
+
             android:textSize="15dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -134,7 +134,7 @@
             android:layout_gravity="center"
             android:drawableStart="@drawable/ic_baseline_attach_money_24"
             android:hint="price maximum"
-            android:inputType="number"
+
             android:textSize="15dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -176,7 +176,7 @@
             android:drawableStart="@drawable/ic_surface_2"
             android:gravity="center"
             android:hint="surface minimum"
-            android:inputType="number"
+
             android:textSize="15dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -203,7 +203,7 @@
             android:drawableStart="@drawable/ic_surface_2"
             android:gravity="center"
             android:hint="surface maximum"
-            android:inputType="number"
+
             android:textSize="15dp" />
 
     </com.google.android.material.textfield.TextInputLayout>

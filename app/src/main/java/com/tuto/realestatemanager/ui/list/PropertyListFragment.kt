@@ -39,7 +39,7 @@ class PropertyListFragment : Fragment()/*, MenuProvider*/ {
 //        viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
 //            adapter?.submitList(it)
 //        }
-        viewModel.getPropertiesLiveData.observe(viewLifecycleOwner) {
+        viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
 

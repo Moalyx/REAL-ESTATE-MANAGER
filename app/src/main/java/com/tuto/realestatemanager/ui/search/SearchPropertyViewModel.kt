@@ -31,9 +31,7 @@ class SearchPropertyViewModel @Inject constructor(
         poiSchool: Boolean,
         poiBus: Boolean,
         poiPark: Boolean,
-
-
-        ) { //todo mettre en parametre les attributs de l'objet
+    ) { //todo mettre en parametre les attributs de l'objet
 
 
 //        if (typeParameter(type) != null
@@ -44,22 +42,22 @@ class SearchPropertyViewModel @Inject constructor(
 //            && cityParameter(city) != null
 //
 //        ) {
-            SearchRepository.setParameters(
-                SearchParameters(
-                    typeParameter(type),
-                    priceMiniParameter(priceMini)?.toInt(),
-                    priceMaxiParameter(priceMaxi)?.toInt(),
-                    surfaceMiniParameter(surfaceMini)?.toInt(),
-                    surfaceMaxiParameter(surfaceMaxi)?.toInt(),
-                    cityParameter(city),
-                    poiTrain,
-                    poiAirport,
-                    poiResto,
-                    poiSchool,
-                    poiBus,
-                    poiPark
-                )
+        SearchRepository.setParameters(
+            SearchParameters(
+                typeParameter(type),
+                priceMiniParameter(priceMini)?.toInt(),
+                priceMaxiParameter(priceMaxi)?.toInt(),
+                surfaceMiniParameter(surfaceMini)?.toInt(),
+                surfaceMaxiParameter(surfaceMaxi)?.toInt(),
+                cityParameter(city),
+                poiTrain,
+                poiAirport,
+                poiResto,
+                poiSchool,
+                poiBus,
+                poiPark
             )
+        )
 //        }
     }
 

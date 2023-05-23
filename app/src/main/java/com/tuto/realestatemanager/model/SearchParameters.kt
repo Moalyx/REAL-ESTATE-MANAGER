@@ -7,10 +7,10 @@ data class SearchParameters(
     val surfaceMinimum: Int?,
     val surfaceMaximum: Int?,
     val city: String?,
-    val poiTrain: Boolean?,
-    val poiAirport: Boolean?,
-    val poiResto: Boolean?,
-    val poiSchool: Boolean?,
-    val poiBus: Boolean?,
-    val poiPark: Boolean?
+    val poiTrain: Boolean,
+    val poiAirport: Boolean,
+    val poiResto: Boolean,
+    val poiSchool: Boolean,
+    val poiBus: Boolean,
+    val poiPark: Boolean
 )

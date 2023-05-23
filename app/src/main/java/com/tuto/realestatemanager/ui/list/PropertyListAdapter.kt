@@ -30,7 +30,7 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
             Glide
                 .with(binding.propertyPhoto)
                 //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
-                .load(propertyViewState.photoList[1].photoUri)
+                .load(propertyViewState.photoList[0].photoUri)
                 .centerCrop()
                 .into(binding.propertyPhoto)
         }

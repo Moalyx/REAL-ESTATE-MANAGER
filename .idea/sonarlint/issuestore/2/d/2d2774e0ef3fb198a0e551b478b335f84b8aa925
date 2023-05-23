@@ -1,13 +1,0 @@
-
-gkotlin:S107ª"HThis function has 19 parameters, which is greater than the 7 authorized.(‚ΏξÒ8ίβά»ω0
-?kotlin:S6305;" Don't expose mutable flow types.(¥Μζ†8ΰβά»ω0
-=kotlin:S1258"Remove this commented out code.(φκ»±8ιβά»ω0
-Bkotlin:S125="Remove this commented out code.(¥Òόÿÿÿÿ8ιβά»ω0
-=kotlin:S125F"Remove this commented out code.(Κ°ρ8κβά»ω0
-=kotlin:S125J"Remove this commented out code.(ύΟΗί8κβά»ω0
-=kotlin:S125P"Remove this commented out code.(ιλΐ8κβά»ω0
-Ckotlin:S125‘"Remove this commented out code.(οΕÿÿÿÿÿ8λβά»ω0
-Ckotlin:S125™"Remove this commented out code.(»·Ετόÿÿÿÿ8μβά»ω0
-Ckotlin:S125"Remove this commented out code.(δ°Φ±όÿÿÿÿ8νβά»ω0
-Akotlin:S6310Χ"Avoid hardcoded dispatchers.(Σι‹ψÿÿÿÿ8ρβά»ω0
-ykotlin:S1186"ZAdd a nested comment explaining why this function is empty or complete the implementation.(Μ½•8σβά»ω0

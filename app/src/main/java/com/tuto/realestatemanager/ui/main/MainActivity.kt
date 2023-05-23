@@ -117,5 +117,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             item.setIcon(R.drawable.euro)
         }
+        isConversionToDollars = !isConversionToDollars
     }
 }

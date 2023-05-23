@@ -1,10 +1,8 @@
 package com.tuto.realestatemanager.model
 
-import android.location.Location
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.android.gms.maps.model.LatLng
 
 @Entity(tableName = "property_table")
 data class PropertyEntity constructor(
@@ -12,7 +10,6 @@ data class PropertyEntity constructor(
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "price") val price: Int,
     @ColumnInfo(name = "address") val address: String,
-//    @ColumnInfo(name = "address_complement") val addressComplement: String,
     @ColumnInfo(name = "city") val city: String,
     @ColumnInfo(name = "state") val state: String,
     @ColumnInfo(name = "zipcode") val zipCode: Int,
@@ -34,6 +31,5 @@ data class PropertyEntity constructor(
     @ColumnInfo(name = "poi_school") val poiSchool: Boolean,
     @ColumnInfo(name = "poi_bus") val poiBus: Boolean,
     @ColumnInfo(name = "poi_park") val poiPark: Boolean,
-) {
-}
+)
 

@@ -1,6 +1,8 @@
 package com.tuto.realestatemanager.ui.detail
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
@@ -27,6 +29,15 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
     private var propertyId: Long = 0
 
     private val viewmodel by viewModels<DetailPropertyViewModel>()
+
+    companion object {
+        const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
+        fun navigate(context: Context, propertyId: Long): Intent {
+            val intent = Intent(context, DetailsPropertyFragment::class.java)
+            intent.putExtra(KEY_PROPERTY_ID, propertyId)
+            return intent
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

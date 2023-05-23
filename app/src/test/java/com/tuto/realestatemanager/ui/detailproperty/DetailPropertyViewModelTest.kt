@@ -179,6 +179,8 @@ class DetailPropertyViewModelTest {
 
         currentIdStateFlow.value = 0L
 
+        coEvery { currentPropertyIdRepository.currentIdFlow } returns flowOf(currentIdStateFlow.value)
+
         val getPropertyWithPhoto = PropertyWithPhotosEntity(
             propertyEntity = PropertyEntity(
                 id = PROPERTY_ID,
@@ -217,8 +219,8 @@ class DetailPropertyViewModelTest {
             )
         )
 
-        coEvery { currentPropertyIdRepository.currentIdFlow } returns flowOf(0L)
-        coEvery { propertyRepository.getPropertyById(0L) } returns flowOf(getPropertyWithPhoto)
+
+        coEvery { propertyRepository.getPropertyById(currentIdStateFlow.value) } returns flowOf(getPropertyWithPhoto)
 
         //WHEN
         detailPropertyViewModel.detailPropertyLiveData.observeForTesting(this) {

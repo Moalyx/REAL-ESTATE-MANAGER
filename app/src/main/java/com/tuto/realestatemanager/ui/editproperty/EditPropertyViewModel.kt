@@ -3,23 +3,20 @@ package com.tuto.realestatemanager.ui.editproperty
 import android.widget.CheckBox
 import androidx.lifecycle.*
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.model.PhotoEntity
-import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
+import com.tuto.realestatemanager.model.PhotoEntity
+import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 @HiltViewModel
 class EditPropertyViewModel @Inject constructor(
@@ -82,23 +79,23 @@ class EditPropertyViewModel @Inject constructor(
                     photoUri = photo.photoUri,
                 )
             }
-            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
+            //updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
-        }else{
-
-            photoList.clear()
+        } else {
 
 
 
-            for (photo in registeredPhoto) {
-                photoList.add(
-                    EditPropertyPhotoViewState(
-                        photoTitle = photo.photoTitle,
-                        photoUri = photo.photoUri,
 
-                        )
-                )
-            }
+
+//            for (photo in registeredPhoto) {
+//                photoList.add(
+//                    EditPropertyPhotoViewState(
+//                        photoTitle = photo.photoTitle,
+//                        photoUri = photo.photoUri,
+//
+//                        )
+//                )
+//            }
 
             for (photo in addedPhoto) {
                 photoList.add(
@@ -110,62 +107,15 @@ class EditPropertyViewModel @Inject constructor(
                 )
             }
 
-            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
+//            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
             addedPhotoMutableList = addedPhoto.toMutableList()
 
 
             getAllPhotoMediatorLiveData.value = photoList
         }
-
-//            for (temporaryPhoto in addedPhoto!!/*temporaryPhotoStateFlow.value*/) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
-//                viewModelScope.launch {
-//                    photoRepository.insertPhoto(
-//                        PhotoEntity(
-//                            propertyId = currentPropertyId!!,
-//                            photoUri = temporaryPhoto.uri,
-//                            photoTitle = temporaryPhoto.title
-//                        )
-//                    )
-//                }
-//            }
-//            getAllPhotoMediatorLiveData.value = toViewState(registeredPhoto, addedPhoto)
-
     }
 
-    private fun toViewState(
-        registeredPhoto: List<PhotoEntity>,
-        addedPhoto: List<TemporaryPhoto>
-    ): List<EditPropertyPhotoViewState> {
-
-        val photoList = mutableListOf<EditPropertyPhotoViewState>()
-
-        for (photo in registeredPhoto) {
-            photoList.add(
-                EditPropertyPhotoViewState(
-                    photoTitle = photo.photoTitle,
-                    photoUri = photo.photoUri,
-
-                    )
-            )
-        }
-        for (photo in addedPhoto) {
-            photoList.add(
-                EditPropertyPhotoViewState(
-                    photoTitle = photo.title,
-                    photoUri = photo.uri
-
-                )
-            )
-        }
-
-        updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
-
-        addedPhotoMutableList = addedPhoto.toMutableList()
-
-
-        return photoList
-    }
 
     val getPhoto: LiveData<List<EditPropertyPhotoViewState>> = getAllPhotoMediatorLiveData
 
@@ -287,12 +237,6 @@ class EditPropertyViewModel @Inject constructor(
                 )
             }
         }
-
-//        val photo = PhotoEntity(id = 0,
-//            property.id,
-//            photoUri
-//        )
-//        viewModelScope.launch(Dispatchers.Main) { photoRepository.upDatePhoto(photo) }
     }
 
 }

@@ -30,7 +30,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIz8" />
+            android:value="AIzaSyAa9_11eBTDn68" />
 
         <activity
             android:name=".ui.search.SearchPropertyActivity"

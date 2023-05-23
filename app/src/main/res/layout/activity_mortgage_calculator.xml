@@ -11,6 +11,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOAN AMOUNT"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
+
         <EditText
             android:id="@+id/total_amount"
             android:layout_gravity="center"
@@ -18,11 +27,22 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="montant total credit"
+            android:hint="1000.000"
+            android:textColor="@color/purple_500"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:inputType="numberDecimal"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="INTEREST RATE"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
+
 
         <EditText
             android:id="@+id/rate"
@@ -31,34 +51,40 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="taux d'interet du credit"
+            android:hint="2.5%"
+            android:textColor="@color/purple_500"
             app:layout_constraintTop_toBottomOf="@id/total_amount"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:inputType="numberDecimal"
             />
 
-        <com.google.android.material.slider.Slider
-            android:layout_gravity="center"
-            android:id="@+id/sliderRate"
-            style="Widget.MaterialComponents.Slider"
-            android:layout_width="match_parent"
+<!--        <com.google.android.material.slider.Slider-->
+<!--            android:layout_gravity="center"-->
+<!--            android:id="@+id/sliderRate"-->
+<!--            style="Widget.MaterialComponents.Slider"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            android:stepSize="0.5"-->
+<!--            android:value="2"-->
+<!--            android:valueFrom="2"-->
+<!--            android:valueTo="6"-->
+<!--            app:labelStyle="@style/Widget.MaterialComponents.Tooltip"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/ivPlus2"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/ivMinus2"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/tvMortgageRateValue" />-->
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:stepSize="0.5"
-            android:value="2"
-            android:valueFrom="2"
-            android:valueTo="6"
-            app:labelStyle="@style/Widget.MaterialComponents.Tooltip"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivPlus2"
-            app:layout_constraintStart_toEndOf="@+id/ivMinus2"
-            app:layout_constraintTop_toBottomOf="@+id/tvMortgageRateValue" />
-
-
-
-
+            android:text="TERM OF THE LOAN"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
 
         <EditText
             android:layout_gravity="center"
@@ -67,20 +93,34 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="duree du pret"
+            android:hint="25 years"
+            android:textColor="@color/purple_500"
             app:layout_constraintTop_toBottomOf="@id/rate"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:inputType="number"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MONTHLY FEE"
+            android:textSize="35sp"
+            android:textColor="#03A9F4"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
 
         <TextView
             android:id="@+id/mensualité_payement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="payement mensuelle"
-            android:layout_marginTop="50dp"
+            android:text="800$ / month"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/purple_500"
             android:textSize="50sp"
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/duration"/>
@@ -93,7 +133,7 @@
             app:layout_constraintTop_toBottomOf="@id/mensualité_payement"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:text="calculate"/>
 
 

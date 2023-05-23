@@ -13,4 +13,4 @@ data class SearchParameters(
     val poiSchool: Boolean?,
     val poiBus: Boolean?,
     val poiPark: Boolean?
-    )
+)

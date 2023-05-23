@@ -46,18 +46,25 @@ class MortgageCalculatorViewModel @Inject constructor(
         }
     }
 
-    private fun combine(amount: Double, rate: Double, duration: Int) {
+    private fun combine(amount: Double?, rate: Double?, duration: Int?) {
 
         if (amount == null || rate == null || duration == null) {
             return
         }
 
+        var monthlyFee = 0
+
         val principal: Double = amount
         val currentRate: Double = (rate / 100) / 12
         val time: Int = duration * 12
 
-        val monthlyFee =
-            (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
+        if (amount == 0.0 || currentRate == 0.0 || time == 0){
+            monthlyFee = 0
+        }else{
+            monthlyFee =
+                (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
+        }
+
 
         monthlyPayment.value = monthlyFee
     }

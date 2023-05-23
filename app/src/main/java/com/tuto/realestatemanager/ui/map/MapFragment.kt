@@ -14,12 +14,9 @@ import androidx.fragment.app.viewModels
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.MapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.tuto.realestatemanager.ui.detail.DetailActivity
+import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import com.tuto.realestatemanager.ui.main.MainViewAction
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -56,36 +53,41 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         map.uiSettings.isMyLocationButtonEnabled = true
         //map.mapType = GoogleMap.MAP_TYPE_SATELLITE
 
-        viewModel.userLocation.observe(this) { location ->
-            val point = LatLng(location.latitude, location.longitude)
+        viewModel.getMapViewState.observe(this) { mapViewState ->
+            val point = LatLng(mapViewState.lat, mapViewState.lng)
             map.animateCamera(CameraUpdateFactory.zoomIn())
             val camera: CameraPosition =
                 CameraPosition.Builder().target(point).zoom(12.0F).bearing(0F).tilt(30F).build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
 
-            viewModel.mapViewStateList.observe(viewLifecycleOwner) {
 
-                for (property in it) {
+            for (markerPlace in mapViewState.marker) {
 //                    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver , Uri.parse(
 //                        property.photos[0].photoUri))
-                    val marker = map.addMarker(
-                        MarkerOptions()
-                            .position(
-                                LatLng(
-                                    property.propertyEntity.lat,
-                                    property.propertyEntity.lng
-                                )
+                val marker = map.addMarker(
+                    MarkerOptions()
+                        .position(
+                            LatLng(
+                                markerPlace.lat,
+                                markerPlace.lng
                             )
-                            .title(property.propertyEntity.description)
-                            .snippet(property.propertyEntity.address)
+                        )
+                        .title(markerPlace.description)
+                        .snippet(markerPlace.address)
 //                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    )
-                    if (marker != null) {
-                        marker.tag = property.propertyEntity.id
-                    }
+                )
+                if (marker != null) {
+                    marker.tag = markerPlace.id
                 }
+            }
 
-                map.setOnMarkerClickListener {
+            map.setOnMarkerClickListener { it ->
+                startActivity(
+                    EditPropertyActivity.navigate(
+                        requireContext(),
+                        it.tag.toString().toLong()
+                    )
+                )
 //                    viewModel.navigateSingleLiveEvent.observe(this) { //todo verifier pourquoi cela ne fonctionne pas
 //                        when (it) {
 //                            MapViewAction.NavigateToDetailActivity -> startActivity(
@@ -96,11 +98,10 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 //                            )
 //                        }
 //                    }
-                    startActivity(Intent(this.requireContext(), DetailActivity::class.java))
-                    return@setOnMarkerClickListener true
-                }
-
+//                    startActivity(Intent(this.requireContext(), DetailActivity::class.java))
+                return@setOnMarkerClickListener true
             }
+
         }
     }
 }

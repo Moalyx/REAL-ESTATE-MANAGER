@@ -67,11 +67,11 @@ class MortgageCalculatorActivity : AppCompatActivity() {
 
 
 
-        binding.button.setOnClickListener{
+
             viewModel.getMonthlyPayment.observe(this) {
                 binding.mensualitPayement.text = it.toString()
             }
-        }
+
 
 
 

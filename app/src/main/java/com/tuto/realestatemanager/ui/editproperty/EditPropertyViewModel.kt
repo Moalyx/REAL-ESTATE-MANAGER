@@ -11,9 +11,7 @@ import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -29,6 +27,7 @@ class EditPropertyViewModel @Inject constructor(
 
     //val actionSingleLiveEvent = SingleLiveEvent<EditActivityViewAction>()
 
+    private val photoList = mutableListOf<EditPropertyPhotoViewState>()
     private var addedPhotoMutableList = mutableListOf<TemporaryPhoto>()
     private var updatedRegisteredPhotoMutableList = mutableListOf<PhotoEntity>()
 
@@ -41,6 +40,48 @@ class EditPropertyViewModel @Inject constructor(
 
     private val currentPropertyId: LiveData<Long> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().asLiveData(Dispatchers.IO)
+
+    val getAllPhotoLiveData: LiveData<List<EditPropertyPhotoViewState>> = liveData {
+        combine(
+            photoRepository.getAllPhoto(),
+            temporaryPhotoRepository.getTemporaryPhotoList()
+        ) { registeredPhoto, newPhoto ->
+            if (newPhoto == null) {
+                emit(registeredPhoto.map { photo ->
+                    EditPropertyPhotoViewState(
+                        id = photo.id,
+                        photoTitle = photo.photoTitle,
+                        photoUri = photo.photoUri,
+                    )
+                }
+                )
+            } else {
+                for (photo in registeredPhoto) {
+                    photoList.add(
+                        EditPropertyPhotoViewState(
+                            photo.id,
+                            photoTitle = photo.photoTitle,
+                            photoUri = photo.photoUri,
+
+                            )
+                    )
+                }
+
+                for (photo in newPhoto) {
+                    photoList.add(
+                        EditPropertyPhotoViewState(
+                            photo.id,
+                            photoTitle = photo.title,
+                            photoUri = photo.uri
+
+                        )
+                    )
+                }
+                emit(photoList)
+            }
+
+        }.collect()
+    }
 
     private val getAllPhotoMediatorLiveData: MediatorLiveData<List<EditPropertyPhotoViewState>> =
         MediatorLiveData<List<EditPropertyPhotoViewState>>().apply {
@@ -57,7 +98,6 @@ class EditPropertyViewModel @Inject constructor(
                 combine(getRegisteredPhoto.value, getAddedPhoto.value, currentPropertyId)
             }
 
-
         }
 
     private fun combine(
@@ -67,58 +107,66 @@ class EditPropertyViewModel @Inject constructor(
     ) {
         registeredPhoto ?: return
 
-        val photoList = mutableListOf<EditPropertyPhotoViewState>()
-        photoList.clear()
-
-
+        //photoList.clear()
 
         if (addedPhoto == null) {
             getAllPhotoMediatorLiveData.value = registeredPhoto.map { photo ->
                 EditPropertyPhotoViewState(
+                    id = photo.id,
                     photoTitle = photo.photoTitle,
                     photoUri = photo.photoUri,
                 )
             }
-            //updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
+            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
 
         } else {
 
+            //photoList.clear()
 
 
+            for (photo in registeredPhoto) {
+                if (!registeredPhoto.contains(photo))
+                    photoList.add(
+                        EditPropertyPhotoViewState(
+                            photo.id,
+                            photoTitle = photo.photoTitle,
+                            photoUri = photo.photoUri,
 
-
-//            for (photo in registeredPhoto) {
-//                photoList.add(
-//                    EditPropertyPhotoViewState(
-//                        photoTitle = photo.photoTitle,
-//                        photoUri = photo.photoUri,
-//
-//                        )
-//                )
-//            }
-
-            for (photo in addedPhoto) {
-                photoList.add(
-                    EditPropertyPhotoViewState(
-                        photoTitle = photo.title,
-                        photoUri = photo.uri
-
+                            )
                     )
-                )
             }
 
-//            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
+            for (photo in addedPhoto) {
+                if (!addedPhoto.contains(photo))
+                    photoList.add(
+                        EditPropertyPhotoViewState(
+                            photo.id,
+                            photoTitle = photo.title,
+                            photoUri = photo.uri
 
+                        )
+                    )
+            }
+
+
+            updatedRegisteredPhotoMutableList = registeredPhoto.toMutableList()
+//
             addedPhotoMutableList = addedPhoto.toMutableList()
 
 
             getAllPhotoMediatorLiveData.value = photoList
+
+
         }
     }
 
 
     val getPhoto: LiveData<List<EditPropertyPhotoViewState>> = getAllPhotoMediatorLiveData
 
+//    fun OnDeletePhoto(id: Long) {
+//        photoRepository.deletePhotoById(id)
+//       // photoList.remove()
+//    }
 
     fun setPropertyId(id: Long) {
         currentPropertyIdRepository.setCurrentId(id)
@@ -126,33 +174,33 @@ class EditPropertyViewModel @Inject constructor(
 
     val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
-            propertyRepository.getPropertyById(id).map { propertyWithPhotosEntity ->
+            propertyRepository.getPropertyById(id).map { propertyEntity ->
                 UpdatePropertyViewState(
-                    propertyWithPhotosEntity.propertyEntity.id,
-                    propertyWithPhotosEntity.propertyEntity.type,
-                    propertyWithPhotosEntity.propertyEntity.price,
-                    //propertyWithPhotosEntity.photos.map { it },
-                    propertyWithPhotosEntity.propertyEntity.address,
-                    propertyWithPhotosEntity.propertyEntity.city,
-                    propertyWithPhotosEntity.propertyEntity.zipCode,
-                    propertyWithPhotosEntity.propertyEntity.state,
-                    propertyWithPhotosEntity.propertyEntity.country,
-                    propertyWithPhotosEntity.propertyEntity.lat,
-                    propertyWithPhotosEntity.propertyEntity.lng,
-                    propertyWithPhotosEntity.propertyEntity.surface,
-                    propertyWithPhotosEntity.propertyEntity.description,
-                    propertyWithPhotosEntity.propertyEntity.agent,
-                    propertyWithPhotosEntity.propertyEntity.room,
-                    propertyWithPhotosEntity.propertyEntity.bedroom,
-                    propertyWithPhotosEntity.propertyEntity.bathroom,
-                    propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
-                    propertyWithPhotosEntity.propertyEntity.poiTrain,
-                    propertyWithPhotosEntity.propertyEntity.poiAirport,
-                    propertyWithPhotosEntity.propertyEntity.poiResto,
-                    propertyWithPhotosEntity.propertyEntity.poiSchool,
-                    propertyWithPhotosEntity.propertyEntity.poiBus,
-                    propertyWithPhotosEntity.propertyEntity.poiPark,
-                    propertyWithPhotosEntity.propertyEntity.propertySold
+                    propertyEntity.id,
+                    propertyEntity.type,
+                    propertyEntity.price,
+//                    y.photos.map { it },
+                    propertyEntity.address,
+                    propertyEntity.city,
+                    propertyEntity.zipCode,
+                    propertyEntity.state,
+                    propertyEntity.country,
+                    propertyEntity.lat,
+                    propertyEntity.lng,
+                    propertyEntity.surface,
+                    propertyEntity.description,
+                    propertyEntity.agent,
+                    propertyEntity.room,
+                    propertyEntity.bedroom,
+                    propertyEntity.bathroom,
+                    propertyEntity.propertyOnSaleSince,
+                    propertyEntity.poiTrain,
+                    propertyEntity.poiAirport,
+                    propertyEntity.poiResto,
+                    propertyEntity.poiSchool,
+                    propertyEntity.poiBus,
+                    propertyEntity.poiPark,
+                    propertyEntity.propertySold
                 )
             }
         }.asLiveData(Dispatchers.IO)
@@ -223,20 +271,34 @@ class EditPropertyViewModel @Inject constructor(
             poiBus = poiBus,
             poiPark = poiPark
         )
+        viewModelScope.launch(Dispatchers.IO) { photoRepository.deleteAllPropertyPhotos(id) }
+
         viewModelScope.launch(Dispatchers.IO) {
             propertyRepository.updateProperty(property)
 
+//            photoRepository.deleteAllPropertyPhotos(id)
 
-            for (temporaryPhoto in addedPhotoMutableList/*temporaryPhotoStateFlow.value*/) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
+//            if (photoList.isNotEmpty()) {
+            for (temporaryPhoto in photoList/*temporaryPhotoStateFlow.value*/) { //todo pluto utilise le mediator ici avec getphoto.value!! a verifier
+
                 photoRepository.insertPhoto(
                     PhotoEntity(
                         propertyId = id,
-                        photoUri = temporaryPhoto.uri,
-                        photoTitle = temporaryPhoto.title
+                        photoUri = temporaryPhoto.photoUri,
+                        photoTitle = temporaryPhoto.photoTitle
                     )
                 )
             }
-        }
-    }
+            photoList.clear()
+//            updatedRegisteredPhotoMutableList.clear()
+//            addedPhotoMutableList.clear()
 
+//            }
+        }
+
+        //photoList.clear()
+//        updatedRegisteredPhotoMutableList.clear()
+//        addedPhotoMutableList.clear()
+
+    }
 }

@@ -5,10 +5,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PriceConverterRepository @Inject constructor() {
 
     private val isDollarMutableStateFlow = MutableStateFlow(true)
+
     val isDollarStateFlow: StateFlow<Boolean> = isDollarMutableStateFlow.asStateFlow()
 
     fun convertPrice() {

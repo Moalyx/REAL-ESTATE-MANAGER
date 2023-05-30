@@ -12,7 +12,9 @@ interface PropertyRepository {
 
     fun getAllPropertiesWithPhotosEntity(): Flow<List<PropertyWithPhotosEntity>>
 
-    fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity>
+    fun getPropertyWithPhotoById(id: Long): Flow<PropertyWithPhotosEntity>
+
+    fun getPropertyById(id: Long) : Flow<PropertyEntity>
 
     suspend fun deletePropertyById(id: Long)
 

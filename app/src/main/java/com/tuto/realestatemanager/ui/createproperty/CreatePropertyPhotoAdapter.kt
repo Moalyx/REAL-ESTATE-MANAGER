@@ -32,7 +32,7 @@ class CreatePropertyPhotoAdapter(
                 .with(binding.photo)
                 //.apply { RequestOptions().override(800, 800) }
                 .load(tempPhoto.uri)
-                //.centerCrop()
+                .centerCrop()
                 .into(binding.photo)
 
 //            binding.deleteButton.setOnClickListener{

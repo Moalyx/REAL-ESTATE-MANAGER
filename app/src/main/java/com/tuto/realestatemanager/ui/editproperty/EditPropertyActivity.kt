@@ -65,12 +65,19 @@ class EditPropertyActivity : AppCompatActivity() {
             startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
 
-        val adapter = EditPropertyPhotoAdapter()
+        val adapter = EditPropertyPhotoAdapter(
+            object : EditPropertyPhotoAdapter.OnDeletePhotoListener {
+                override fun onDeletePhotoListener(photoId: Long) {  //todo regler probleme gestion delete
+                    //viewModel.OnDeletePhoto(photoId)
+                }
+
+            }
+        )
         val recyclerView: RecyclerView = binding.createUpdatePhotoRecyclerview
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        viewModel.getPhoto.observe(this) {
+        viewModel.getAllPhotoLiveData.observe(this) {
             adapter.submitList(it)
         }
 

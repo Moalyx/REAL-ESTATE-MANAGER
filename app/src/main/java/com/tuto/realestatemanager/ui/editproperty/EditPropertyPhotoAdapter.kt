@@ -9,7 +9,9 @@ import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ItemPropertyPhotoDetailBinding
 import com.tuto.realestatemanager.model.PhotoEntity
 
-class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPropertyPhotoAdapter.ViewHolder>(
+class EditPropertyPhotoAdapter(
+    private val listener: OnDeletePhotoListener
+) : ListAdapter<EditPropertyPhotoViewState, EditPropertyPhotoAdapter.ViewHolder>(
     PropertyDiffCallback
 ) {
 
@@ -19,11 +21,11 @@ class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPro
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), listener)
     }
 
     class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(photo: EditPropertyPhotoViewState) {
+        fun bind(photo: EditPropertyPhotoViewState, listener: OnDeletePhotoListener) {
 
             Glide
                 .with(binding.itemPropertyPhotoDetail)
@@ -32,6 +34,10 @@ class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPro
                 .into(binding.itemPropertyPhotoDetail)
 
             binding.itemPropertyPhotoTitle.text = photo.photoTitle
+//
+//            binding.de.setOnClickListener{  //todo implemente delete dans la recyclerview de l'edit activity
+//                listener.onDeletePhotoListener(photo.id)
+//            }
 
         }
     }
@@ -46,6 +52,12 @@ class EditPropertyPhotoAdapter : ListAdapter<EditPropertyPhotoViewState, EditPro
             oldItem: EditPropertyPhotoViewState,
             newItem: EditPropertyPhotoViewState
         ): Boolean = oldItem == newItem
+    }
+
+    interface OnDeletePhotoListener {
+
+        fun onDeletePhotoListener(photoId: Long)
+
     }
 
 }

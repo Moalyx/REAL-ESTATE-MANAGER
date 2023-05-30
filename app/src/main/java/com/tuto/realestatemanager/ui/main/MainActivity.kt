@@ -91,32 +91,32 @@ class MainActivity : AppCompatActivity() {
         viewmodel.onConfigurationChanged(resources.getBoolean(R.bool.isTablet))
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.edit_property_menu, menu)
-        return true
-    }
-
-    //val listFragment = supportFragmentManager.findFragmentById(PropertyListFragment().id) as? ListFragment
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
-            R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
-            R.id.currency -> {
-                updateMenuIcon(item)
-                viewmodel.converterPrice()
-            }
-        }
-        return true
-    }
-
-    private fun updateMenuIcon(item: MenuItem) {
-        if (isConversionToDollars) {
-            item.setIcon(R.drawable.dollar)
-        } else {
-            item.setIcon(R.drawable.euro)
-        }
-        isConversionToDollars = !isConversionToDollars
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        val inflater = menuInflater
+//        inflater.inflate(R.menu.edit_property_menu, menu)
+//        return true
+//    }
+//
+////    val listFragment = supportFragmentManager.findFragmentById(PropertyListFragment().id) as? ListFragment
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+////            R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
+////            R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
+//            R.id.currency -> {
+//                updateMenuIcon(item)
+//                viewmodel.converterPrice()
+//            }
+//        }
+//        return true
+//    }
+//
+//    private fun updateMenuIcon(item: MenuItem) {
+//        if (isConversionToDollars) {
+//            item.setIcon(R.drawable.dollar)
+//        } else {
+//            item.setIcon(R.drawable.euro)
+//        }
+//        isConversionToDollars = !isConversionToDollars
+//    }
 }

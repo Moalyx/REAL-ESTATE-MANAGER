@@ -13,4 +13,8 @@ interface PhotoRepository {
 
     fun getPhotoById(id: Long): Flow<PhotoEntity>
 
+    suspend fun deletePhotoById(id: Long)
+
+    suspend fun deleteAllPropertyPhotos(propertyId: Long)
+
 }

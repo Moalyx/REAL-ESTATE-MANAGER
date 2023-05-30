@@ -29,9 +29,14 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getAllPropertyWithPhotos()
     }
 
-    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> {
+    override fun getPropertyWithPhotoById(id: Long): Flow<PropertyWithPhotosEntity> {
         return propertyDao.getPropertyWithPhotosById(id)
     }
+
+    override fun getPropertyById(id: Long): Flow<PropertyEntity> {
+        return propertyDao.getPropertyById(id)
+    }
+
 
 //    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> = flowOf(
 //        propertiesWithPhotos.find { it.propertyEntity.id == id }

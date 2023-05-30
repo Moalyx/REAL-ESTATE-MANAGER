@@ -9,4 +9,6 @@ interface TemporaryPhotoRepository {
 
     fun onAddTemporaryPhoto(temporaryPhoto: TemporaryPhoto)
 
+    fun onDeleteTemporaryPhotoRepo()
+
 }

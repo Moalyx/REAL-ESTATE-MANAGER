@@ -42,17 +42,17 @@
         tools:text="title photo"
         />
 
-    <ImageButton
-        android:id="@+id/delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="10dp"
-        android:background="@color/white"
-        android:src="@drawable/ic_baseline_delete_24"
-        app:layout_constraintBottom_toBottomOf="@id/photo"
-        app:layout_constraintStart_toEndOf="@id/photo"
-        app:layout_constraintTop_toTopOf="@id/photo"
-        />
+<!--    <ImageButton-->
+<!--        android:id="@+id/delete_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:background="@color/white"-->
+<!--        android:src="@drawable/ic_baseline_delete_24"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/photo"-->
+<!--        app:layout_constraintStart_toEndOf="@id/photo"-->
+<!--        app:layout_constraintTop_toTopOf="@id/photo"-->
+<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

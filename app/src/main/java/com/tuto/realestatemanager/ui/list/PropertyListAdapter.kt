@@ -27,12 +27,16 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
                 propertyViewState.onItemClicked.invoke()
             }
 
-            Glide
-                .with(binding.propertyPhoto)
-                //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
-                .load(propertyViewState.photoList[0].photoUri)
-                .centerCrop()
-                .into(binding.propertyPhoto)
+//            if(propertyViewState.photoList != null){
+//                Glide
+//                    .with(binding.propertyPhoto)
+//                    //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
+//                    .load(propertyViewState.photoList[0].photoUri)
+//                    .centerCrop()
+//                    .into(binding.propertyPhoto)
+//
+//            }
+
         }
     }
 

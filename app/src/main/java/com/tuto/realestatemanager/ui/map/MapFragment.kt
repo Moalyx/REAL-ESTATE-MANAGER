@@ -1,23 +1,17 @@
 package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.MediaStore.Video.Thumbnails.getThumbnail
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
-import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.MapFragment
-import com.google.android.gms.maps.model.*
-import com.tuto.realestatemanager.ui.detail.DetailActivity
-import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
-import com.tuto.realestatemanager.ui.main.MainViewAction
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,6 +42,7 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         ) {
             map.isMyLocationEnabled = true
         }
+
 
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
@@ -83,7 +78,7 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
             map.setOnMarkerClickListener { it ->
                 startActivity(
-                    EditPropertyActivity.navigate(
+                    DetailsPropertyFragment.navigate(
                         requireContext(),
                         it.tag.toString().toLong()
                     )

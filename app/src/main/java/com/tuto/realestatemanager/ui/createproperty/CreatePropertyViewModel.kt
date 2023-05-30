@@ -70,12 +70,12 @@ class CreatePropertyViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val predictions: LiveData<PredictionResponse> =
+    private val predictionResponseLiveData: LiveData<PredictionResponse> =
         addressSearchMutableStateFlow.filterNotNull().mapLatest {
             autocompleteRepository.getAutocompleteResult(it)
         }.asLiveData(Dispatchers.IO)
 
-    val predictionListViewState: LiveData<List<PredictionViewState>> = predictions.map {
+    val predictionListViewState: LiveData<List<PredictionViewState>> = predictionResponseLiveData.map {
         it.predictions.map { predictions ->
             PredictionViewState(
                 predictions.structuredFormatting?.mainText.toString(),

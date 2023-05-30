@@ -9,12 +9,12 @@
         app:showAsAction="always"
         />
 
-    <item
-        android:id="@+id/edit_property"
-        android:title="edit property"
-        android:icon="@drawable/ic_baseline_edit_24"
-        app:showAsAction="always"
-        />
+<!--    <item-->
+<!--        android:id="@+id/edit_property"-->
+<!--        android:title="edit property"-->
+<!--        android:icon="@drawable/ic_baseline_edit_24"-->
+<!--        app:showAsAction="always"-->
+<!--        />-->
 
     <item
         android:id="@+id/search_property"

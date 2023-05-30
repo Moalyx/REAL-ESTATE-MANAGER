@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TemporaryPhotoRepositoryImpl @Inject constructor() : TemporaryPhotoRepository {
 
     private val temporaryPhotoListFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
@@ -16,5 +18,11 @@ class TemporaryPhotoRepositoryImpl @Inject constructor() : TemporaryPhotoReposit
         }
     }
 
+    override fun onDeleteTemporaryPhotoRepo() {
+        temporaryPhotoListFlow.value = emptyList()
+    }
+
     override fun getTemporaryPhotoList(): StateFlow<List<TemporaryPhoto>> = temporaryPhotoListFlow
+
+
 }

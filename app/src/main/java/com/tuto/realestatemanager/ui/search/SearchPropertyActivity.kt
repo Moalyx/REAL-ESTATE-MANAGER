@@ -77,7 +77,7 @@ class SearchPropertyActivity : AppCompatActivity() {
 
             )
             startActivity(Intent(this, MainActivity::class.java))
-            //onBackPressed()
+
         }
     }
 }

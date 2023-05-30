@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/purple_500"
-        app:menu="@menu/edit_property_menu" />
+        app:menu="@menu/fragment_detail_menu" />
 
     <FrameLayout
         android:id="@+id/detail_container"

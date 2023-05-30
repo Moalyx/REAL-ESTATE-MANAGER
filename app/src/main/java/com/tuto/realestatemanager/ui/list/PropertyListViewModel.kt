@@ -20,7 +20,7 @@ import javax.inject.Inject
 class PropertyListViewModel @Inject constructor(
     propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    priceConverterRepository: PriceConverterRepository,
+    private val priceConverterRepository: PriceConverterRepository,
     searchRepository: SearchRepository
 ) : ViewModel() {
 
@@ -190,6 +190,10 @@ class PropertyListViewModel @Inject constructor(
         val propertyPoiPark = property.propertyEntity.poiPark
 
         return !searchPoiPark || propertyPoiPark
+    }
+
+    fun converterPrice(){
+        priceConverterRepository.convertPrice()
     }
 
 }

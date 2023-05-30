@@ -13,7 +13,8 @@
         android:layout_height="150dp"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/item_property_photo_title"
@@ -27,5 +28,18 @@
         app:layout_constraintBottom_toBottomOf="@id/item_property_photo_detail"
         app:layout_constraintEnd_toEndOf="@id/item_property_photo_detail"
         app:layout_constraintStart_toStartOf="@id/item_property_photo_detail" />
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/delete_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginStart="10dp"-->
+
+<!--        android:src="@drawable/ic_baseline_delete_24"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/item_property_photo_detail"-->
+<!--        app:layout_constraintStart_toEndOf="@id/item_property_photo_detail"-->
+<!--        app:layout_constraintTop_toTopOf="@id/item_property_photo_detail"-->
+<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

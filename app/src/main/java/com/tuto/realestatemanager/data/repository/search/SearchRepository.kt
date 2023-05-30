@@ -10,23 +10,7 @@ import javax.inject.Singleton
 class SearchRepository @Inject constructor() {
 
     private val searchParametersMutableStateFlow: MutableStateFlow<SearchParameters?> =
-        MutableStateFlow(
-//            value = SearchParameters(
-//                type = null,
-//                priceMinimum = null,
-//                priceMaximum = null,
-//                surfaceMinimum = null,
-//                surfaceMaximum = null,
-//                city = null,
-//                poiTrain = false,
-//                poiAirport = false,
-//                poiResto = false,
-//                poiSchool = true,
-//                poiBus = false,
-//                poiPark = true
-//            )
-    null
-        )
+        MutableStateFlow(null)
 
 
     fun setParameters(searchParameters: SearchParameters?) {

@@ -17,7 +17,10 @@ import com.google.android.gms.maps.*
 import com.tuto.realestatemanager.BuildConfig
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
+import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
+import com.tuto.realestatemanager.ui.mortgagecalcultator.MortgageCalculatorActivity
+import com.tuto.realestatemanager.ui.search.SearchPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 
@@ -53,6 +56,29 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
         // setHasOptionsMenu(true)
 
+//        requireActivity().addMenuProvider(
+//            object : MenuProvider {
+//
+//                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//                    menuInflater.inflate(R.menu.fragment_detail_menu, menu)
+//                }
+//
+//
+//                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//                    when (menuItem.itemId) {
+//                        R.id.edit_property -> startActivity(
+//                            Intent(
+//                                context,
+//                                CreatePropertyActivity::class.java
+//                            )
+//                        )
+//                    }
+//                    return true
+//                }
+//            }
+//
+//        )
+
         (requireActivity() as MenuHost).addMenuProvider(this)
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
@@ -74,7 +100,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             if (!it.isSold) {
                 binding.status.text = "Available for sale"
                 binding.soldDate.text = it.saleDate
-            }else{
+            } else {
                 binding.status.text = "SOLD"
                 binding.soldDate.text = LocalDate.now().toString()
             }
@@ -125,7 +151,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.edit_property_menu, menu)
+        menuInflater.inflate(R.menu.fragment_detail_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

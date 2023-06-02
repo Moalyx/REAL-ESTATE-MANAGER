@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
+import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,6 +23,8 @@ class EditPropertyActivity : AppCompatActivity() {
     private var type = ""
 
     companion object {
+        const val  XXX ="XXX"
+        const val KEY_EDIT = "edit_property"
         const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
         fun navigate(context: Context, propertyId: Long): Intent {
             val intent = Intent(context, EditPropertyActivity::class.java)
@@ -57,7 +60,10 @@ class EditPropertyActivity : AppCompatActivity() {
         viewModel.setPropertyId(propertyId)
 
         binding.addPictureButton.setOnClickListener {
-            startActivity(Intent(this, AddPhotoActivity::class.java))
+            val intent = Intent(this, AddPhotoActivity::class.java)
+            intent.putExtra("XXX", XXX)
+            intent.putExtra(KEY_EDIT, propertyId )
+            startActivity(intent)
 
         }
 
@@ -135,7 +141,7 @@ class EditPropertyActivity : AppCompatActivity() {
                     binding.checkboxBus.isChecked,
                     binding.checkboxPark.isChecked
                 )
-                finish()
+                startActivity(Intent(this, MainActivity::class.java))
             }
         }
     }

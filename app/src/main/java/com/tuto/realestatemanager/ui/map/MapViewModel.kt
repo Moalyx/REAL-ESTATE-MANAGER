@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
+import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(
     locationRepository: LocationRepository,
     searchRepository: SearchRepository,
-    propertyRepository: PropertyRepository
+    propertyRepository: PropertyRepository,
+    coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {
 
 
@@ -28,13 +30,13 @@ class MapViewModel @Inject constructor(
         propertyRepository.getAllPropertiesWithPhotosEntity()
 
     private val propertyListLiveData: LiveData<List<PropertyWithPhotosEntity>> =
-        propertyList.filterNotNull().asLiveData(Dispatchers.IO)
+        propertyList.filterNotNull().asLiveData(coroutineDispatchersProvider.io)
 
     private val searchParametersLiveData: LiveData<SearchParameters?> =
-        searchRepository.getParametersFlow().asLiveData(Dispatchers.IO)
+        searchRepository.getParametersFlow().asLiveData(coroutineDispatchersProvider.io)
 
     private val userLocationLivedata: LiveData<Location> =
-        locationRepository.getUserLocation().asLiveData(Dispatchers.IO)
+        locationRepository.getUserLocation().asLiveData(coroutineDispatchersProvider.io)
 
     private val propertyListMediatorLiveData = MediatorLiveData<MapViewState>().apply {
         addSource(propertyListLiveData) { propertiesWithPhotoEntity ->

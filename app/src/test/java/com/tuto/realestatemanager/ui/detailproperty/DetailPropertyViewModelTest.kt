@@ -1,7 +1,6 @@
 package com.tuto.realestatemanager.ui.detailproperty
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.tuto.realestatemanager.TestCoroutineRule
@@ -69,15 +68,10 @@ class DetailPropertyViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val currentIdStateFlow =
-        MutableStateFlow<Long>(0L)
+        MutableStateFlow(0L)
 
     private val currentPropertyIdRepository: CurrentPropertyIdRepository = mockk()
     private val propertyRepository: PropertyRepository = mockk()
-
-    private val propertyDetailViewStateMutableLiveData = MutableLiveData<PropertyDetailViewState>()
-//    private val propertyDetailViewStateMutableStateFlow =
-//        MutableStateFlow<PropertyDetailViewState>()
-
 
     private lateinit var detailPropertyViewModel: DetailPropertyViewModel
 
@@ -127,34 +121,6 @@ class DetailPropertyViewModelTest {
         //PREPARE DATA FOR CURRENTPROPERTYIDREPOSITORY RETURNS
         currentIdStateFlow.value = 0L
 
-
-        propertyDetailViewStateMutableLiveData.value = getPropertyDetailViewState()
-//        propertyDetailViewStateMutableLiveData.value = PropertyDetailViewState(
-//            getPropertyWithPhoto.propertyEntity.id,
-//            getPropertyWithPhoto.propertyEntity.type,
-//            getPropertyWithPhoto.propertyEntity.price,
-//            getPropertyWithPhoto.photos,
-//            getPropertyWithPhoto.propertyEntity.address,
-//            getPropertyWithPhoto.propertyEntity.city,
-//            getPropertyWithPhoto.propertyEntity.zipCode,
-//            getPropertyWithPhoto.propertyEntity.state,
-//            getPropertyWithPhoto.propertyEntity.country,
-//            getPropertyWithPhoto.propertyEntity.surface,
-//            getPropertyWithPhoto.propertyEntity.description,
-//            getPropertyWithPhoto.propertyEntity.room,
-//            getPropertyWithPhoto.propertyEntity.bathroom,
-//            getPropertyWithPhoto.propertyEntity.bedroom,
-//            getPropertyWithPhoto.propertyEntity.agent,
-//            getPropertyWithPhoto.propertyEntity.propertySold,
-//            getPropertyWithPhoto.propertyEntity.propertyOnSaleSince,
-//            getPropertyWithPhoto.propertyEntity.propertyDateOfSale,
-//            getPropertyWithPhoto.propertyEntity.poiTrain,
-//            getPropertyWithPhoto.propertyEntity.poiAirport,
-//            getPropertyWithPhoto.propertyEntity.poiResto,
-//            getPropertyWithPhoto.propertyEntity.poiSchool,
-//            getPropertyWithPhoto.propertyEntity.poiBus,
-//            getPropertyWithPhoto.propertyEntity.poiPark,
-//        )
         //SET RETURNS OF CURRENTPROPERTYIDREPOSITORY
         every { currentPropertyIdRepository.currentIdFlow } returns flowOf(0L)
 
@@ -167,9 +133,8 @@ class DetailPropertyViewModelTest {
         detailPropertyViewModel = DetailPropertyViewModel(
             currentPropertyIdRepository = currentPropertyIdRepository,
             propertyRepository = propertyRepository,
-            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider(),  //todo c'etait ici le big probleme ouin ouin ouin
+            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider()
         )
-
     }
 
 
@@ -220,7 +185,9 @@ class DetailPropertyViewModelTest {
         )
 
 
-        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(getPropertyWithPhoto)
+        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(
+            getPropertyWithPhoto
+        )
 
         //WHEN
         detailPropertyViewModel.detailPropertyLiveData.observeForTesting(this) {
@@ -283,7 +250,9 @@ class DetailPropertyViewModelTest {
         )
 
 
-        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(getPropertyWithPhoto)
+        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(
+            getPropertyWithPhoto
+        )
 
         //WHEN
         detailPropertyViewModel.detailPropertyLiveData.observeForTesting(this) {
@@ -488,7 +457,9 @@ class DetailPropertyViewModelTest {
         )
 
 
-        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(getPropertyWithPhoto)
+        coEvery { propertyRepository.getPropertyWithPhotoById(currentIdStateFlow.value) } returns flowOf(
+            getPropertyWithPhoto
+        )
 
         //WHEN
         detailPropertyViewModel.detailPropertyLiveData.observeForTesting(this) {
@@ -578,7 +549,4 @@ class DetailPropertyViewModelTest {
             )
         )
     )
-
-
-
 }

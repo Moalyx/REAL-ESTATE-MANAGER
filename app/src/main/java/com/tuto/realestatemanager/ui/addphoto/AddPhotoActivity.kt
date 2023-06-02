@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.addphoto
 
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -22,14 +23,21 @@ class AddPhotoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddPhotoBinding
 
+    private var fromEditPropertyActivity: String? = "edit_property"
+    private var getEditPropertyId = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddPhotoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        fromEditPropertyActivity = intent.getStringExtra("XXX")
+        getEditPropertyId = intent.getLongExtra("edit_property", -1)
+
         launchIntent()
 
     }
+
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCodes: Int, resultCodes: Int, data: Intent?) {
@@ -42,10 +50,21 @@ class AddPhotoActivity : AppCompatActivity() {
                 .into(binding.image)
 
             binding.addPictureButton.setOnClickListener {
-                viewModel.onAddTemporaryPhoto(
-                    title = binding.title.text.toString(),
-                    uri = uri.toString()
-                )
+                if (fromEditPropertyActivity == "XXX"){
+                    viewModel.insertPhoto(
+                        0,
+                        getEditPropertyId,
+                        binding.title.text.toString(),
+                        uri.toString()
+
+                    )
+                }else{
+                    viewModel.onAddTemporaryPhoto(
+                        title = binding.title.text.toString(),
+                        uri = uri.toString()
+                    )
+                }
+
                 finish()
             }
         } else {

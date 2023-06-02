@@ -2,6 +2,8 @@ package com.tuto.realestatemanager.ui.propertymap
 
 import android.location.Location
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.tuto.realestatemanager.TestCoroutineRule
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
@@ -10,14 +12,17 @@ import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
+import com.tuto.realestatemanager.observeForTesting
 import com.tuto.realestatemanager.ui.map.MapViewModel
 import com.tuto.realestatemanager.ui.map.MapViewState
 import com.tuto.realestatemanager.ui.map.MarkerPlace
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 
 class MapViewModelTest {
 
@@ -92,21 +97,20 @@ class MapViewModelTest {
         //USERLOCATION
         private const val USER_LATITUDE = -90.0
         private const val USER_LONGITUDE = -100.0
-        private val location: Location = Location("$USER_LATITUDE, $USER_LONGITUDE")
 
         //SEARCHPARAMETERS
-        private const val SEARCHPARAMETER_TYPE = "House"
-        private const val SEARCHPARAMETER_PRICE_MINIMUM = 100000
-        private const val SEARCHPARAMETER_PRICE_MAXIMUM = 300000
-        private const val SEARCHPARAMETER_SURFACE_MINIMUM = 100
-        private const val SEARCHPARAMETER_SURFACE_MAXIMUM = 500
-        private const val SEARCHPARAMETER_CITY = "Paris"
-        private const val SEARCHPARAMETER_POITRAIN = false
-        private const val SEARCHPARAMETER_POIAIRPORT = false
-        private const val SEARCHPARAMETER_POIRESTO = false
-        private const val SEARCHPARAMETER_POISCHOOL = false
-        private const val SEARCHPARAMETER_POIBUS = false
-        private const val SEARCHPARAMETER_POIPARK = false
+        private const val SEARCHPARAMETER_TYPE = "type"
+        private const val SEARCHPARAMETER_PRICE_MINIMUM = 0
+        private const val SEARCHPARAMETER_PRICE_MAXIMUM = 1000000
+        private const val SEARCHPARAMETER_SURFACE_MINIMUM = 0
+        private const val SEARCHPARAMETER_SURFACE_MAXIMUM = 100000
+        private const val SEARCHPARAMETER_CITY = "CITY"
+        private const val SEARCHPARAMETER_POITRAIN = true
+        private const val SEARCHPARAMETER_POIAIRPORT = true
+        private const val SEARCHPARAMETER_POIRESTO = true
+        private const val SEARCHPARAMETER_POISCHOOL = true
+        private const val SEARCHPARAMETER_POIBUS = true
+        private const val SEARCHPARAMETER_POIPARK = true
     }
 
     @get:Rule
@@ -115,13 +119,18 @@ class MapViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    private val searchParametersMutableStateFlow: MutableStateFlow<SearchParameters?> =
+        MutableStateFlow(null)
+    private val getAllPropertiesMutableStateFlow: MutableStateFlow<List<PropertyWithPhotosEntity>> =
+        MutableStateFlow(
+            emptyList()
+        )
+
     //REPOSITORY MOCKK
     private val locationRepository: LocationRepository = mockk()
     private val searchRepository: SearchRepository = mockk()
     private val propertyRepository: PropertyRepository = mockk()
-
-    //FLOW FOR LOCATION REPOSITORY
-    private val getUserLocation = flowOf(location)
+    private val userLocation: Location = mockk()
 
     private lateinit var mapViewModel: MapViewModel
 
@@ -138,32 +147,6 @@ class MapViewModelTest {
         SEARCHPARAMETER_POISCHOOL,
         SEARCHPARAMETER_POIBUS,
         SEARCHPARAMETER_POIPARK
-    )
-
-    private fun getMarkerList(): List<MarkerPlace> {
-        return listOf(
-            MarkerPlace(
-                PROPERTY_ID_1,
-                DESCRIPTION,
-                ADDRESS,
-                LAT,
-                LNG
-                ),
-            MarkerPlace(
-                PROPERTY_ID_2,
-                DESCRIPTION_2,
-                ADDRESS_2,
-                LAT_2,
-                LNG_2
-            )
-
-        )
-    }
-
-    val mapViewState: MapViewState = MapViewState(
-        USER_LATITUDE,
-        USER_LONGITUDE,
-        getMarkerList()
     )
 
 
@@ -247,27 +230,193 @@ class MapViewModelTest {
 
     @Before
     fun setUp() {
+        searchParametersMutableStateFlow.value = getSearchParameters
+        getAllPropertiesMutableStateFlow.value = getAllProperties
+
+        //SET DATA FOR LOCATION
+        every { userLocation.latitude } returns USER_LATITUDE
+        every { userLocation.longitude } returns USER_LONGITUDE
 
         //SET DATA FOR USERLOCATION
-        every { locationRepository.getUserLocation() } returns getUserLocation
+        every { locationRepository.getUserLocation() } returns flowOf(userLocation)
 
         //SET DATA FOR PROPERTYREPOSITORY
-        every { propertyRepository.getAllPropertiesWithPhotosEntity() } returns flowOf(
-            getAllProperties
-        )
+        every { propertyRepository.getAllPropertiesWithPhotosEntity() } returns getAllPropertiesMutableStateFlow
 
         //SET DATA FOR RESEARCHREPOSITORY
-        every { searchRepository.getParametersFlow() } returns flowOf(getSearchParameters)
+        every { searchRepository.getParametersFlow() } returns searchParametersMutableStateFlow
 
         //INSTANTIATE VIEWMODEL
         mapViewModel = MapViewModel(
             locationRepository = locationRepository,
             propertyRepository = propertyRepository,
-            searchRepository = searchRepository
+            searchRepository = searchRepository,
+            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider()
         )
 
 
     }
 
+    @Test
+    fun nominal_case() = testCoroutineRule.runTest {
+        //WHEN
+
+        mapViewModel.getMapViewState.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(mapViewState)
+
+        }
+    }
+
+    @Test
+    fun parameters_match_one_property_display_one_property_on_map() = testCoroutineRule.runTest {
+        //WHEN
+        searchParametersMutableStateFlow.value = getSearchParametersForMatchingOneProperty
+        getAllPropertiesMutableStateFlow.value = getAllPropertiesForMatchingOneTEst
+
+
+
+        mapViewModel.getMapViewState.observeForTesting(this) {
+            assertThat(it.value?.marker?.size).isEqualTo(mapViewStateDisplayOnePropertyTest.marker.size)
+
+        }
+    }
+
+    // DATA FOR TEST NOMINAL CASE
+    private val mapViewState: MapViewState = MapViewState(
+        USER_LATITUDE,
+        USER_LONGITUDE,
+        getMarkerList()
+    )
+
+    private fun getMarkerList(): List<MarkerPlace> {
+        return listOf(
+            MarkerPlace(
+                PROPERTY_ID_1,
+                DESCRIPTION,
+                ADDRESS,
+                LAT,
+                LNG
+            ),
+            MarkerPlace(
+                PROPERTY_ID_2,
+                DESCRIPTION_2,
+                ADDRESS_2,
+                LAT_2,
+                LNG_2
+            )
+
+        )
+    }
+
+    //DATA FOR TEST PARAMETERS MATCH ONE PROPERTY MAP DISPLAY ONE
+    private val mapViewStateDisplayOnePropertyTest: MapViewState = MapViewState(
+        USER_LATITUDE,
+        USER_LONGITUDE,
+        getMarkerListDisplayOnePropertyTest()
+    )
+
+    private fun getMarkerListDisplayOnePropertyTest(): List<MarkerPlace> {
+        return listOf(
+            MarkerPlace(
+                PROPERTY_ID_1,
+                DESCRIPTION,
+                ADDRESS,
+                LAT,
+                LNG
+            )
+        )
+    }
+
+    private val getSearchParametersForMatchingOneProperty = SearchParameters(
+        SEARCHPARAMETER_TYPE,
+        SEARCHPARAMETER_PRICE_MINIMUM,
+        SEARCHPARAMETER_PRICE_MAXIMUM,
+        50,
+        150,
+        SEARCHPARAMETER_CITY,
+        SEARCHPARAMETER_POITRAIN,
+        SEARCHPARAMETER_POIAIRPORT,
+        SEARCHPARAMETER_POIRESTO,
+        SEARCHPARAMETER_POISCHOOL,
+        SEARCHPARAMETER_POIBUS,
+        SEARCHPARAMETER_POIPARK
+    )
+
+    private val getAllPropertiesForMatchingOneTEst: List<PropertyWithPhotosEntity> = listOf(
+        PropertyWithPhotosEntity(
+            propertyEntity = PropertyEntity(
+                id = PROPERTY_ID_1,
+                type = TYPE_2,
+                price = PRICE_2,
+                address = ADDRESS_2,
+                city = CITY_2,
+                state = STATE_2,
+                zipCode = ZIPCODE_2,
+                country = COUNTRY_2,
+                surface = 100,
+                lat = LAT_2,
+                lng = LNG_2,
+                description = DESCRIPTION_2,
+                room = ROOM_2,
+                bedroom = BEDROOM_2,
+                bathroom = BATHROOM_2,
+                agent = AGENT_2,
+                propertySold = IS_PROPERTY_SOLD_2,
+                propertyOnSaleSince = SALESINCE_2,
+                propertyDateOfSale = SOLD_AT_2,
+                poiTrain = POITRAIN_2,
+                poiAirport = POIAIRPORT_2,
+                poiResto = POIRESTO_2,
+                poiSchool = POISCHOOL_2,
+                poiBus = POIBUS_2,
+                poiPark = POIPARK_2
+            ),
+            photos = listOf(
+                PhotoEntity(
+                    id = PHOTO_ID,
+                    propertyId = PROPERTY_PHOTO_ID,
+                    photoUri = PHOTO_URI,
+                    photoTitle = PHOTO_TITLE
+                )
+            )
+        ),
+        PropertyWithPhotosEntity(
+            propertyEntity = PropertyEntity(
+                id = PROPERTY_ID_2,
+                type = TYPE,
+                price = PRICE,
+                address = ADDRESS,
+                city = CITY,
+                state = STATE,
+                zipCode = ZIPCODE,
+                country = COUNTRY,
+                surface = 200,
+                lat = LAT,
+                lng = LNG,
+                description = DESCRIPTION,
+                room = ROOM,
+                bedroom = BEDROOM,
+                bathroom = BATHROOM,
+                agent = AGENT,
+                propertySold = IS_PROPERTY_SOLD,
+                propertyOnSaleSince = SALESINCE,
+                propertyDateOfSale = SOLD_AT,
+                poiTrain = POITRAIN,
+                poiAirport = POIAIRPORT,
+                poiResto = POIRESTO,
+                poiSchool = POISCHOOL,
+                poiBus = POIBUS,
+                poiPark = POIPARK
+            ),
+            photos = listOf(
+                PhotoEntity(
+                    id = PHOTO_ID_2,
+                    propertyId = PROPERTY_2_PHOTO_ID,
+                    photoUri = PHOTO_URI_2,
+                    photoTitle = PHOTO_TITLE_2
+                )
+            )
+        )
+    )
 
 }

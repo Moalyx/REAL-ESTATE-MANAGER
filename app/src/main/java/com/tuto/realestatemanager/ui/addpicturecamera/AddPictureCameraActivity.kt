@@ -25,6 +25,9 @@ class AddPictureCameraActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<AddPictureCameraViewModel>()
 
+    private var fromEditPropertyActivity: String? = "edit_property"
+    private var getEditPropertyId = 0L
+
     private lateinit var binding: ActivityAddPictureCameraBinding
 
     private var currentPhotoUri: Uri? = null
@@ -44,19 +47,12 @@ class AddPictureCameraActivity : AppCompatActivity() {
             }
         }
 
+        fromEditPropertyActivity = intent.getStringExtra("XXX")
+        getEditPropertyId = intent.getLongExtra("edit_property", -1)
+
         launchIntentCamera()
 
-        binding.mainButtonPicture.setOnClickListener {
 
-        }
-
-        binding.addPictureButton.setOnClickListener {
-            viewModel.onAddTemporaryPhoto(
-                title = binding.title.text?.toString(),
-                uri = currentPhotoUri?.toString()
-            )
-            finish()
-        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -69,6 +65,29 @@ class AddPictureCameraActivity : AppCompatActivity() {
                 .load(currentPhotoUri)
                 .into(binding.mainImageViewPhoto)
         }
+
+        binding.addPictureButton.setOnClickListener {
+            if (fromEditPropertyActivity == "XXX") {
+                viewModel.insertPhoto(
+                    0,
+                    getEditPropertyId,
+                    binding.title.text.toString(),
+                    currentPhotoUri.toString()
+
+                )
+            } else {
+                viewModel.onAddTemporaryPhoto(
+                    title = binding.title.text?.toString(),
+                    uri = currentPhotoUri?.toString()
+                )
+            }
+            finish()
+        }
+
+        binding.cancelButton.setOnClickListener{
+            finish()
+        }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -28,7 +28,7 @@ class AddPhotoDialogFragmentViewModel @Inject constructor(
         }
     }
 
-    fun insertPhoto(id: Long, propertyId: Long, title: String, uri: String){
+    fun insertPhoto(id: Long, propertyId: Long, title: String, uri: String) {
         viewModelScope.launch {
             photoRepository.insertPhoto(
                 PhotoEntity(
@@ -38,13 +38,6 @@ class AddPhotoDialogFragmentViewModel @Inject constructor(
                     photoTitle = title
                 )
             )
-
         }
-
     }
-
-
-
-
-
 }

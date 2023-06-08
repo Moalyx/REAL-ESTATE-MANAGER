@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
+import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,7 @@ class MapViewModel @Inject constructor(
     locationRepository: LocationRepository,
     searchRepository: SearchRepository,
     propertyRepository: PropertyRepository,
+    val currentPropertyIdRepository: CurrentPropertyIdRepository,
     coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {
 
@@ -289,21 +292,21 @@ class MapViewModel @Inject constructor(
     }
 
 
-//    private var isTablet: Boolean = false //todo verifier pour-quoi ici cela ne march pas
-//
-//    val navigateSingleLiveEvent: SingleLiveEvent<MapViewAction> = SingleLiveEvent()
-//
-//    init {
-//        navigateSingleLiveEvent.addSource(currentPropertyIdRepositoryImpl.currentIdFlow.filterNotNull().asLiveData()) {
-//            if (!isTablet) {
-//                navigateSingleLiveEvent.setValue(MapViewAction.NavigateToDetailActivity)
-//            }
-//        }
-//    }
-//
-//    fun onConfigurationChanged(isTablet: Boolean) {
-//        this.isTablet = isTablet
-//    }
+    private var isTablet: Boolean = false //todo verifier pour-quoi ici cela ne march pas
+
+    private val navigateSingleLiveEvent: SingleLiveEvent<MapViewAction> = SingleLiveEvent()
+
+    init {
+        navigateSingleLiveEvent.addSource(currentPropertyIdRepository.currentIdFlow.filterNotNull().asLiveData()) {
+            if (!isTablet) {
+                navigateSingleLiveEvent.setValue(MapViewAction.NavigateToDetailActivity)
+            }
+        }
+    }
+
+    fun onConfigurationChanged(isTablet: Boolean) {
+        this.isTablet = isTablet
+    }
 
 
 }

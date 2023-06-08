@@ -76,6 +76,18 @@
                 app:layout_constraintStart_toEndOf="@id/property_photo"
                 app:layout_constraintTop_toBottomOf="@id/property_county" />
 
+            <TextView
+                android:id="@+id/is_sold_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="VENDU"
+                android:textSize="55sp"
+                android:textColor="#70F60000"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

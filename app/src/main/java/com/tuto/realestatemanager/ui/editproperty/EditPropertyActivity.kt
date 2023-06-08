@@ -68,7 +68,11 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         binding.takePictureButton.setOnClickListener {
-            startActivity(Intent(this, AddPictureCameraActivity::class.java))
+            val intent = Intent(this, AddPictureCameraActivity::class.java)
+            intent.putExtra("XXX", XXX)
+            intent.putExtra(KEY_EDIT, propertyId )
+            startActivity(intent)
+            //startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
 
         val adapter = EditPropertyPhotoAdapter(
@@ -111,8 +115,6 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
             viewModel.isChecked(binding.checkboxtrTrain, it.poiTrain)
             viewModel.isChecked(binding.checkboxSaleStatus,it.isSold)
-
-            //adapter.submitList(it.photoList) //todo momentanement commenté pour trouver une solution
 
             binding.saveButton.setOnClickListener {
                 viewModel.updateProperty(

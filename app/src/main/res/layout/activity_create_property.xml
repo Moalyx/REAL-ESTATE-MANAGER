@@ -54,16 +54,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="text" />
 
-                <!--            <com.google.android.material.textfield.TextInputEditText-->
-                <!--                android:id="@+id/type"-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_gravity="center"-->
-                <!--                android:drawableStart="@drawable/ic_round_type"-->
-                <!--                android:hint="property type"-->
-                <!--                android:textColor="#036A9F"-->
-                <!--                android:textSize="15dp" />-->
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -151,7 +141,6 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
                 android:background="#A9A9A9" />
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -312,7 +301,6 @@
 
                     </LinearLayout>
 
-
                 </LinearLayout>
 
                 <ImageView
@@ -332,9 +320,7 @@
                     android:layout_marginEnd="12dp"
                     android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/separator2"
-
-                    >
+                    app:layout_constraintTop_toBottomOf="@id/separator2">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -382,12 +368,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-
                             android:hint="Address"
                             android:textSize="15dp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
-
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/title_complement"
@@ -476,7 +460,6 @@
                         app:boxBackgroundColor="#D2B3F8"
                         app:endIconMode="clear_text"
                         app:endIconTint="#673AB7"
-
                         app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                         app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                         app:layout_constraintStart_toStartOf="parent"
@@ -613,8 +596,8 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="12dp"
                     app:boxBackgroundColor="#D2B3F8"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7">
@@ -629,7 +612,6 @@
                         android:textSize="15dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -659,14 +641,13 @@
                         android:id="@+id/date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_baseline_date_range_24"
                         android:layout_gravity="center"
+                        android:drawableStart="@drawable/ic_baseline_date_range_24"
                         android:hint="date of publication"
                         android:inputType="date"
                         android:textSize="15dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -694,7 +675,6 @@
                         android:layout_marginEnd="12dp"
                         android:backgroundTint="#D2B3F8"
                         android:elevation="8dp"
-
                         android:text="Add picture"
                         android:textColor="@color/black" />
 
@@ -706,7 +686,6 @@
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="12dp"
                         android:backgroundTint="#D2B3F8"
-
                         android:elevation="8dp"
                         android:text="take picture"
                         android:textColor="@color/black" />
@@ -735,10 +714,10 @@
                     android:id="@+id/checkbox_sale_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="#673AB7"
                     android:layout_gravity="center"
+                    android:buttonTint="#673AB7"
                     android:text="Property Sold"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -753,7 +732,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginEnd="12dp"
-
                         android:backgroundTint="#D2B3F8"
                         android:text="save"
                         android:textColor="@color/black" />
@@ -765,15 +743,12 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="12dp"
                         android:backgroundTint="#D2B3F8"
-
                         android:text="Delete"
                         android:textColor="@color/black" />
 
                 </LinearLayout>
 
-
             </LinearLayout>
-
 
         </LinearLayout>
 

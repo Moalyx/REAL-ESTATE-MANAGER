@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -76,27 +78,36 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
                 }
             }
 
+//            map.setOnMarkerClickListener { marker ->
+//                val propertyId = marker.tag.toString().toLong()
+//                val intent = DetailActivity.navigate(requireContext(), propertyId)
+//                startActivity(intent)
+//                true
+//            }
+
             map.setOnMarkerClickListener { it ->
+                // val tag = it.toString().toLong()
                 startActivity(
-                    DetailsPropertyFragment.navigate(
+                    DetailActivity.navigate(
                         requireContext(),
                         it.tag.toString().toLong()
                     )
                 )
 //                    viewModel.navigateSingleLiveEvent.observe(this) { //todo verifier pourquoi cela ne fonctionne pas
-//                        when (it) {
-//                            MapViewAction.NavigateToDetailActivity -> startActivity(
-//                                Intent(
-//                                    requireContext(),
-//                                    DetailActivity::class.java
-//                                )
-//                            )
-//                        }
+//                    when (it) {
+//                        MapViewAction.NavigateToDetailActivity -> DetailsPropertyFragment.navigate(
+//                            requireContext(),
+//                            tag
+//                        )
+//                        else -> {}
 //                    }
-//                    startActivity(Intent(this.requireContext(), DetailActivity::class.java))
+
+                    //startActivity(Intent(this.requireContext(), DetailActivity::class.java))
                 return@setOnMarkerClickListener true
             }
 
         }
     }
+
+
 }

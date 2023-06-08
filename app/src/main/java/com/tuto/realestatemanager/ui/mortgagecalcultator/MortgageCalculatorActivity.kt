@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.mortgagecalcultator
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
     private val viewModel by viewModels<MortgageCalculatorViewModel>()
 
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_mortgage_calculator)
@@ -44,7 +46,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
 
         viewModel.getMonthlyPayment.observe(this) {
-            binding.mensualitPayement.text = it.toString()
+            binding.mensualitPayement.text = "$it $ / MONTH"
         }
     }
 }

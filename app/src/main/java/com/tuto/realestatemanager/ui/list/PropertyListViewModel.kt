@@ -7,6 +7,7 @@ import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdReposit
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
+import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.Utils
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
+    private val temporaryPhotoRepository: TemporaryPhotoRepository,
     propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
     private val priceConverterRepository: PriceConverterRepository,
@@ -51,6 +53,10 @@ class PropertyListViewModel @Inject constructor(
         }.collect()
     }
 
+    fun onDeleteTemporaryPhotoRepository(){
+        temporaryPhotoRepository.onDeleteTemporaryPhotoRepo()
+    }
+
     private fun mapPropertiesIntoViewState(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>,
         isDollar: Boolean
@@ -64,6 +70,7 @@ class PropertyListViewModel @Inject constructor(
             ),
             photoList = propertyWithPhotosEntity.photos.map { it },
             city = propertyWithPhotosEntity.propertyEntity.city,
+            propertyWithPhotosEntity.propertyEntity.propertySold,
             onItemClicked = {
                 currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
             }

@@ -22,10 +22,6 @@ class TemporaryPhotoRepositoryImpl @Inject constructor() : TemporaryPhotoReposit
         temporaryPhotoListFlow.value = emptyList()
     }
 
-    fun addEditPhoto(){
-
-    }
-
     override fun getTemporaryPhotoList(): StateFlow<List<TemporaryPhoto>> = temporaryPhotoListFlow
 
 

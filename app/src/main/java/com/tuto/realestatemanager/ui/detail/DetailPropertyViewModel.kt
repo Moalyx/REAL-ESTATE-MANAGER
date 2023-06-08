@@ -18,7 +18,7 @@ class DetailPropertyViewModel @Inject constructor(
     currentPropertyIdRepository: CurrentPropertyIdRepository,
     //priceConverterRepository: PriceConverterRepository,
     private val propertyRepository: PropertyRepository,
-    private val coroutineDispatchersProvider : CoroutineDispatchersProvider
+    coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {
 
     val detailPropertyLiveData: LiveData<PropertyDetailViewState> =

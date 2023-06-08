@@ -1,6 +1,9 @@
 package com.tuto.realestatemanager.ui.createproperty
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.*
+import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
@@ -31,8 +34,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val photoRepository: PhotoRepository,
     private val autocompleteRepository: AutocompleteRepository,
     private val clock: Clock,
-    private val coroutineDispatchersProvider : CoroutineDispatchersProvider,
-    temporaryPhotoRepository: TemporaryPhotoRepository,
+    private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
+    private val temporaryPhotoRepository: TemporaryPhotoRepository,
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
@@ -61,9 +64,11 @@ class CreatePropertyViewModel @Inject constructor(
         )
     }
 
-    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> = temporaryPhotoRepository.getTemporaryPhotoList()
+    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
+        temporaryPhotoRepository.getTemporaryPhotoList()
 
-    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> = temporaryPhotoStateFlow.asLiveData()
+    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
+        temporaryPhotoStateFlow.asLiveData()
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
@@ -75,19 +80,20 @@ class CreatePropertyViewModel @Inject constructor(
             autocompleteRepository.getAutocompleteResult(it)
         }.asLiveData(Dispatchers.IO)
 
-    val predictionListViewState: LiveData<List<PredictionViewState>> = predictionResponseLiveData.map {
-        it.predictions.map { predictions ->
-            PredictionViewState(
-                predictions.structuredFormatting?.mainText.toString(),
-                predictions.structuredFormatting?.secondaryText.toString(),
-                predictions.structuredFormatting?.mainText.toString(),
-                predictions.structuredFormatting?.mainText.toString(),
-                predictions.structuredFormatting?.mainText.toString(),
-                predictions.structuredFormatting?.mainText.toString(),
-                predictions.placeId!!
-            )
+    val predictionListViewState: LiveData<List<PredictionViewState>> =
+        predictionResponseLiveData.map {
+            it.predictions.map { predictions ->
+                PredictionViewState(
+                    predictions.structuredFormatting?.mainText.toString(),
+                    predictions.structuredFormatting?.secondaryText.toString(),
+                    predictions.structuredFormatting?.mainText.toString(),
+                    predictions.structuredFormatting?.mainText.toString(),
+                    predictions.structuredFormatting?.mainText.toString(),
+                    predictions.structuredFormatting?.mainText.toString(),
+                    predictions.placeId!!
+                )
+            }
         }
-    }
 
     fun createProperty(
         type: String,
@@ -111,8 +117,18 @@ class CreatePropertyViewModel @Inject constructor(
         poiResto: Boolean,
         poiSchool: Boolean,
         poiBus: Boolean,
-        poiPark: Boolean
+        poiPark: Boolean,
     ) {
+
+//        if (type.isEmpty() || address.isEmpty() || city.isEmpty() || state.isEmpty()){
+////            || zipcode.toString().isEmpty() || country.isEmpty() || surface.toString() == "" || description.isEmpty()
+////            || room.toString() == "" || bedroom.toString() == "" || bathroom.toString() == "" || agent.isEmpty()){
+//
+//
+//
+//
+//        }else{
+
         val saleSince = LocalDate.now(clock).toString()
         val dateOfSale = "estate available for sale"
         val property = PropertyEntity(
@@ -144,6 +160,9 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(coroutineDispatchersProvider.io) {
             val propertyId = propertyRepository.insertProperty(property)
 
+//                if (temporaryPhotoStateFlow.value.isEmpty()){
+//
+//                }
             for (temporaryPhoto in temporaryPhotoStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(
@@ -153,6 +172,9 @@ class CreatePropertyViewModel @Inject constructor(
                     )
                 )
             }
+            temporaryPhotoRepository.onDeleteTemporaryPhotoRepo()
         }
+
+
     }
 }

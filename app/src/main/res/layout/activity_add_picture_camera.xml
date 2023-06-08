@@ -21,25 +21,26 @@
         tools:src="@tools:sample/avatars"
         />
 
-    <Button
-        android:id="@+id/main_Button_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Take picture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_ImageView_photo"
-        />
+<!--    <Button-->
+<!--        android:id="@+id/main_Button_picture"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:text="Take picture"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/main_ImageView_photo"-->
+<!--        />-->
 
     <EditText
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="please enter a title for the picture"
-        app:layout_constraintTop_toBottomOf="@id/main_Button_picture"
+        app:layout_constraintTop_toBottomOf="@id/main_ImageView_photo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/black"/>
 
     <Button
@@ -48,7 +49,18 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cancel_button"
         android:text="add "/>
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintStart_toEndOf="@id/add_picture_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Cancel "/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

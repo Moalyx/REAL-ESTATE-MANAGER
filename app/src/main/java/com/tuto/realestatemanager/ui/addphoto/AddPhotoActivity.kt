@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ActivityAddPhotoBinding
+import com.tuto.realestatemanager.ui.utils.RealPathUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @Suppress("DEPRECATION")
@@ -45,8 +46,10 @@ class AddPhotoActivity : AppCompatActivity() {
         if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
             val uri: Uri = data.data!!
 
+            val realpathutil = RealPathUtil.getRealPathFromURI_API19(this, uri)
+
             Glide.with(binding.image)
-                .load(uri)
+                .load(uri.toString())
                 .into(binding.image)
 
             binding.addPictureButton.setOnClickListener {
@@ -55,7 +58,7 @@ class AddPhotoActivity : AppCompatActivity() {
                         0,
                         getEditPropertyId,
                         binding.title.text.toString(),
-                        uri.toString()
+                        realpathutil!!
 
                     )
                 }else{
@@ -69,6 +72,10 @@ class AddPhotoActivity : AppCompatActivity() {
             }
         } else {
             Toast.makeText(this, "no permissions", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.cancelAction.setOnClickListener{
+            finish()
         }
     }
 

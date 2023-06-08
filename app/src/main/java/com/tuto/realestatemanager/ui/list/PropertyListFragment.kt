@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
@@ -104,16 +105,14 @@ class PropertyListFragment : Fragment() {
 
         val recyclerView: RecyclerView = binding.recyclerview
         val adapter = PropertyListAdapter()
-        //recyclerView.layoutManager = GridLayoutManager(context,2)
         recyclerView.adapter = adapter
-//        viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
-//            adapter?.submitList(it)
-//        }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
         binding.createProperty.setOnClickListener {
+            viewModel.onDeleteTemporaryPhotoRepository()
             startActivity(Intent(context, CreatePropertyActivity::class.java))
         }
 

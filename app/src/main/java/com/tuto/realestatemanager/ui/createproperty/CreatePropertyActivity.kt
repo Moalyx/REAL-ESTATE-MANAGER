@@ -7,6 +7,7 @@ import android.text.InputType
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView.OnQueryTextListener
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -85,7 +86,12 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.predictionRecyclerview.adapter = searchAdapter
         viewModel.predictionListViewState.observe(this) {
-            searchAdapter.submitList(it)
+            if(it.isEmpty() || it == null){
+                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
+            }else{
+                searchAdapter.submitList(it)
+            }
+
         }
 
         val adapter = CreatePropertyPhotoAdapter()
@@ -106,33 +112,110 @@ class CreatePropertyActivity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            viewModel.createProperty(
-                type,
-                Integer.parseInt(binding.price.text.toString()),
-                binding.address.text.toString(),
-                binding.city.text.toString(),
-                binding.state.text.toString(),
-                Integer.parseInt(binding.zipcode.text.toString()),
-                binding.country.text.toString(),
-                Integer.parseInt(binding.surface.text.toString()),
-                lat,
-                lng,
-                binding.description.text.toString(),
-                Integer.parseInt(binding.rooms.text.toString()),
-                Integer.parseInt(binding.bedrooms.text.toString()),
-                Integer.parseInt(binding.bathrooms.text.toString()),
-                binding.agent.text.toString(),
-                binding.checkboxSaleStatus.isChecked,
-                binding.checkboxtrTrain.isChecked,
-                binding.checkboxAirport.isChecked,
-                binding.checkboxRestaurant.isChecked,
-                binding.checkboxSchool.isChecked,
-                binding.checkboxBus.isChecked,
-                binding.checkboxPark.isChecked
 
-            )
-            startActivity(Intent(this, MainActivity::class.java))
+            val type = binding.typeDropdown.text.toString()
+            val price = binding.price.text.toString()
+            val address = binding.address.text.toString()
+            val city = binding.city.text.toString()
+            val state = binding.state.text.toString()
+            val zipcode = binding.zipcode.text.toString()
+            val country = binding.country.text.toString()
+            val surface = binding.surface.text.toString()
+            val description = binding.description.text.toString()
+            val rooms = binding.rooms.text.toString()
+            val bedrooms = binding.bedrooms.text.toString()
+            val bathrooms = binding.bathrooms.text.toString()
+            val agent = binding.agent.text.toString()
+
+
+            if (type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
+                state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
+                description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
+                bathrooms.isEmpty() || agent.isEmpty()
+            ) {
+
+                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
+
+            } else {
+
+                viewModel.createProperty(
+                    type,
+                    binding.price.text.toString().toInt(),
+                    binding.address.text.toString(),
+                    binding.city.text.toString(),
+                    binding.state.text.toString(),
+                    binding.zipcode.text.toString().toInt(),
+                    binding.country.text.toString(),
+                    binding.surface.text.toString().toInt(),
+                    lat,
+                    lng,
+                    binding.description.text.toString(),
+                    binding.rooms.text.toString().toInt(),
+                    binding.bedrooms.text.toString().toInt(),
+                    binding.bathrooms.text.toString().toInt(),
+                    binding.agent.text.toString(),
+                    binding.checkboxSaleStatus.isChecked,
+                    binding.checkboxtrTrain.isChecked,
+                    binding.checkboxAirport.isChecked,
+                    binding.checkboxRestaurant.isChecked,
+                    binding.checkboxSchool.isChecked,
+                    binding.checkboxBus.isChecked,
+                    binding.checkboxPark.isChecked
+
+                )
+                startActivity(Intent(this, MainActivity::class.java))
+
+
+            }
+
 
         }
+
+
+//
+//        if (!(type == "" || binding.price.text.toString() == "" || binding.address.text.toString() == "" || binding.city.text.toString() == "" || binding.state.text.toString() == "" || binding.zipcode.text.toString() == "" || binding.country.text.toString() == "" || binding.surface.text.toString() == "" || binding.description.text.toString() == "" || binding.rooms.text.toString() == "" || binding.bedrooms.text.toString() == "" || binding.bathrooms.text.toString() == "" || binding.agent.text.toString() == "")){
+//
+//            binding.saveButton.isEnabled = false
+//
+////            binding.saveButton.isEnabled = true
+////
+////            binding.saveButton.setOnClickListener {0
+////                viewModel.createProperty(
+////                    type,
+////                    binding.price.text.toString().toInt(),
+////                    binding.address.text.toString(),
+////                    binding.city.text.toString(),
+////                    binding.state.text.toString(),
+////                    binding.zipcode.text.toString().toInt(),
+////                    binding.country.text.toString(),
+////                    binding.surface.text.toString().toInt(),
+////                    lat,
+////                    lng,
+////                    binding.description.text.toString(),
+////                    binding.rooms.text.toString().toInt(),
+////                    binding.bedrooms.text.toString().toInt(),
+////                    binding.bathrooms.text.toString().toInt(),
+////                    binding.agent.text.toString(),
+////                    binding.checkboxSaleStatus.isChecked,
+////                    binding.checkboxTrain.isChecked,
+////                    binding.checkboxAirport.isChecked,
+////                    binding.checkboxRestaurant.isChecked,
+////                    binding.checkboxSchool.isChecked,
+////                    binding.checkboxBus.isChecked,
+////                    binding.checkboxPark.isChecked
+////
+////                )
+////                startActivity(Intent(this, MainActivity::class.java))
+////
+////            }
+//
+//        }else{
+//            binding.saveButton.isEnabled = true
+//
+//
+////            binding.saveButton.isEnabled = false
+//        }
+
+
     }
 }

@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.list
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -22,21 +23,25 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
         fun bind(propertyViewState: PropertyViewState) {
             binding.propertyType.text = propertyViewState.type
             binding.propertyCounty.text = propertyViewState.city
-            binding.propertyPrice.text = propertyViewState.price.toString()
+            binding.propertyPrice.text = propertyViewState.price
             binding.itemProperty.setOnClickListener {
                 propertyViewState.onItemClicked.invoke()
             }
 
-//            if(propertyViewState.photoList != null){
-//                Glide
-//                    .with(binding.propertyPhoto)
-//                    //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
-//                    .load(propertyViewState.photoList[0].photoUri)
-//                    .centerCrop()
-//                    .into(binding.propertyPhoto)
-//
-//            }
+            if (propertyViewState.isSold){
+                binding.isSoldText.visibility = View.VISIBLE
+            }
 
+            if(propertyViewState.photoList.isEmpty()){
+
+
+            }
+            Glide
+                .with(binding.propertyPhoto)
+                //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
+                .load(propertyViewState.photoList[0].photoUri)
+                .centerCrop()
+                .into(binding.propertyPhoto)
         }
     }
 
@@ -51,6 +56,5 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
             newItem: PropertyViewState
         ): Boolean = oldItem == newItem
     }
-
 
 }

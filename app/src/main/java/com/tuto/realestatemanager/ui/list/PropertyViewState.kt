@@ -8,6 +8,7 @@ data class PropertyViewState(
     val price: String,
     val photoList: List<PhotoEntity>,
     val city: String,
+    val isSold: Boolean,
     val onItemClicked: () -> Unit,
 //    val onClickForIntent: () -> Unit,
 )

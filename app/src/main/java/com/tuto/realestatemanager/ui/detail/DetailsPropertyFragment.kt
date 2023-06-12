@@ -33,15 +33,6 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
     private val viewmodel by viewModels<DetailPropertyViewModel>()
 
-    companion object {
-        private const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
-        fun navigate(context: Context, propertyId: Long): Intent {
-            val intent = Intent(context, DetailActivity::class.java)
-            intent.putExtra(KEY_PROPERTY_ID, propertyId)
-            return intent
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

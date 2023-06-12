@@ -15,6 +15,7 @@ import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
+import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -129,7 +130,8 @@ class CreatePropertyViewModel @Inject constructor(
 //
 //        }else{
 
-        val saleSince = LocalDate.now(clock).toString()
+//        val saleSince = LocalDate.now(clock).toString()
+        val saleSince = Utils.todayDate()
         val dateOfSale = "estate available for sale"
         val property = PropertyEntity(
             type = type,
@@ -160,9 +162,6 @@ class CreatePropertyViewModel @Inject constructor(
         viewModelScope.launch(coroutineDispatchersProvider.io) {
             val propertyId = propertyRepository.insertProperty(property)
 
-//                if (temporaryPhotoStateFlow.value.isEmpty()){
-//
-//                }
             for (temporaryPhoto in temporaryPhotoStateFlow.value) {
                 photoRepository.insertPhoto(
                     PhotoEntity(

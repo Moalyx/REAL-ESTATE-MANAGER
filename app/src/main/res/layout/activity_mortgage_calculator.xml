@@ -215,7 +215,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MONTHLY FEE"
+                    android:text="MONTHLY PAYEMENT"
                     android:textSize="35sp"
                     android:textColor="#03A9F4"
                     android:textStyle="bold"
@@ -230,7 +230,7 @@
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:text="800$ / month"
+                    android:text="800$"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/purple_500"
                     android:textSize="40sp"

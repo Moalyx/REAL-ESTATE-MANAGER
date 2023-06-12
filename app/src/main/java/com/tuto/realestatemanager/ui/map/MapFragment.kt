@@ -37,10 +37,10 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
         }
@@ -75,6 +75,7 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
                 )
                 if (marker != null) {
                     marker.tag = markerPlace.id
+
                 }
             }
 
@@ -85,29 +86,35 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 //                true
 //            }
 
-            map.setOnMarkerClickListener { it ->
-                // val tag = it.toString().toLong()
-                startActivity(
-                    DetailActivity.navigate(
-                        requireContext(),
-                        it.tag.toString().toLong()
-                    )
-                )
-//                    viewModel.navigateSingleLiveEvent.observe(this) { //todo verifier pourquoi cela ne fonctionne pas
-//                    when (it) {
-//                        MapViewAction.NavigateToDetailActivity -> DetailsPropertyFragment.navigate(
-//                            requireContext(),
-//                            tag
-//                        )
-//                        else -> {}
-//                    }
 
-                    //startActivity(Intent(this.requireContext(), DetailActivity::class.java))
-                return@setOnMarkerClickListener true
-            }
+//            map.setOnMarkerClickListener { it ->
+//                // val tag = it.toString().toLong()
+//                startActivity(
+//                    DetailActivity.navigate(
+//                        requireContext()
+//                    )
+//                )
+//
+//
+//                //startActivity(Intent(this.requireContext(), DetailActivity::class.java))
+//                return@setOnMarkerClickListener true
+//            }
 
         }
+
+        viewModel.navigateSingleLiveEvent.observe(this) {
+
+
+                when (it) {
+                    MapViewAction.NavigateToDetailActivity -> map.setOnMarkerClickListener{
+                        DetailActivity.navigate(requireContext())
+                        return@setOnMarkerClickListener true
+                    }
+                }
+            }
+
+
+
+
     }
-
-
 }

@@ -46,7 +46,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
 
         viewModel.getMonthlyPayment.observe(this) {
-            binding.mensualitPayement.text = "$it $ / MONTH"
+            binding.mensualitPayement.text = "$it$"
         }
     }
 }

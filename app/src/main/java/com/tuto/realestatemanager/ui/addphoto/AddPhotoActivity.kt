@@ -46,7 +46,7 @@ class AddPhotoActivity : AppCompatActivity() {
         if (requestCodes == INTENT_REQUEST_CODE && resultCodes == RESULT_OK && data != null) {
             val uri: Uri = data.data!!
 
-            val realpathutil = RealPathUtil.getRealPathFromURI_API19(this, uri)
+            //val realpathutil = RealPathUtil.getRealPathFromURI_API19(this, uri)
 
             Glide.with(binding.image)
                 .load(uri.toString())
@@ -58,7 +58,7 @@ class AddPhotoActivity : AppCompatActivity() {
                         0,
                         getEditPropertyId,
                         binding.title.text.toString(),
-                        realpathutil!!
+                        uri.toString()
 
                     )
                 }else{

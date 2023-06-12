@@ -294,7 +294,7 @@ class MapViewModel @Inject constructor(
 
     private var isTablet: Boolean = false //todo verifier pour-quoi ici cela ne march pas
 
-    private val navigateSingleLiveEvent: SingleLiveEvent<MapViewAction> = SingleLiveEvent()
+    val navigateSingleLiveEvent: SingleLiveEvent<MapViewAction> = SingleLiveEvent()
 
     init {
         navigateSingleLiveEvent.addSource(currentPropertyIdRepository.currentIdFlow.filterNotNull().asLiveData()) {
@@ -302,6 +302,10 @@ class MapViewModel @Inject constructor(
                 navigateSingleLiveEvent.setValue(MapViewAction.NavigateToDetailActivity)
             }
         }
+    }
+
+    fun setMarkerId(id: Long){
+        currentPropertyIdRepository.setCurrentId(id)
     }
 
     fun onConfigurationChanged(isTablet: Boolean) {

@@ -2,6 +2,7 @@ package com.tuto.realestatemanager.ui.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
@@ -12,6 +13,7 @@ import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import java.text.DecimalFormat
@@ -202,5 +204,7 @@ class PropertyListViewModel @Inject constructor(
     fun converterPrice(){
         priceConverterRepository.convertPrice()
     }
+
+    val iconStatus: LiveData<Boolean> = priceConverterRepository.isDollarStateFlow.asLiveData(Dispatchers.IO)
 
 }

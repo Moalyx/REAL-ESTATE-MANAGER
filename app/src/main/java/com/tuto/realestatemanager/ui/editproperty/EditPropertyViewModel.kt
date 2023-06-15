@@ -108,7 +108,7 @@ class EditPropertyViewModel @Inject constructor(
         poiBus: Boolean,
         poiPark: Boolean
     ) {
-        val dateOfSale = LocalDate.now().toString()
+        val dateOfSale = "Not yet sold"
         val property = PropertyEntity(
             id = id,
             type = type,

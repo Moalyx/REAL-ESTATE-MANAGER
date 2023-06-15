@@ -5,7 +5,7 @@ import com.tuto.realestatemanager.model.PhotoEntity
 data class PropertyDetailViewState(
     val id: Long,
     val type: String,
-    val price: Int,
+    val price: String,
     val photoList: List<PhotoEntity>,
     val address: String,
     val city: String,

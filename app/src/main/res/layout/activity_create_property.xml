@@ -737,13 +737,13 @@
                         android:textColor="@color/black" />
 
                     <Button
-                        android:id="@+id/delete_button"
+                        android:id="@+id/dismiss_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="12dp"
                         android:backgroundTint="#D2B3F8"
-                        android:text="Delete"
+                        android:text="DISMISS"
                         android:textColor="@color/black" />
 
                 </LinearLayout>

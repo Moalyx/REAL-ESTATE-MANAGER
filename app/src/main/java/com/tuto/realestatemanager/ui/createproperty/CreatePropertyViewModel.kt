@@ -7,6 +7,7 @@ import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
@@ -37,6 +39,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val clock: Clock,
     private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
     private val temporaryPhotoRepository: TemporaryPhotoRepository,
+    private val converterRepository: PriceConverterRepository
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
@@ -45,6 +48,8 @@ class CreatePropertyViewModel @Inject constructor(
     fun onGetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
     }
+
+    val isDollar: Boolean = converterRepository.isDollarStateFlow.value
 
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow.filterNotNull().mapLatest {
@@ -130,12 +135,17 @@ class CreatePropertyViewModel @Inject constructor(
 //
 //        }else{
 
-//        val saleSince = LocalDate.now(clock).toString()
-        val saleSince = Utils.todayDate()
-        val dateOfSale = "estate available for sale"
+        val saleSince: String = Utils.todayDate()
+//            if(isDollar){
+//            LocalDate.now(clock).toString()
+//        }else{
+//            Utils.todayDate()
+//        }
+
+        val dateOfSale = "Not yet sold"
         val property = PropertyEntity(
             type = type,
-            price = price,
+            price = convertMoney(price.toString(), isDollar).toInt(),
             address = address,
             city = city,
             state = state,
@@ -176,4 +186,14 @@ class CreatePropertyViewModel @Inject constructor(
 
 
     }
+
+    private fun convertMoney(price: String, isDollar: Boolean): String {
+        val convertPrice: String = if (isDollar) {
+            price
+        } else {
+            Utils.convertEuroToDollar(price.toInt()).toString()
+        }
+        return convertPrice
+    }
+
 }

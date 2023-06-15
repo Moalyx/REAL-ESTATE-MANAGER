@@ -87,9 +87,7 @@ class PropertyListViewModel @Inject constructor(
         } else {
             decimalFormat.format(Utils.convertDollarToEuro(price.toInt())).toString() + " €"
         }
-
         return convertPrice
-
     }
 
     private fun compareType(

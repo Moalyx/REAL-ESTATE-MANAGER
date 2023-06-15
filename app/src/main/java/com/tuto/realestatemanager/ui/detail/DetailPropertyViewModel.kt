@@ -4,6 +4,7 @@ import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.ui.utils.Utils
@@ -16,10 +17,12 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailPropertyViewModel @Inject constructor(
     currentPropertyIdRepository: CurrentPropertyIdRepository,
-    //priceConverterRepository: PriceConverterRepository,
+    val priceConverterRepository: PriceConverterRepository,
     private val propertyRepository: PropertyRepository,
     coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {
+
+    private val isDollar = priceConverterRepository.isDollarStateFlow.value
 
     val detailPropertyLiveData: LiveData<PropertyDetailViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
@@ -27,7 +30,8 @@ class DetailPropertyViewModel @Inject constructor(
                 PropertyDetailViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
-                    price = propertyWithPhotosEntity.propertyEntity.price,
+                    convertMoney(propertyWithPhotosEntity.propertyEntity.price.toString(), isDollar),
+//                    price = propertyWithPhotosEntity.propertyEntity.price,
                     photoList = propertyWithPhotosEntity.photos.map { it },
                     address = propertyWithPhotosEntity.propertyEntity.address,
                     city = propertyWithPhotosEntity.propertyEntity.city,
@@ -41,7 +45,7 @@ class DetailPropertyViewModel @Inject constructor(
                     bedroom = propertyWithPhotosEntity.propertyEntity.bathroom,
                     agent = propertyWithPhotosEntity.propertyEntity.agent,
                     isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
-                    saleSince = propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
+                    saleSince = convertDate(propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince, isDollar),
                     saleDate = propertyWithPhotosEntity.propertyEntity.propertyDateOfSale,
                     poiTrain = propertyWithPhotosEntity.propertyEntity.poiTrain,
                     poiAirport = propertyWithPhotosEntity.propertyEntity.poiAirport,
@@ -53,18 +57,24 @@ class DetailPropertyViewModel @Inject constructor(
             }
         }.asLiveData(coroutineDispatchersProvider.io)
 
-
     private fun convertMoney(price: String, isDollar: Boolean): String {
         val decimalFormat = DecimalFormat("#,###.#")
-        val formatPrice: String = decimalFormat.format(price.toInt()).toString()
+        val formatPrice: String = decimalFormat.format(price.toInt()).toString().trim()
         val convertPrice: String = if (isDollar) {
             "$formatPrice $"
         } else {
-            decimalFormat.format(Utils.convertDollarToEuro(price.toInt())).toString() + " €"
+            decimalFormat.format(Utils.convertDollarToEuro(price.toInt())) + " €"
         }
-
         return convertPrice
+    }
 
+    private fun convertDate(date: String, isDollar: Boolean): String{
+        val convertDate = if (isDollar){
+            date
+        }else{
+            Utils.formatToUS(date)
+        }
+        return convertDate
     }
 
     fun isVisible(view: ImageView, isVisible: Boolean): Boolean{

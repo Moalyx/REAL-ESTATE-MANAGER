@@ -72,7 +72,6 @@ class EditPropertyActivity : AppCompatActivity() {
             intent.putExtra("XXX", XXX)
             intent.putExtra(KEY_EDIT, propertyId )
             startActivity(intent)
-            //startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
 
         val adapter = EditPropertyPhotoAdapter(
@@ -80,7 +79,6 @@ class EditPropertyActivity : AppCompatActivity() {
                 override fun onDeletePhotoListener(photoId: Long) {  //todo regler probleme gestion delete
                     //viewModel.OnDeletePhoto(photoId)
                 }
-
             }
         )
         val recyclerView: RecyclerView = binding.createUpdatePhotoRecyclerview
@@ -115,36 +113,41 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
             viewModel.isChecked(binding.checkboxtrTrain, it.poiTrain)
             viewModel.isChecked(binding.checkboxSaleStatus,it.isSold)
-
-            binding.saveButton.setOnClickListener {
-                viewModel.updateProperty(
-                    propertyId,
-                    type,
-                    Integer.parseInt(binding.price.text.toString()),
-                    binding.address.text.toString(),
-                    binding.city.text.toString(),
-                    binding.state.text.toString(),
-                    Integer.parseInt(binding.zipcode.text.toString()),
-                    binding.country.text.toString(),
-                    Integer.parseInt(binding.surface.text.toString()),
-                    lat,
-                    lng,
-                    binding.description.text.toString(),
-                    Integer.parseInt(binding.rooms.text.toString()),
-                    Integer.parseInt(binding.bedrooms.text.toString()),
-                    Integer.parseInt(binding.bathrooms.text.toString()),
-                    binding.agent.text.toString(),
-                    binding.checkboxSaleStatus.isChecked,
-                    binding.checkboxtrTrain.isChecked,
-                    binding.date.text.toString(),
-                    binding.checkboxAirport.isChecked,
-                    binding.checkboxRestaurant.isChecked,
-                    binding.checkboxSchool.isChecked,
-                    binding.checkboxBus.isChecked,
-                    binding.checkboxPark.isChecked
-                )
-                startActivity(Intent(this, MainActivity::class.java))
-            }
         }
+
+        binding.saveButton.setOnClickListener {
+            viewModel.updateProperty(
+                propertyId,
+                type,
+                Integer.parseInt(binding.price.text.toString()),
+                binding.address.text.toString(),
+                binding.city.text.toString(),
+                binding.state.text.toString(),
+                Integer.parseInt(binding.zipcode.text.toString()),
+                binding.country.text.toString(),
+                Integer.parseInt(binding.surface.text.toString()),
+                lat,
+                lng,
+                binding.description.text.toString(),
+                Integer.parseInt(binding.rooms.text.toString()),
+                Integer.parseInt(binding.bedrooms.text.toString()),
+                Integer.parseInt(binding.bathrooms.text.toString()),
+                binding.agent.text.toString(),
+                binding.checkboxSaleStatus.isChecked,
+                binding.checkboxtrTrain.isChecked,
+                binding.date.text.toString(),
+                binding.checkboxAirport.isChecked,
+                binding.checkboxRestaurant.isChecked,
+                binding.checkboxSchool.isChecked,
+                binding.checkboxBus.isChecked,
+                binding.checkboxPark.isChecked
+            )
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        binding.dismissButton.setOnClickListener{
+            finish()
+        }
+
     }
 }

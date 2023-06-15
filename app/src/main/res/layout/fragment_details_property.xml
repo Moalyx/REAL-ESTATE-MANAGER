@@ -166,7 +166,7 @@
 
                 <TextView
                     android:id="@+id/number_bathroom"
-                    android:layout_width="wrap_content"
+                    android:layout_width="4dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:hint="2"
@@ -223,14 +223,14 @@
                     android:layout_height="wrap_content"
 
                     android:layout_marginTop="15dp"
-                    android:drawableStart="@drawable/ic_baseline_attach_money_24"
                     android:gravity="center"
                     android:text="Price"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/description" />
+                    app:layout_constraintTop_toBottomOf="@id/description"
+                    app:drawableStartCompat="@drawable/ic_baseline_attach_money_24" />
 
                 <TextView
                     android:id="@+id/price"

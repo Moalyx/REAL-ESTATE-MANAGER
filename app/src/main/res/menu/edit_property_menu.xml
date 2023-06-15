@@ -15,7 +15,6 @@
 <!--        android:icon="@drawable/ic_baseline_edit_24"-->
 <!--        app:showAsAction="always"-->
 <!--        />-->
-
     <item
         android:id="@+id/search_property"
         android:title="search property"

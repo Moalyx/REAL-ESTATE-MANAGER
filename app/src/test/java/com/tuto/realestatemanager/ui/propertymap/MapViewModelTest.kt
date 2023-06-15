@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.tuto.realestatemanager.TestCoroutineRule
+import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
@@ -131,6 +132,8 @@ class MapViewModelTest {
     private val searchRepository: SearchRepository = mockk()
     private val propertyRepository: PropertyRepository = mockk()
     private val userLocation: Location = mockk()
+    private     val currentPropertyIdRepository: CurrentPropertyIdRepository = mockk()
+
 
     private lateinit var mapViewModel: MapViewModel
 
@@ -251,7 +254,8 @@ class MapViewModelTest {
             locationRepository = locationRepository,
             propertyRepository = propertyRepository,
             searchRepository = searchRepository,
-            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider()
+            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider(),
+            currentPropertyIdRepository = currentPropertyIdRepository
         )
 
 
@@ -276,7 +280,7 @@ class MapViewModelTest {
 
 
         mapViewModel.getMapViewState.observeForTesting(this) {
-            assertThat(it.value?.marker?.size).isEqualTo(mapViewStateDisplayOnePropertyTest.marker.size)
+            assertThat(it.value?.markers?.size).isEqualTo(mapViewStateDisplayOnePropertyTest.markers.size)
 
         }
     }

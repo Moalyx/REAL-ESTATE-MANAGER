@@ -15,11 +15,11 @@ object Utils {
      * @return
      */
     fun convertDollarToEuro(dollars: Int): Int {
-        return (dollars * 0.812).roundToInt()
+        return (dollars * 0.92).roundToInt()
     }
 
     fun convertEuroToDollar(euros: Int): Int {
-        return (euros / 0.812).roundToInt()
+        return (euros / 0.92).roundToInt()
     }
 
     /**
@@ -32,6 +32,13 @@ object Utils {
     fun todayDate(): String {
         val dateFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return dateFormat.format(Date())
+    }
+
+    fun formatToUS(dateString: String): String {
+        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
+        val date: Date = inputFormat.parse(dateString) as Date
+        return outputFormat.format(date)
     }
 
 }

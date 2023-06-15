@@ -1,7 +1,6 @@
 package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -13,7 +12,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.tuto.realestatemanager.ui.detail.DetailActivity
-import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,7 +43,6 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
             map.isMyLocationEnabled = true
         }
 
-
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
         //map.mapType = GoogleMap.MAP_TYPE_SATELLITE
@@ -58,9 +55,7 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
             map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
 
 
-            for (markerPlace in mapViewState.marker) {
-//                    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver , Uri.parse(
-//                        property.photos[0].photoUri))
+            for (markerPlace in mapViewState.markers) {
                 val marker = map.addMarker(
                     MarkerOptions()
                         .position(
@@ -71,50 +66,36 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
                         )
                         .title(markerPlace.description)
                         .snippet(markerPlace.address)
-//                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+
                 )
                 if (marker != null) {
                     marker.tag = markerPlace.id
-
                 }
             }
-
-//            map.setOnMarkerClickListener { marker ->
-//                val propertyId = marker.tag.toString().toLong()
-//                val intent = DetailActivity.navigate(requireContext(), propertyId)
-//                startActivity(intent)
-//                true
-//            }
-
-
-//            map.setOnMarkerClickListener { it ->
-//                // val tag = it.toString().toLong()
-//                startActivity(
-//                    DetailActivity.navigate(
-//                        requireContext()
-//                    )
-//                )
-//
-//
-//                //startActivity(Intent(this.requireContext(), DetailActivity::class.java))
-//                return@setOnMarkerClickListener true
-//            }
-
         }
 
-        viewModel.navigateSingleLiveEvent.observe(this) {
+        map.setOnMarkerClickListener {
+            viewModel.setMarkerId(it.tag.toString().toLong())
+            startActivity(
+                DetailActivity.navigate(
+                    requireContext()
+                )
+            )
+            return@setOnMarkerClickListener true
+        }
 
-
-                when (it) {
-                    MapViewAction.NavigateToDetailActivity -> map.setOnMarkerClickListener{
-                        DetailActivity.navigate(requireContext())
-                        return@setOnMarkerClickListener true
-                    }
-                }
-            }
-
-
-
-
+//        viewModel.navigateSingleLiveEvent.observe(this) { it ->
+//
+//
+//            when (it) {
+//                MapViewAction.NavigateToDetailActivity -> map.setOnMarkerClickListener {
+//                    viewModel.setMarkerId(it.tag as Long)
+//                    DetailActivity.navigate(requireContext())
+//                    return@setOnMarkerClickListener true
+//                }
+//            }
+//        }
     }
+
+
 }

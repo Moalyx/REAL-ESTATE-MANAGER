@@ -25,8 +25,10 @@ class MapViewModel @Inject constructor(
     searchRepository: SearchRepository,
     propertyRepository: PropertyRepository,
     val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    coroutineDispatchersProvider : CoroutineDispatchersProvider
+    coroutineDispatchersProvider: CoroutineDispatchersProvider,
 ) : ViewModel() {
+
+    private var isTablet = false
 
 
     private val propertyList: Flow<List<PropertyWithPhotosEntity>> =
@@ -71,7 +73,7 @@ class MapViewModel @Inject constructor(
     private fun combine(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>?,
         searchParameters: SearchParameters?,
-        userLocation: Location?
+        userLocation: Location?,
     ) {
 
         val markerPlaceList = mutableListOf<MarkerPlace>()
@@ -87,8 +89,8 @@ class MapViewModel @Inject constructor(
                         property.propertyEntity.id,
                         property.propertyEntity.description,
                         property.propertyEntity.address,
-                        property.propertyEntity.lat,
-                        property.propertyEntity.lng
+                        property.propertyEntity.lat!!,
+                        property.propertyEntity.lng!!
                     )
                 )
             }
@@ -127,8 +129,8 @@ class MapViewModel @Inject constructor(
                         property.propertyEntity.id,
                         property.propertyEntity.description,
                         property.propertyEntity.address,
-                        property.propertyEntity.lat,
-                        property.propertyEntity.lng
+                        property.propertyEntity.lat!!,
+                        property.propertyEntity.lng!!
                     )
                 )
             }
@@ -145,7 +147,7 @@ class MapViewModel @Inject constructor(
 
     private fun compareType(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
         var isMatching = false
         val searchType = searchParameters.type
@@ -159,22 +161,18 @@ class MapViewModel @Inject constructor(
 
     private fun comparePrice(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPriceMini = searchParameters.priceMinimum
         val searchPriceMaxi = searchParameters.priceMaximum
         val propertyPrice = property.propertyEntity.price
 
-        if (searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi) {
-            isMatching = true
-        }
-        return isMatching
+        return searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi
     }
 
     private fun compareSurface(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
         var isMatching = false
         val searchSurfaceMini = searchParameters.surfaceMinimum
@@ -189,7 +187,7 @@ class MapViewModel @Inject constructor(
 
     private fun compareCity(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
         var isMatching = false
         val searchCity = searchParameters.city
@@ -203,114 +201,72 @@ class MapViewModel @Inject constructor(
 
     private fun comparePoiTrain(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
-    ): Boolean {
-        var isMatching = false
-        val searchPoiTrain = searchParameters.poiTrain
-        val propertyPoiTrain = property.propertyEntity.poiTrain
-
-        if (searchPoiTrain == true && propertyPoiTrain || searchPoiTrain == false && !propertyPoiTrain) {
-            isMatching = true
-        }
-
-        return isMatching
-    }
+        property: PropertyWithPhotosEntity,
+    ): Boolean = !searchParameters.poiTrain || property.propertyEntity.poiTrain
 
     private fun comparePoiAirport(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPoiAirport = searchParameters.poiAirport
         val propertyPoiAirport = property.propertyEntity.poiAirport
 
-        if (searchPoiAirport == true && propertyPoiAirport || searchPoiAirport == false && !propertyPoiAirport) {
-            isMatching = true
-        }
-
-        return isMatching
+        return !searchPoiAirport || propertyPoiAirport
     }
 
     private fun comparePoiResto(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPoiResto = searchParameters.poiResto
         val propertyPoiResto = property.propertyEntity.poiResto
 
-        if (searchPoiResto == true && propertyPoiResto || searchPoiResto == false && !propertyPoiResto) {
-            isMatching = true
-        }
-
-        return isMatching
+        return !searchPoiResto || propertyPoiResto
     }
 
     private fun comparePoiSchool(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPoiSchool = searchParameters.poiSchool
         val propertyPoiSchool = property.propertyEntity.poiSchool
 
-        if (searchPoiSchool == true && propertyPoiSchool || searchPoiSchool == false && !propertyPoiSchool) {
-            isMatching = true
-        }
-
-        return isMatching
+        return !searchPoiSchool || propertyPoiSchool
     }
 
     private fun comparePoiBus(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPoiBus = searchParameters.poiBus
         val propertyPoiBus = property.propertyEntity.poiBus
 
-        if (searchPoiBus == true && propertyPoiBus || searchPoiBus == false && !propertyPoiBus) {
-            isMatching = true
-        }
-
-        return isMatching
+        return !searchPoiBus || propertyPoiBus
     }
 
     private fun comparePoiPark(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity
+        property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
         val searchPoiPark = searchParameters.poiPark
         val propertyPoiPark = property.propertyEntity.poiPark
 
-        if (searchPoiPark == true && propertyPoiPark || searchPoiPark == false && !propertyPoiPark) {
-            isMatching = true
-        }
-
-        return isMatching
+        return !searchPoiPark || propertyPoiPark
     }
 
-
-    private var isTablet: Boolean = false //todo verifier pour-quoi ici cela ne march pas
 
     val navigateSingleLiveEvent: SingleLiveEvent<MapViewAction> = SingleLiveEvent()
 
-    init {
-        navigateSingleLiveEvent.addSource(currentPropertyIdRepository.currentIdFlow.filterNotNull().asLiveData()) {
-            if (!isTablet) {
-                navigateSingleLiveEvent.setValue(MapViewAction.NavigateToDetailActivity)
-            }
-        }
-    }
 
-    fun setMarkerId(id: Long){
+    fun setMarkerId(id: Long) {
         currentPropertyIdRepository.setCurrentId(id)
+        if (!isTablet) {
+            navigateSingleLiveEvent.setValue(MapViewAction.NavigateToDetailActivity)
+        }
     }
 
     fun onConfigurationChanged(isTablet: Boolean) {
         this.isTablet = isTablet
     }
-
 
 }

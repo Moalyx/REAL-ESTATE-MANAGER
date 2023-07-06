@@ -1,26 +1,21 @@
 package com.tuto.realestatemanager.ui.detail
 
-import android.Manifest
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
-import androidx.core.app.ActivityCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.gms.maps.*
 import com.tuto.realestatemanager.BuildConfig
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
-import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
-import com.tuto.realestatemanager.ui.mortgagecalcultator.MortgageCalculatorActivity
-import com.tuto.realestatemanager.ui.search.SearchPropertyActivity
+import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 
@@ -35,13 +30,14 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
 
         _binding = FragmentDetailsPropertyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,7 +72,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             propertyId = it.id
             binding.type.text = it.type
             binding.surface.text = it.surface.toString()
-            binding.price.text = it.price.toString()
+            binding.price.text = it.price
             binding.description.text = it.description
             binding.numberRoom.text = it.room.toString()
             binding.numberBathroom.text = it.bathroom.toString()
@@ -102,7 +98,6 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             viewmodel.isVisible(binding.poiResto, it.poiResto)
             viewmodel.isVisible(binding.poiTrain, it.poiTrain)
 
-
             val recyclerView: RecyclerView = binding.mediaRecyclerview
             val adapter = PropertyDetailPhotoAdapter()
             recyclerView.adapter = adapter
@@ -113,9 +108,10 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             val zoom = 15
             val size = "1200x1200"
             val apiKey = BuildConfig.GOOGLE_PLACES_KEY
+            val address = "${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}"
 
             val staticMap =
-                "https://maps.googleapis.com/maps/api/staticmap?center=${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}&markers=${it.address}&zoom=$zoom&size=$size&key=$apiKey"
+                "https://maps.googleapis.com/maps/api/staticmap?center=$address&markers=${it.address}&zoom=$zoom&size=$size&key=$apiKey"
 
             Glide.with(requireContext())
                 .load(staticMap)
@@ -124,22 +120,28 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
         }
 
 
+
+        viewmodel.navigateSingleLiveEvent.observe(viewLifecycleOwner) {
+            when (it) {
+                DetailViewAction.NavigateToEditActivity -> startActivity(
+                    EditPropertyActivity.navigate(
+                        requireContext(),
+                        propertyId
+                    )
+                )
+                //requireActivity().finish()
+//                DetailViewAction.NavigateToMainActivity -> startActivity(
+//                    Intent(
+//                        requireContext(),
+//                        MainActivity::class.java
+//                    )
+//                )
+                else -> {}
+            }
+        }
+
+        //viewmodel.onNavigatetoMainActivity()
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.edit_property_menu, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.edit_property-> {
-//                startActivity(CreatePropertyActivity.navigate(requireContext(), 1))
-//                return true
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
-
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_detail_menu, menu)
@@ -147,12 +149,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.edit_property -> startActivity(
-                EditPropertyActivity.navigate(
-                    requireContext(),
-                    propertyId
-                )
-            )
+            R.id.edit_property -> viewmodel.onNavigateToEditActivity()
         }
         return true
     }

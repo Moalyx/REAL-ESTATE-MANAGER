@@ -1,9 +1,6 @@
 package com.tuto.realestatemanager.ui.createproperty
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.*
-import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
@@ -16,6 +13,7 @@ import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
+import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,9 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
 import java.time.Clock
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,7 +35,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val clock: Clock,
     private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
     private val temporaryPhotoRepository: TemporaryPhotoRepository,
-    private val converterRepository: PriceConverterRepository
+    converterRepository: PriceConverterRepository
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
@@ -49,7 +45,7 @@ class CreatePropertyViewModel @Inject constructor(
         placeIdMutableStateFlow.value = id
     }
 
-    val isDollar: Boolean = converterRepository.isDollarStateFlow.value
+    private val isDollar: Boolean = converterRepository.isDollarStateFlow.value
 
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow.filterNotNull().mapLatest {
@@ -126,21 +122,7 @@ class CreatePropertyViewModel @Inject constructor(
         poiPark: Boolean,
     ) {
 
-//        if (type.isEmpty() || address.isEmpty() || city.isEmpty() || state.isEmpty()){
-////            || zipcode.toString().isEmpty() || country.isEmpty() || surface.toString() == "" || description.isEmpty()
-////            || room.toString() == "" || bedroom.toString() == "" || bathroom.toString() == "" || agent.isEmpty()){
-//
-//
-//
-//
-//        }else{
-
         val saleSince: String = Utils.todayDate()
-//            if(isDollar){
-//            LocalDate.now(clock).toString()
-//        }else{
-//            Utils.todayDate()
-//        }
 
         val dateOfSale = "Not yet sold"
         val property = PropertyEntity(
@@ -170,6 +152,7 @@ class CreatePropertyViewModel @Inject constructor(
             poiPark = poiPark
         )
         viewModelScope.launch(coroutineDispatchersProvider.io) {
+
             val propertyId = propertyRepository.insertProperty(property)
 
             for (temporaryPhoto in temporaryPhotoStateFlow.value) {
@@ -183,8 +166,6 @@ class CreatePropertyViewModel @Inject constructor(
             }
             temporaryPhotoRepository.onDeleteTemporaryPhotoRepo()
         }
-
-
     }
 
     private fun convertMoney(price: String, isDollar: Boolean): String {
@@ -194,6 +175,12 @@ class CreatePropertyViewModel @Inject constructor(
             Utils.convertEuroToDollar(price.toInt()).toString()
         }
         return convertPrice
+    }
+
+    val navigateSingleLiveEvent: SingleLiveEvent<CreateViewAction> = SingleLiveEvent()
+
+    fun onNavigateToMainActivity(){
+        navigateSingleLiveEvent.setValue(CreateViewAction.NavigateToMainActivity)
     }
 
 }

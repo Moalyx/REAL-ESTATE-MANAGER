@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.search
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.widget.AdapterView
@@ -9,8 +8,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.databinding.ActivitySearchPropertyBinding
-import com.tuto.realestatemanager.model.SearchParameters
-import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +29,11 @@ class SearchPropertyActivity : AppCompatActivity() {
         viewModel.getParametersLiveData().observe(this) {
             //todo rien a observer ici
         }
+
+        viewModel.navigateSingleLiveEvent.observe(this) {
+            //startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
     }
 
     private fun setToolbar() {
@@ -40,6 +42,11 @@ class SearchPropertyActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        viewModel.onNavigateToMainActivity()
     }
 
     private fun setDropdownMenu() {
@@ -62,23 +69,21 @@ class SearchPropertyActivity : AppCompatActivity() {
         binding.validateParametersButton.setOnClickListener {
 
             viewModel.setParameters(
-                    type,
-                    binding.priceMin.text.toString(),
-                    binding.priceMax.text.toString(),
-                    binding.surfaceMinimum.text.toString(),
-                    binding.surfaceMaximum.text.toString(),
-                    binding.city.text.toString(),
-                    binding.checkboxtrTrain.isChecked,
-                    binding.checkboxAirport.isChecked,
-                    binding.checkboxRestaurant.isChecked,
-                    binding.checkboxSchool.isChecked,
-                    binding.checkboxBus.isChecked,
-                    binding.checkboxPark.isChecked
+                type,
+                binding.priceMin.text.toString(),
+                binding.priceMax.text.toString(),
+                binding.surfaceMinimum.text.toString(),
+                binding.surfaceMaximum.text.toString(),
+                binding.city.text.toString(),
+                binding.checkboxtrTrain.isChecked,
+                binding.checkboxAirport.isChecked,
+                binding.checkboxRestaurant.isChecked,
+                binding.checkboxSchool.isChecked,
+                binding.checkboxBus.isChecked,
+                binding.checkboxPark.isChecked
 
             )
-            finish()
-            //startActivity(Intent(this, MainActivity::class.java))
-
+            viewModel.onNavigateToMainActivity()
         }
     }
 }

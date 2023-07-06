@@ -2,7 +2,6 @@ package com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -12,12 +11,6 @@ class MortgageCalculatorRepository @Inject constructor() {
     private val rate = MutableStateFlow(0.0)
     private val duration = MutableStateFlow(0)
     private val monthlyFee = MutableStateFlow(0)
-
-//    fun setMortgageParameters(principal: Double, proposedRate: Double, duration: Int){
-//        amount.value = principal
-//        rate.value = proposedRate
-//        this.duration.value = duration
-//    }
 
     fun setAmount(amount: Double) {
         this.amount.value = amount

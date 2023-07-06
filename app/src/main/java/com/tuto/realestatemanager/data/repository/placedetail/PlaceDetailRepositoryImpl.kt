@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.data.repository.placedetail
 
-import com.google.android.gms.maps.model.LatLng
 import com.tuto.realestatemanager.BuildConfig
 import com.tuto.realestatemanager.data.api.GoogleApi
 import com.tuto.realestatemanager.data.repository.placedetail.model.PlaceDetailResponse
@@ -9,7 +8,7 @@ import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import javax.inject.Inject
 
 class PlaceDetailRepositoryImpl @Inject constructor(
-    private val googleApi: GoogleApi
+    private val googleApi: GoogleApi,
 ) : PlaceDetailRepository {
 
     override suspend fun getAddressById(id: String): AddressComponentsEntity? {
@@ -38,8 +37,6 @@ class PlaceDetailRepositoryImpl @Inject constructor(
             "postal_code" in addressComponentsResponse.types
         }?.longName
 
-        //val latLng = "${response.placeResult?.geometry?.location?.lng.toString()}, ${response.placeResult?.geometry?.location?.lng.toString()}"
-
         val lat = response.placeResult?.geometry?.location?.lat
         val lng = response.placeResult?.geometry?.location?.lng
 
@@ -52,7 +49,6 @@ class PlaceDetailRepositoryImpl @Inject constructor(
             country = country ?: return null,
             lat = lat ?: return null,
             lng = lng ?: return null
-
         )
     }
 }

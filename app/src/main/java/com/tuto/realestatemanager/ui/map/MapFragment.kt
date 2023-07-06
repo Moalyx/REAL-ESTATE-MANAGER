@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.map
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +37,8 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
@@ -43,7 +46,6 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
             map.isMyLocationEnabled = true
         }
 
-        map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
         //map.mapType = GoogleMap.MAP_TYPE_SATELLITE
 
@@ -74,27 +76,22 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
             }
         }
 
-        map.setOnMarkerClickListener {
-            viewModel.setMarkerId(it.tag.toString().toLong())
-            startActivity(
-                DetailActivity.navigate(
-                    requireContext()
-                )
-            )
+        map.setOnMarkerClickListener { marker ->
+            viewModel.setMarkerId(marker.tag.toString().toLong())
+            //viewModel.onNavigationToDetailActivity()
             return@setOnMarkerClickListener true
         }
 
-//        viewModel.navigateSingleLiveEvent.observe(this) { it ->
-//
-//
-//            when (it) {
-//                MapViewAction.NavigateToDetailActivity -> map.setOnMarkerClickListener {
-//                    viewModel.setMarkerId(it.tag as Long)
-//                    DetailActivity.navigate(requireContext())
-//                    return@setOnMarkerClickListener true
-//                }
-//            }
-//        }
+        viewModel.navigateSingleLiveEvent.observe(viewLifecycleOwner) {
+            startActivity(Intent(requireContext(), DetailActivity::class.java))
+            //DetailActivity.navigate(requireContext())
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onConfigurationChanged(resources.getBoolean(R.bool.isTablet))
     }
 
 

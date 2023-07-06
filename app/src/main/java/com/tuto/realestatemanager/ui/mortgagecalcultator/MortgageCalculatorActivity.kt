@@ -17,7 +17,6 @@ class MortgageCalculatorActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_mortgage_calculator)
 
         val binding = ActivityMortgageCalculatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -31,11 +30,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
 
         binding.rate.doAfterTextChanged {
-//            if (it.toString() == "") {
-//                viewModel.setRate(0.0) //todo algo reporter dans le viewmodel
-//            }else{
             viewModel.setRate(it.toString())
-//            }
         }
 
         binding.totalAmount.doAfterTextChanged {

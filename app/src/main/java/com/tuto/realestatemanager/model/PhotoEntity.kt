@@ -10,5 +10,4 @@ data class PhotoEntity(
     val propertyId: Long,
     val photoUri: String,
     val photoTitle : String
-//    val photoDescription: String
 )

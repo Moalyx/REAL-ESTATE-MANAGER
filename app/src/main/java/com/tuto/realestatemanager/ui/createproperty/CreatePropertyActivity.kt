@@ -25,6 +25,7 @@ class CreatePropertyActivity : AppCompatActivity() {
     private val viewModel by viewModels<CreatePropertyViewModel>()
     private var lat: Double = 0.0
     private var lng: Double = 0.0
+    private var onePhotoAtLeast = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +34,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var type = ""
+        var type: String
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
@@ -64,7 +65,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         viewModel.placeDetailViewState.observe(this) {
             binding.address.setText("${it.number} ${it.address}")
-            //binding.complement.setText(it.number + " " +  it.address)
             binding.zipcode.setText(it.zipCode)
             binding.state.setText(it.state)
             binding.country.setText(it.country)
@@ -86,11 +86,10 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.predictionRecyclerview.adapter = searchAdapter
         viewModel.predictionListViewState.observe(this) {
             if (it.isEmpty() || it == null) {
-                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "please enter an address manually", Toast.LENGTH_SHORT).show()
             } else {
                 searchAdapter.submitList(it)
             }
-
         }
 
         val adapter = CreatePropertyPhotoAdapter()
@@ -98,7 +97,12 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.createUpdatePhotoRecyclerview.adapter = adapter
 
         viewModel.temporaryPhotoLiveData.observe(this) {
-            adapter.submitList(it)
+            if (it.isEmpty() || it == null) {
+                onePhotoAtLeast = false
+            } else {
+                onePhotoAtLeast = true
+                adapter.submitList(it)
+            }
         }
 
         binding.addPictureButton.setOnClickListener {
@@ -110,62 +114,75 @@ class CreatePropertyActivity : AppCompatActivity() {
             startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
 
+
         binding.saveButton.setOnClickListener {
 
-            type = binding.typeDropdown.text.toString()
-            val price = binding.price.text.toString()
-            val address = binding.address.text.toString()
-            val city = binding.city.text.toString()
-            val state = binding.state.text.toString()
-            val zipcode = binding.zipcode.text.toString()
-            val country = binding.country.text.toString()
-            val surface = binding.surface.text.toString()
-            val description = binding.description.text.toString()
-            val rooms = binding.rooms.text.toString()
-            val bedrooms = binding.bedrooms.text.toString()
-            val bathrooms = binding.bathrooms.text.toString()
-            val agent = binding.agent.text.toString()
 
-            if (type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
-                state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
-                description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
-                bathrooms.isEmpty() || agent.isEmpty()
-            ) {
-                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT)
-                    .show()
+            if (onePhotoAtLeast == false) {
+                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
             } else {
 
-                viewModel.createProperty(
-                    type,
-                    binding.price.text.toString().toInt(),
-                    binding.address.text.toString(),
-                    binding.city.text.toString(),
-                    binding.state.text.toString(),
-                    binding.zipcode.text.toString().toInt(),
-                    binding.country.text.toString(),
-                    binding.surface.text.toString().toInt(),
-                    lat,
-                    lng,
-                    binding.description.text.toString(),
-                    binding.rooms.text.toString().toInt(),
-                    binding.bedrooms.text.toString().toInt(),
-                    binding.bathrooms.text.toString().toInt(),
-                    binding.agent.text.toString(),
-                    binding.checkboxSaleStatus.isChecked,
-                    binding.checkboxtrTrain.isChecked,
-                    binding.checkboxAirport.isChecked,
-                    binding.checkboxRestaurant.isChecked,
-                    binding.checkboxSchool.isChecked,
-                    binding.checkboxBus.isChecked,
-                    binding.checkboxPark.isChecked
-                )
-                startActivity(Intent(this, MainActivity::class.java))
+                type = binding.typeDropdown.text.toString()
+                val price = binding.price.text.toString()
+                val address = binding.address.text.toString()
+                val city = binding.city.text.toString()
+                val state = binding.state.text.toString()
+                val zipcode = binding.zipcode.text.toString()
+                val country = binding.country.text.toString()
+                val surface = binding.surface.text.toString()
+                val description = binding.description.text.toString()
+                val rooms = binding.rooms.text.toString()
+                val bedrooms = binding.bedrooms.text.toString()
+                val bathrooms = binding.bathrooms.text.toString()
+                val agent = binding.agent.text.toString()
+
+                if (type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
+                    state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
+                    description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
+                    bathrooms.isEmpty() || agent.isEmpty()
+                ) {
+                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+
+                    viewModel.createProperty(
+                        type,
+                        price.toInt(),
+                        binding.address.text.toString(),
+                        binding.city.text.toString(),
+                        binding.state.text.toString(),
+                        binding.zipcode.text.toString().toInt(),
+                        binding.country.text.toString(),
+                        binding.surface.text.toString().toInt(),
+                        lat,
+                        lng,
+                        binding.description.text.toString(),
+                        binding.rooms.text.toString().toInt(),
+                        binding.bedrooms.text.toString().toInt(),
+                        binding.bathrooms.text.toString().toInt(),
+                        binding.agent.text.toString(),
+                        binding.checkboxSaleStatus.isChecked,
+                        binding.checkboxtrTrain.isChecked,
+                        binding.checkboxAirport.isChecked,
+                        binding.checkboxRestaurant.isChecked,
+                        binding.checkboxSchool.isChecked,
+                        binding.checkboxBus.isChecked,
+                        binding.checkboxPark.isChecked
+                    )
+                    viewModel.onNavigateToMainActivity()
+                    finish()
+                }
             }
         }
 
-        binding.dismissButton.setOnClickListener{
+        binding.dismissButton.setOnClickListener {
             finish()
         }
 
+        viewModel.navigateSingleLiveEvent.observe(this) {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
     }
+
 }

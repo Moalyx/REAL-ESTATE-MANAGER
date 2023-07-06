@@ -21,13 +21,13 @@ class MainViewModel @Inject constructor(
 
     val navigateSingleLiveEvent: SingleLiveEvent<MainViewAction> = SingleLiveEvent()
 
-    init {
-        navigateSingleLiveEvent.addSource(currentPropertyIdRepositoryImpl.currentIdFlow.filterNotNull().asLiveData()) {
-            if (!isTablet) {
-                navigateSingleLiveEvent.setValue(MainViewAction.NavigateToDetailActivity)
-            }
-        }
-    }
+//    init {
+//        navigateSingleLiveEvent.addSource(currentPropertyIdRepositoryImpl.currentIdFlow.filterNotNull().asLiveData()) {
+//            if (!isTablet) {
+//                navigateSingleLiveEvent.setValue(MainViewAction.NavigateToDetailActivity)
+//            }
+//        }
+//    }
 
     fun onConfigurationChanged(isTablet: Boolean) {
         this.isTablet = isTablet
@@ -39,5 +39,8 @@ class MainViewModel @Inject constructor(
     val iconStatus: LiveData<Boolean> = priceConverterRepository.isDollarStateFlow.asLiveData(
         Dispatchers.IO)
 
+    fun navigateToSearch(){
+        navigateSingleLiveEvent.setValue(MainViewAction.NavigateToSearch)
+    }
 
 }

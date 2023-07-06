@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -16,6 +17,7 @@ import com.tuto.realestatemanager.databinding.ActivityAddPictureCameraBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class AddPictureCameraActivity : AppCompatActivity() {
 
@@ -67,24 +69,30 @@ class AddPictureCameraActivity : AppCompatActivity() {
         }
 
         binding.addPictureButton.setOnClickListener {
-            if (fromEditPropertyActivity == "XXX") {
-                viewModel.insertPhoto(
-                    0,
-                    getEditPropertyId,
-                    binding.title.text.toString(),
-                    currentPhotoUri.toString()
 
-                )
+            if (binding.title.text.toString() == "") {
+                Toast.makeText(this, "please enter a description", Toast.LENGTH_SHORT).show()
             } else {
-                viewModel.onAddTemporaryPhoto(
-                    title = binding.title.text?.toString(),
-                    uri = currentPhotoUri?.toString()
-                )
+
+                if (fromEditPropertyActivity == "XXX") {
+                    viewModel.insertPhoto(
+                        0,
+                        getEditPropertyId,
+                        binding.title.text.toString(),
+                        currentPhotoUri.toString()
+
+                    )
+                } else {
+                    viewModel.onAddTemporaryPhoto(
+                        title = binding.title.text?.toString(),
+                        uri = currentPhotoUri?.toString()
+                    )
+                }
+                finish()
             }
-            finish()
         }
 
-        binding.cancelButton.setOnClickListener{
+        binding.cancelButton.setOnClickListener {
             finish()
         }
 

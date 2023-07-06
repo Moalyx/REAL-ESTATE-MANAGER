@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
-import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,13 +27,14 @@ class EditPropertyActivity : AppCompatActivity() {
         const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
         fun navigate(context: Context, propertyId: Long): Intent {
             val intent = Intent(context, EditPropertyActivity::class.java)
+           //intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             intent.putExtra(KEY_PROPERTY_ID, propertyId)
             return intent
         }
     }
 
-    private var lat: Double = 0.0
-    private var lng: Double = 0.0
+    private var lat: Double? = 0.0
+    private var lng: Double? = 0.0
     private val viewModel by viewModels<EditPropertyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,38 +116,57 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            viewModel.updateProperty(
-                propertyId,
-                type,
-                Integer.parseInt(binding.price.text.toString()),
-                binding.address.text.toString(),
-                binding.city.text.toString(),
-                binding.state.text.toString(),
-                Integer.parseInt(binding.zipcode.text.toString()),
-                binding.country.text.toString(),
-                Integer.parseInt(binding.surface.text.toString()),
-                lat,
-                lng,
-                binding.description.text.toString(),
-                Integer.parseInt(binding.rooms.text.toString()),
-                Integer.parseInt(binding.bedrooms.text.toString()),
-                Integer.parseInt(binding.bathrooms.text.toString()),
-                binding.agent.text.toString(),
-                binding.checkboxSaleStatus.isChecked,
-                binding.checkboxtrTrain.isChecked,
-                binding.date.text.toString(),
-                binding.checkboxAirport.isChecked,
-                binding.checkboxRestaurant.isChecked,
-                binding.checkboxSchool.isChecked,
-                binding.checkboxBus.isChecked,
-                binding.checkboxPark.isChecked
-            )
-            startActivity(Intent(this, MainActivity::class.java))
+            lat?.let { lat ->
+                lng?.let { lng ->
+                    viewModel.updateProperty(
+                        propertyId,
+                        type,
+                        Integer.parseInt(binding.price.text.toString()),
+                        binding.address.text.toString(),
+                        binding.city.text.toString(),
+                        binding.state.text.toString(),
+                        Integer.parseInt(binding.zipcode.text.toString()),
+                        binding.country.text.toString(),
+                        Integer.parseInt(binding.surface.text.toString()),
+                        lat,
+                        lng,
+                        binding.description.text.toString(),
+                        Integer.parseInt(binding.rooms.text.toString()),
+                        Integer.parseInt(binding.bedrooms.text.toString()),
+                        Integer.parseInt(binding.bathrooms.text.toString()),
+                        binding.agent.text.toString(),
+                        binding.checkboxSaleStatus.isChecked,
+                        binding.checkboxtrTrain.isChecked,
+                        binding.date.text.toString(),
+                        binding.checkboxAirport.isChecked,
+                        binding.checkboxRestaurant.isChecked,
+                        binding.checkboxSchool.isChecked,
+                        binding.checkboxBus.isChecked,
+                        binding.checkboxPark.isChecked
+                    )
+                }
+            }
+            viewModel.onNavigateToDetailActivity()
+
+
+
         }
+
 
         binding.dismissButton.setOnClickListener{
             finish()
         }
 
+        viewModel.navigateSingleLiveEvent.observe(this){
+           finish()
+         //   startActivity(Intent(this, MainActivity::class.java))
+        }
+
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        viewModel.onNavigateToDetailActivity()
     }
 }

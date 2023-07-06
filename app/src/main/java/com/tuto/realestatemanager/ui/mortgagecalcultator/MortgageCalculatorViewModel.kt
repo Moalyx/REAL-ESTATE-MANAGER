@@ -12,7 +12,7 @@ import kotlin.math.pow
 
 @HiltViewModel
 class MortgageCalculatorViewModel @Inject constructor(
-    private val mortgageCalculatorRepository: MortgageCalculatorRepository
+    private val mortgageCalculatorRepository: MortgageCalculatorRepository,
 ) : ViewModel() {
 
     private val getAmount: LiveData<Double> =
@@ -21,15 +21,6 @@ class MortgageCalculatorViewModel @Inject constructor(
         mortgageCalculatorRepository.getRate().asLiveData(Dispatchers.IO)
     private val getDuration: LiveData<Int> =
         mortgageCalculatorRepository.getDuration().asLiveData(Dispatchers.IO)
-
-
-    fun getRate(): LiveData<Double> {
-        return mortgageCalculatorRepository.getRate().asLiveData(Dispatchers.IO)
-    }
-
-    fun getDuration(): LiveData<Int> {
-        return mortgageCalculatorRepository.getDuration().asLiveData(Dispatchers.IO)
-    }
 
     private val monthlyPayment = MediatorLiveData<Int>().apply {
 
@@ -52,25 +43,21 @@ class MortgageCalculatorViewModel @Inject constructor(
             return
         }
 
-        var monthlyFee = 0
+        val monthlyFee: Int
 
         val principal: Double = amount
         val currentRate: Double = (rate / 100) / 12
         val time: Int = duration * 12
 
-        if (amount == 0.0 || currentRate == 0.0 || time == 0){
-            monthlyFee = 0
-        }else{
-            monthlyFee =
-                (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
+        monthlyFee = if (amount == 0.0 || currentRate == 0.0 || time == 0) {
+            0
+        } else {
+            (principal * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()
         }
-
-
         monthlyPayment.value = monthlyFee
     }
 
     val getMonthlyPayment = monthlyPayment
-
 
     fun setAmount(amount: Double) {
         mortgageCalculatorRepository.setAmount(amount)
@@ -85,21 +72,6 @@ class MortgageCalculatorViewModel @Inject constructor(
 
     fun setDuration(duration: Int) {
         mortgageCalculatorRepository.setDuration(duration)
-    }
-
-
-//    fun setMortgageParameters(amount: Double, proposedRate: Double, years: Int){
-//       mortgageCalculatorRepository.setMortgageParameters(amount, proposedRate, years)
-//    }
-
-    val monthlyFee = mortgageCalculatorRepository.monthlyPaymentMortgage().asLiveData()
-
-//    fun monthlyPayment() : LiveData<Int> {
-//        return mortgageCalculatorRepository.monthlyPaymentMortgage().asLiveData(Dispatchers.IO)
-//    }
-
-    fun getTotalInvestmentCost(monthlyFee: Int, length: Int): Int {
-        return mortgageCalculatorRepository.totalInvestmentCost(monthlyFee, length)
     }
 
 }

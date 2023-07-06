@@ -2,15 +2,20 @@ package com.tuto.realestatemanager.ui.detail
 
 import android.widget.ImageView
 import androidx.core.view.isVisible
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import com.tuto.realestatemanager.ui.map.MapViewAction
+import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -31,7 +36,6 @@ class DetailPropertyViewModel @Inject constructor(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
                     convertMoney(propertyWithPhotosEntity.propertyEntity.price.toString(), isDollar),
-//                    price = propertyWithPhotosEntity.propertyEntity.price,
                     photoList = propertyWithPhotosEntity.photos.map { it },
                     address = propertyWithPhotosEntity.propertyEntity.address,
                     city = propertyWithPhotosEntity.propertyEntity.city,
@@ -70,9 +74,9 @@ class DetailPropertyViewModel @Inject constructor(
 
     private fun convertDate(date: String, isDollar: Boolean): String{
         val convertDate = if (isDollar){
-            date
-        }else{
             Utils.formatToUS(date)
+        }else{
+            date
         }
         return convertDate
     }
@@ -83,7 +87,14 @@ class DetailPropertyViewModel @Inject constructor(
         return view.isVisible
     }
 
+    val navigateSingleLiveEvent: SingleLiveEvent<DetailViewAction> = SingleLiveEvent()
 
+    fun onNavigateToEditActivity(){
+        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
+    }
 
+    fun onNavigatetoMainActivity(){
+        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToMainActivity)
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.data.api
 
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
+import com.tuto.realestatemanager.data.repository.geocoding.model.GeocodingResponse
 import com.tuto.realestatemanager.data.repository.placedetail.model.PlaceDetailResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -20,6 +21,13 @@ interface GoogleApi {
         @Query("radius") radius : String,
         @Query("input") input :String
     ) : PredictionResponse
+
+    @GET("maps/api/geocode/json")
+    suspend fun getLatLngLocation(
+        @Query("key") key : String,
+        @Query("address") address : String
+
+    ) : GeocodingResponse
 
 
 }

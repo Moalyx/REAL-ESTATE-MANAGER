@@ -20,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewmodel by viewModels<MainViewModel>()
-    private var isConversionToDollars = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,16 +73,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewmodel.navigateSingleLiveEvent.observe(this) {
+        viewmodel.navigateSingleLiveEvent.observe(this) { //todo a verifier ici
             when (it) {
-                MainViewAction.NavigateToDetailActivity -> startActivity(
-                    Intent(
-                        this,
-                        DetailActivity::class.java
-                    )
-                )
+//                MainViewAction.NavigateToDetailActivity -> startActivity(DetailActivity.navigate(
+//                    this))
+
+                MainViewAction.NavigateToSearch -> startActivity(Intent(this,
+                    SearchPropertyActivity::class.java))
+                else -> {}
             }
         }
+
     }
 
     override fun onResume() {
@@ -98,12 +98,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-//    val listFragment = supportFragmentManager.findFragmentById(PropertyListFragment().id) as? ListFragment
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
-            R.id.search_property -> startActivity(Intent(this, SearchPropertyActivity::class.java))
+
+            R.id.search_property -> viewmodel.navigateToSearch()
+
             R.id.currency -> {
                 updateMenuIcon(item)
                 viewmodel.converterPrice()
@@ -112,23 +112,14 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-//    private fun updateMenuIcon(item: MenuItem) {
-//        if (isConversionToDollars) {
-//            item.setIcon(R.drawable.dollar)
-//        } else {
-//            item.setIcon(R.drawable.euro)
-//        }
-//        isConversionToDollars = !isConversionToDollars
-//    }
-
     private fun updateMenuIcon(item: MenuItem) {
-            viewmodel.iconStatus.observe(this) {
-                if (it) {
-                    item.setIcon(R.drawable.dollar)
-                } else {
-                    item.setIcon(R.drawable.euro)
-                }
+        viewmodel.iconStatus.observe(this) {
+            if (it) {
+                item.setIcon(R.drawable.dollar)
+            } else {
+                item.setIcon(R.drawable.euro)
             }
+        }
     }
 
 }

@@ -2,18 +2,19 @@ package com.tuto.realestatemanager.ui.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
+import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import java.text.DecimalFormat
@@ -25,15 +26,29 @@ class PropertyListViewModel @Inject constructor(
     propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
     private val priceConverterRepository: PriceConverterRepository,
-    searchRepository: SearchRepository
+    searchRepository: SearchRepository,
+    private val geocodingRepository: GeocodingRepository
 ) : ViewModel() {
+
+    private var isTablet = false
 
     val propertyListLiveData: LiveData<List<PropertyViewState>> = liveData {
         combine(
             propertyRepository.getAllPropertiesWithPhotosEntity(),
             searchRepository.getParametersFlow(),
-            priceConverterRepository.isDollarStateFlow,
+            priceConverterRepository.isDollarStateFlow
         ) { propertiesWithPhotosEntity, searchParameters, isDollar ->
+
+            for (property in propertiesWithPhotosEntity){
+                if(property.propertyEntity.lat == null || property.propertyEntity.lng == null || property.propertyEntity.lat == 0.0 || property.propertyEntity.lng == 0.0 ){
+                    val latLng = geocodingRepository.getLatLngLocation(
+                        "${property.propertyEntity.address} ${property.propertyEntity.city} ${property.propertyEntity.zipCode} ${property.propertyEntity.state} ${property.propertyEntity.country}")
+                    property.propertyEntity.lat = latLng.results.get(0).geometry?.location?.lat
+                    property.propertyEntity.lng = latLng.results.get(0).geometry?.location?.lng
+                    propertyRepository.updateProperty(property.propertyEntity)
+                }
+            }
+
             if (searchParameters == null) {
                 emit(mapPropertiesIntoViewState(propertiesWithPhotosEntity, isDollar))
             } else {
@@ -74,6 +89,8 @@ class PropertyListViewModel @Inject constructor(
             city = propertyWithPhotosEntity.propertyEntity.city,
             propertyWithPhotosEntity.propertyEntity.propertySold,
             onItemClicked = {
+                if (!isTablet){
+                navigateSingleLiveEvent.setValue(ListViewAction.NavigateToDetailActivity)}
                 currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
             }
         )
@@ -199,10 +216,15 @@ class PropertyListViewModel @Inject constructor(
         return !searchPoiPark || propertyPoiPark
     }
 
-    fun converterPrice(){
-        priceConverterRepository.convertPrice()
+    val navigateSingleLiveEvent: SingleLiveEvent<ListViewAction> = SingleLiveEvent()
+
+    fun onNavigateToCreateActivity(){
+        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToCreateActvity)
     }
 
-    val iconStatus: LiveData<Boolean> = priceConverterRepository.isDollarStateFlow.asLiveData(Dispatchers.IO)
+    fun onConfigurationChanged(isTablet: Boolean) {
+        this.isTablet = isTablet
+    }
+
 
 }

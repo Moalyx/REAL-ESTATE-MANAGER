@@ -6,6 +6,8 @@ import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdReposit
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.model.PropertyEntity
+import com.tuto.realestatemanager.ui.createproperty.CreateViewAction
+import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -141,4 +143,12 @@ class EditPropertyViewModel @Inject constructor(
         }
 
     }
+
+    val navigateSingleLiveEvent: SingleLiveEvent<EditViewAction> = SingleLiveEvent()
+
+    fun onNavigateToDetailActivity(){
+        navigateSingleLiveEvent.setValue(EditViewAction.NavigateFromEditToDetailActivity)
+    }
+
+
 }

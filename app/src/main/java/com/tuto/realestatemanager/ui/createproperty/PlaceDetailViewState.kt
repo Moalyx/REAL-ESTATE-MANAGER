@@ -1,7 +1,5 @@
 package com.tuto.realestatemanager.ui.createproperty
 
-import com.google.android.gms.maps.model.LatLng
-
 data class PlaceDetailViewState(
     val number: String,
     val address: String,

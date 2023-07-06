@@ -10,13 +10,6 @@ import javax.inject.Singleton
 class PhotoRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao
 ): PhotoRepository {
-//    override suspend fun insertTemporaryPhoto(temporaryPhotoEntity: TemporaryPhotoEntity) {
-//        propertyDao.insertTemporaryPhoto(temporaryPhotoEntity)
-//    }
-
-//    override suspend fun flushTemporaryPhotos() {
-//        propertyDao.flushTemporaryPhotos()
-//    }
 
     override suspend fun insertPhoto(photoEntity: PhotoEntity) {
         propertyDao.insertPhoto(photoEntity)
@@ -41,6 +34,5 @@ class PhotoRepositoryImpl @Inject constructor(
     override suspend fun deleteAllPropertyPhotos(propertyId: Long) {
         propertyDao.deleteAllPropertyPhotos(propertyId)
     }
-
 
 }

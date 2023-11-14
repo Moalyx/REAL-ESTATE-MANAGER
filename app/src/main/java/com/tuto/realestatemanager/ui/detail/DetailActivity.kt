@@ -14,10 +14,6 @@ class DetailActivity : AppCompatActivity() {
 
     private val viewmodel by viewModels<DetailViewModel>()
 
-    companion object {
-        fun navigate(context: Context) = Intent(context, DetailActivity::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,7 +26,6 @@ class DetailActivity : AppCompatActivity() {
         binding.detailToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -46,25 +41,10 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onBackPressed() { //todo voir si on ajoute ici plutot la fleche de retour dans la actionbar
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
         super.onBackPressed()
         viewmodel.onNavigateToMainActivity()
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        val inflater = menuInflater
-//        inflater.inflate(R.menu.fragment_detail_menu, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//           R.id.edit_property -> viewmodel.onNavigateToEditActivity()
-//        }
-//        return true
-//    }
-
-
 
 }

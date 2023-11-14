@@ -2,8 +2,10 @@ package com.tuto.realestatemanager.data
 
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdIdRepositoryImpl
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepositoryImpl
+import com.tuto.realestatemanager.data.repository.connectivity.ConnectivityRepository
+import com.tuto.realestatemanager.data.repository.connectivity.ConnectivityRepositoryImpl
 import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepository
 import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepositoryImpl
 import com.tuto.realestatemanager.domain.place.PlaceDetailRepository
@@ -51,5 +53,9 @@ abstract class DataBindingModule {
     @Binds
     @Singleton
     abstract fun bindsGeocodingRepository(impl : GeocodingRepositoryImpl) : GeocodingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsConnectivityRepository(impl : ConnectivityRepositoryImpl) : ConnectivityRepository
 
 }

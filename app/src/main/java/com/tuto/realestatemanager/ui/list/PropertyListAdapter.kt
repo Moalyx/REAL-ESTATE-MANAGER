@@ -30,12 +30,10 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
 
             if (propertyViewState.isSold){
                 binding.isSoldText.visibility = View.VISIBLE
+            }else{
+                binding.isSoldText.visibility = View.GONE
             }
 
-            if(propertyViewState.photoList.isEmpty()){
-
-
-            }
             Glide
                 .with(binding.propertyPhoto)
                 //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus

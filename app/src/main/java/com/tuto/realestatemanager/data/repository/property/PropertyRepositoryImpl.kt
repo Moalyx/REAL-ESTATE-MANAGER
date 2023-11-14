@@ -37,11 +37,6 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getPropertyById(id)
     }
 
-
-//    override fun getPropertyById(id: Long): Flow<PropertyWithPhotosEntity> = flowOf(
-//        propertiesWithPhotos.find { it.propertyEntity.id == id }
-//    ).filterNotNull()
-
     override suspend fun deletePropertyById(id: Long) {
         propertyDao.deletePropertyById(id)
     }

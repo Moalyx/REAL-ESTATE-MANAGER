@@ -118,7 +118,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
 
 
-            if (onePhotoAtLeast == false) {
+            if (!onePhotoAtLeast) {
                 Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
             } else {
 

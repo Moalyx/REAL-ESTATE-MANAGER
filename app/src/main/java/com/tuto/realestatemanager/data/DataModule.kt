@@ -6,6 +6,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.api.GoogleApi
 import com.tuto.realestatemanager.data.database.PropertyDao
 import com.tuto.realestatemanager.data.database.PropertyDatabase
@@ -26,7 +27,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
-    companion object{
+    companion object {
         private const val BASE_URL = "https://maps.googleapis.com/"
     }
 
@@ -34,7 +35,7 @@ class DataModule {
     @Provides
     @Singleton
     fun providePropertyDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): PropertyDatabase {
         return Room.databaseBuilder(
             context,
@@ -47,21 +48,20 @@ class DataModule {
     @Provides
     @Singleton
     fun providePropertyDao(
-        propertyDatabase : PropertyDatabase
+        propertyDatabase: PropertyDatabase,
     ): PropertyDao {
         return propertyDatabase.getPropertyDao()
     }
 
     @Provides
     @Singleton
-    fun provideGoogleApi() : GoogleApi {
+    fun provideGoogleApi(): GoogleApi {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
         val gson: Gson = GsonBuilder().setLenient().create()
         val httpClient = OkHttpClient().newBuilder()
             .addInterceptor(interceptor)
-            .connectTimeout(10, TimeUnit.SECONDS).
-            readTimeout(10, TimeUnit.SECONDS).build()
+            .connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build()
 
         val retrofitService: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -80,4 +80,5 @@ class DataModule {
     @Provides
     @Singleton
     fun provideClock(): Clock = Clock.systemDefaultZone()
+
 }

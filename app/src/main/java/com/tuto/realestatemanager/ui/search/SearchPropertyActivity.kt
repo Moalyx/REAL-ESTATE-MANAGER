@@ -31,7 +31,6 @@ class SearchPropertyActivity : AppCompatActivity() {
         }
 
         viewModel.navigateSingleLiveEvent.observe(this) {
-            //startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }
@@ -81,7 +80,6 @@ class SearchPropertyActivity : AppCompatActivity() {
                 binding.checkboxSchool.isChecked,
                 binding.checkboxBus.isChecked,
                 binding.checkboxPark.isChecked
-
             )
             viewModel.onNavigateToMainActivity()
         }

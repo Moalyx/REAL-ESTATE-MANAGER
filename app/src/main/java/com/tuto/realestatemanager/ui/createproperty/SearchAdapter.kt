@@ -29,7 +29,7 @@ class SearchAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(predictionViewState: PredictionViewState, listener: OnSearchClickListener) {
             binding.address.text = predictionViewState.address
-            binding.complementAddress.text = predictionViewState.complement
+//            binding.complementAddress.text = predictionViewState.address
 
             binding.rawSearchview.setOnClickListener {
                 listener.onPredictionClicked(predictionViewState.id)

@@ -22,11 +22,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.duration.doAfterTextChanged {
-            if (it.toString() == "") {
-                viewModel.setDuration(0)
-            } else {
-                viewModel.setDuration(it.toString().toInt())
-            }
+            viewModel.setDuration(it.toString().toInt())
         }
 
         binding.rate.doAfterTextChanged {
@@ -34,10 +30,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
 
         binding.totalAmount.doAfterTextChanged {
-            if (it.toString() == "") {
-                viewModel.setAmount(0.0)
-            } else
-                viewModel.setAmount(it.toString().toDouble())
+            viewModel.setAmount(it.toString().toDouble())
         }
 
         viewModel.getMonthlyPayment.observe(this) {

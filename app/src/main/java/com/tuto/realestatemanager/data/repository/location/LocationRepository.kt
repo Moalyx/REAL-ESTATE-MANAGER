@@ -11,14 +11,16 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 @Suppress("DEPRECATION")
 class LocationRepository @Inject constructor(
     private val client : FusedLocationProviderClient
 ){
     companion object {
-        private const val UPDATE_INTERVAL_SECS = 20000L
-        private const val FASTEST_UPDATE_INTERVAL_SECS = 20000L
+        private const val UPDATE_INTERVAL_SECS = 2000L
+        private const val FASTEST_UPDATE_INTERVAL_SECS = 2000L
     }
 
     @SuppressLint("MissingPermission")

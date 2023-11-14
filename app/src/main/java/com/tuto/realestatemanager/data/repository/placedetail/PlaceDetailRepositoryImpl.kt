@@ -8,7 +8,7 @@ import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import javax.inject.Inject
 
 class PlaceDetailRepositoryImpl @Inject constructor(
-    private val googleApi: GoogleApi,
+    private val googleApi: GoogleApi
 ) : PlaceDetailRepository {
 
     override suspend fun getAddressById(id: String): AddressComponentsEntity? {
@@ -20,19 +20,24 @@ class PlaceDetailRepositoryImpl @Inject constructor(
             response.placeResult?.addressComponents?.find { addressComponentsResponse ->
                 "street_number" in addressComponentsResponse.types
             }?.longName
+
         val fullAddress =
             response.placeResult?.addressComponents?.find { addressComponentsResponse ->
                 "route" in addressComponentsResponse.types
             }?.longName
+
         val city = response.placeResult?.addressComponents?.find { addressComponentsResponse ->
             "locality" in addressComponentsResponse.types
         }?.longName
+
         val state = response.placeResult?.addressComponents?.find { addressComponentsResponse ->
             "administrative_area_level_2" in addressComponentsResponse.types
         }?.longName
+
         val country = response.placeResult?.addressComponents?.find { addressComponentsResponse ->
             "country" in addressComponentsResponse.types
         }?.longName
+
         val zipCode = response.placeResult?.addressComponents?.find { addressComponentsResponse ->
             "postal_code" in addressComponentsResponse.types
         }?.longName

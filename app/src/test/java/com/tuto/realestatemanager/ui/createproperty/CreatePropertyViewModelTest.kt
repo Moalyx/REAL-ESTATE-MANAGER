@@ -2,27 +2,24 @@ package com.tuto.realestatemanager.ui.createproperty
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.TestCoroutineRule
-import com.tuto.realestatemanager.data.repository.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.data.repository.autocomplete.model.Predictions
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
-import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
 import io.mockk.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runCurrent
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.time.Clock
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneOffset
 
 

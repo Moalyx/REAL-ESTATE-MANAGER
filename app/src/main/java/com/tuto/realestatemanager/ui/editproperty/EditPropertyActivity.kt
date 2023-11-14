@@ -22,12 +22,11 @@ class EditPropertyActivity : AppCompatActivity() {
     private var type = ""
 
     companion object {
-        const val  XXX ="XXX"
+        const val XXX = "XXX"
         const val KEY_EDIT = "edit_property"
         const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
         fun navigate(context: Context, propertyId: Long): Intent {
             val intent = Intent(context, EditPropertyActivity::class.java)
-           //intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             intent.putExtra(KEY_PROPERTY_ID, propertyId)
             return intent
         }
@@ -35,6 +34,7 @@ class EditPropertyActivity : AppCompatActivity() {
 
     private var lat: Double? = 0.0
     private var lng: Double? = 0.0
+
     private val viewModel by viewModels<EditPropertyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,15 +62,14 @@ class EditPropertyActivity : AppCompatActivity() {
         binding.addPictureButton.setOnClickListener {
             val intent = Intent(this, AddPhotoActivity::class.java)
             intent.putExtra("XXX", XXX)
-            intent.putExtra(KEY_EDIT, propertyId )
+            intent.putExtra(KEY_EDIT, propertyId)
             startActivity(intent)
-
         }
 
         binding.takePictureButton.setOnClickListener {
             val intent = Intent(this, AddPictureCameraActivity::class.java)
             intent.putExtra("XXX", XXX)
-            intent.putExtra(KEY_EDIT, propertyId )
+            intent.putExtra(KEY_EDIT, propertyId)
             startActivity(intent)
         }
 
@@ -90,6 +89,7 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         viewModel.detailPropertyLiveData.observe(this) {
+            type = it.type
             binding.typeDropdown.setText(it.type)
             binding.description.setText(it.description, TextView.BufferType.EDITABLE)
             binding.price.setText(it.price.toString())
@@ -112,7 +112,7 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxSchool, it.poiSchool)
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
             viewModel.isChecked(binding.checkboxtrTrain, it.poiTrain)
-            viewModel.isChecked(binding.checkboxSaleStatus,it.isSold)
+            viewModel.isChecked(binding.checkboxSaleStatus, it.isSold)
         }
 
         binding.saveButton.setOnClickListener {
@@ -147,21 +147,15 @@ class EditPropertyActivity : AppCompatActivity() {
                 }
             }
             viewModel.onNavigateToDetailActivity()
-
-
-
         }
 
-
-        binding.dismissButton.setOnClickListener{
+        binding.dismissButton.setOnClickListener {
             finish()
         }
 
-        viewModel.navigateSingleLiveEvent.observe(this){
-           finish()
-         //   startActivity(Intent(this, MainActivity::class.java))
+        viewModel.navigateSingleLiveEvent.observe(this) {
+            finish()
         }
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -169,4 +163,5 @@ class EditPropertyActivity : AppCompatActivity() {
         super.onBackPressed()
         viewModel.onNavigateToDetailActivity()
     }
+
 }

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.model.SearchParameters
-import com.tuto.realestatemanager.ui.detail.DetailViewAction
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,17 +32,8 @@ class SearchPropertyViewModel @Inject constructor(
         poiSchool: Boolean,
         poiBus: Boolean,
         poiPark: Boolean,
-    ) { //todo mettre en parametre les attributs de l'objet
+    ) {
 
-
-//        if (typeParameter(type) != null
-//            && priceMiniParameter(priceMini) != null
-//            && priceMaxiParameter(priceMaxi) != null
-//            && surfaceMiniParameter(surfaceMini) != null
-//            && surfaceMaxiParameter(surfaceMaxi) != null
-//            && cityParameter(city) != null
-//
-//        ) {
         SearchRepository.setParameters(
             SearchParameters(
                 typeParameter(type),
@@ -60,7 +50,6 @@ class SearchPropertyViewModel @Inject constructor(
                 poiPark
             )
         )
-//        }
     }
 
     private fun typeParameter(type: String?): String? {
@@ -107,7 +96,7 @@ class SearchPropertyViewModel @Inject constructor(
 
     val navigateSingleLiveEvent: SingleLiveEvent<SearchViewAction> = SingleLiveEvent()
 
-    fun onNavigateToMainActivity(){
+    fun onNavigateToMainActivity() {
         navigateSingleLiveEvent.setValue(SearchViewAction.NavigateToMainActivity)
     }
 

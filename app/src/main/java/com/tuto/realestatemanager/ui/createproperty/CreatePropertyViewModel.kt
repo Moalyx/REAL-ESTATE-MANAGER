@@ -12,6 +12,7 @@ import com.tuto.realestatemanager.data.repository.priceconverterrepository.Price
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
+import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
 import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
@@ -37,6 +38,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
     private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase,
+    private val getPredictionsUseCase: GetPredictionsUseCase,
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val autocompleteRepository: AutocompleteRepository,
@@ -87,7 +89,7 @@ class CreatePropertyViewModel @Inject constructor(
 
     private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
         predictionsLivedata.mapLatest {
-            autocompleteRepository.getAutocompleteResult(
+            getPredictionsUseCase.invoke(
                 it.first,
                 "${it.second.latitude},${it.second.longitude}"
             )

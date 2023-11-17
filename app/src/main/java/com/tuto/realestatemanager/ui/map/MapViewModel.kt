@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
@@ -15,6 +16,7 @@ import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
@@ -28,6 +30,90 @@ class MapViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var isTablet = false
+
+    val getMapViewState : LiveData<MapViewState> = liveData{
+        kotlinx.coroutines.flow.combine(
+            propertyRepository.getAllPropertiesWithPhotosEntity(),
+            searchRepository.getParametersFlow(),
+            locationRepository.getUserLocation()
+
+        ){
+            propertiesWithPhotosEntity, searchParameters, userLocation ->
+
+            //val markerPlaceList = mutableListOf<MarkerPlace>()
+
+
+
+//            if (userLocation == null) return
+//
+//            if (propertiesWithPhotosEntity == null) return
+
+            if (searchParameters == null) {
+                val markerPlaceList = mutableListOf<MarkerPlace>()
+                for (property in propertiesWithPhotosEntity) {
+                    markerPlaceList.add(
+                        MarkerPlace(
+                            property.propertyEntity.id,
+                            property.propertyEntity.description,
+                            property.propertyEntity.address,
+                            property.propertyEntity.lat!!,
+                            property.propertyEntity.lng!!
+                        )
+                    )
+                }
+
+//                propertyListMediatorLiveData.value =
+                    emit(MapViewState(
+                        lat = userLocation.latitude,
+                        lng = userLocation.longitude,
+                        markers = markerPlaceList
+                    ))
+
+            } else {
+                val markerPlaceListFiltered = mutableListOf<MarkerPlace>()
+                val filteredList = mutableListOf<PropertyWithPhotosEntity>()
+                for (property in propertiesWithPhotosEntity) {
+                    if (
+                        comparePrice(searchParameters, property)
+                        && compareType(searchParameters, property)
+                        && compareSurface(searchParameters, property)
+                        && compareCity(searchParameters, property)
+                        && comparePoiTrain(searchParameters, property)
+                        && comparePoiAirport(searchParameters, property)
+                        && comparePoiResto(searchParameters, property)
+                        && comparePoiSchool(searchParameters, property)
+                        && comparePoiBus(searchParameters, property)
+                        && comparePoiPark(searchParameters, property)
+
+                    ) {
+                        filteredList.add(property)
+
+                    }
+                }
+
+                for (property in filteredList) {
+                    markerPlaceListFiltered.add(
+                        MarkerPlace(
+                            property.propertyEntity.id,
+                            property.propertyEntity.description,
+                            property.propertyEntity.address,
+                            property.propertyEntity.lat!!,
+                            property.propertyEntity.lng!!
+                        )
+                    )
+                }
+
+//                propertyListMediatorLiveData.value =
+                    emit(MapViewState(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        markerPlaceListFiltered
+                    ))
+            }
+
+
+        }.collect()
+    }
 
 
     private val propertyList: Flow<List<PropertyWithPhotosEntity>> =
@@ -67,7 +153,7 @@ class MapViewModel @Inject constructor(
 
     }
 
-    val getMapViewState = propertyListMediatorLiveData
+    val getMapViewState2 = propertyListMediatorLiveData
 
     private fun combine(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>?,
@@ -96,9 +182,9 @@ class MapViewModel @Inject constructor(
 
             propertyListMediatorLiveData.value =
                 MapViewState(
-                    userLocation.latitude,
-                    userLocation.longitude,
-                    markerPlaceList
+                    lat = userLocation.latitude,
+                    lng = userLocation.longitude,
+                    markers = markerPlaceList
                 )
 
         } else {

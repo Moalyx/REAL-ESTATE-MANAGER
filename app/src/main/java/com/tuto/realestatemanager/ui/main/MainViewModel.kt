@@ -1,8 +1,14 @@
 package com.tuto.realestatemanager.ui.main
 
+import android.Manifest
+import android.app.Application
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdIdRepositoryImpl
 import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
@@ -14,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val priceConverterRepository: PriceConverterRepository
+    private val application: Application,
+    private val priceConverterRepository: PriceConverterRepository,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
 
     private var isTablet: Boolean = false
@@ -33,6 +41,19 @@ class MainViewModel @Inject constructor(
 
     fun navigateToSearch(){
         navigateSingleLiveEvent.setValue(MainViewAction.NavigateToSearch)
+    }
+
+    fun onResume() {
+        if (ActivityCompat.checkSelfPermission(
+                application,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                application,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED){
+
+        }
     }
 
 }

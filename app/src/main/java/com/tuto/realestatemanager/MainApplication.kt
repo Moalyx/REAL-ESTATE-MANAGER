@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.application
+package com.tuto.realestatemanager
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

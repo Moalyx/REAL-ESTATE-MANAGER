@@ -57,6 +57,8 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
 
         viewModel.getMapViewState.observe(this) { mapViewState ->
+
+            map.clear()
             val point = LatLng(mapViewState.lat, mapViewState.lng)
             map.animateCamera(CameraUpdateFactory.zoomIn())
             val camera: CameraPosition =
@@ -68,25 +70,28 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
                     .center(point)
                     .radius(5000.0)
                     .strokeColor(Color.BLUE)
-                    .fillColor(0x110000BB)
+                    .fillColor(0x11000099)
             )
 
             for (markerPlace in mapViewState.markers) {
-                val marker = map.addMarker(
-                    MarkerOptions()
-                        .position(
-                            LatLng(
-                                markerPlace.lat,
-                                markerPlace.lng
+                if(markerPlace.lat != null && markerPlace.lng != null){
+                    val marker = map.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    markerPlace.lat,
+                                    markerPlace.lng
+                                )
                             )
-                        )
-                        .title(markerPlace.description)
-                        .snippet(markerPlace.address)
+                            .title(markerPlace.description)
+                            .snippet(markerPlace.address)
 
-                )
-                if (marker != null) {
-                    marker.tag = markerPlace.id
+                    )
+                    if (marker != null) {
+                        marker.tag = markerPlace.id
+                    }
                 }
+
             }
         }
 

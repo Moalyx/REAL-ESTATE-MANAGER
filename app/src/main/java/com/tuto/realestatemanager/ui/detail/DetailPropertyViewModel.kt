@@ -4,17 +4,17 @@ import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -22,16 +22,21 @@ import javax.inject.Inject
 class DetailPropertyViewModel @Inject constructor(
     currentIdFlowUseCase: CurrentIdFlowUseCase,
     isDollarFlowUseCase: IsDollarFlowUseCase,
-    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase,
-    coroutineDispatchersProvider : CoroutineDispatchersProvider
+    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase
 ) : ViewModel() {
 
-    private val isDollar = isDollarFlowUseCase.invoke().value
+    private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke().filterNotNull().flatMapLatest {
+        getPropertyWithPhotosByIdUseCase.invoke(it)
+    }
 
-    val detailPropertyLiveData: LiveData<PropertyDetailViewState> =
-        currentIdFlowUseCase.invoke().filterNotNull().flatMapLatest { id ->
-            getPropertyWithPhotosByIdUseCase.invoke(id).map { propertyWithPhotosEntity ->
-                PropertyDetailViewState(
+    val detailPropertyLiveData: LiveData<PropertyDetailViewState> = liveData {
+        combine(
+            getCurrentPropertyFlow,
+            isDollarFlowUseCase.invoke()
+        ){
+                propertyWithPhotosEntity, isDollar ->
+
+                val propertyDetailViewState = PropertyDetailViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
                     convertMoney(propertyWithPhotosEntity.propertyEntity.price.toString(), isDollar),
@@ -57,8 +62,11 @@ class DetailPropertyViewModel @Inject constructor(
                     poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
                     poiPark = propertyWithPhotosEntity.propertyEntity.poiPark
                 )
-            }
-        }.asLiveData(coroutineDispatchersProvider.io)
+
+            emit(propertyDetailViewState)
+
+        }.collect()
+    }
 
     private fun convertMoney(price: String, isDollar: Boolean): String {
         val decimalFormat = DecimalFormat("#,###.#")
@@ -71,14 +79,8 @@ class DetailPropertyViewModel @Inject constructor(
         return convertPrice
     }
 
-    private fun convertDate(date: String, isDollar: Boolean): String{
-        val convertDate = if (isDollar){
-            Utils.formatToUS(date)
-        }else{
-            date
-        }
-        return convertDate
-    }
+    private fun convertDate(date: String, isDollar: Boolean): String = if (isDollar) Utils.formatToUS(date) else date
+
 
     fun isVisible(view: ImageView, isVisible: Boolean): Boolean{
         view.isVisible = false
@@ -92,8 +94,8 @@ class DetailPropertyViewModel @Inject constructor(
         navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
     }
 
-    fun onNavigatetoMainActivity(){
-        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToMainActivity)
-    }
+//    fun onNavigateToMainActivity(){
+//        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToMainActivity)
+//    }
 
 }

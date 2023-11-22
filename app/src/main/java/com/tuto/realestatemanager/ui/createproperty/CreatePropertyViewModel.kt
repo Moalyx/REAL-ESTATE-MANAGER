@@ -128,7 +128,6 @@ class CreatePropertyViewModel @Inject constructor(
                 PredictionViewState(
                     predictions.prediction,
                     predictions.placeId
-
                 )
             }
         }

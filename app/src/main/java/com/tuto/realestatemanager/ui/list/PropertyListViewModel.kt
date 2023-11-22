@@ -6,12 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.data.repository.connectivity.ConnectivityRepository
-import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepository
-import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
-import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-import com.tuto.realestatemanager.data.repository.search.SearchRepository
-import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
+import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.geocode.GetLatLngPropertyLocationUseCase
+import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
+import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.property.GetAllPropertiesWithPhotosUseCase
+import com.tuto.realestatemanager.domain.usecase.property.UpdatePropertyUseCase
+import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
@@ -25,33 +26,34 @@ import javax.inject.Inject
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
     mainApplication: Application,
-    private val connectivityRepository: ConnectivityRepository,
-    private val temporaryPhotoRepository: TemporaryPhotoRepository,
-    propertyRepository: PropertyRepository,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
+    private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
+    private val updatePropertyUseCase: UpdatePropertyUseCase,
+    private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val priceConverterRepository: PriceConverterRepository,
-    searchRepository: SearchRepository,
-    private val geocodingRepository: GeocodingRepository,
+    private val isDollarFlowUseCase: IsDollarFlowUseCase,
+    private val getParametersFlowUseCase: GetParametersFlowUseCase,
+    private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase
 ) : ViewModel() {
 
     private var isTablet = false
 
     val propertyListLiveData: LiveData<List<PropertyViewState>> = liveData {
         combine(
-            propertyRepository.getAllPropertiesWithPhotosEntity(),
-            searchRepository.getParametersFlow(),
-            priceConverterRepository.isDollarStateFlow,
-            connectivityRepository.isInternetAvailable()
+            getAllPropertiesWithPhotosUseCase.invoke(),
+            getParametersFlowUseCase.invoke(),
+            isDollarFlowUseCase.invoke(),
+            isInternetAvailableUseCase.invoke()
         ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable ->
 
             if (isInternetAvailable) {
                 for (property in propertiesWithPhotosEntity) {
                     if (property.propertyEntity.lat == null || property.propertyEntity.lng == null || property.propertyEntity.lat == 0.0 || property.propertyEntity.lng == 0.0) {
-                        val latLng = geocodingRepository.getLatLngLocation(
+                        val latLng = getLatLngPropertyLocationUseCase.invoke(
                             "${property.propertyEntity.address} ${property.propertyEntity.city} ${property.propertyEntity.zipCode} ${property.propertyEntity.state} ${property.propertyEntity.country}")
                         property.propertyEntity.lat = latLng.results[0].geometry?.location?.lat
                         property.propertyEntity.lng = latLng.results[0].geometry?.location?.lng
-                        propertyRepository.updateProperty(property.propertyEntity)
+                        updatePropertyUseCase.invoke(property.propertyEntity)
                     }
                 }
             }else{
@@ -81,7 +83,7 @@ class PropertyListViewModel @Inject constructor(
     }
 
     fun onDeleteTemporaryPhotoRepository() {
-        temporaryPhotoRepository.onDeleteTemporaryPhotoRepo()
+        onDeleteTemporaryPhotoUseCase.invoke()
     }
 
     private fun mapPropertiesIntoViewState(

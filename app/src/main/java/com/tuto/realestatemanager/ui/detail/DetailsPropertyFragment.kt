@@ -2,6 +2,7 @@ package com.tuto.realestatemanager.ui.detail
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
@@ -69,6 +70,10 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
         (requireActivity() as MenuHost).addMenuProvider(this)
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
+            if(it != null){
+                binding.contentFrame.visibility = View.VISIBLE
+                binding.placeholderImage.visibility = View.GONE
+            }
             propertyId = it.id
             binding.type.text = it.type
             binding.surface.text = it.surface.toString()

@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.data
+package com.tuto.realestatemanager.di
 
 import android.content.Context
 import androidx.room.Room
@@ -6,7 +6,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.api.GoogleApi
 import com.tuto.realestatemanager.data.database.PropertyDao
 import com.tuto.realestatemanager.data.database.PropertyDatabase

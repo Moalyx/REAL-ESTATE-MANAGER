@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository.MortgageCalculatorRepository
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -13,31 +14,37 @@ import kotlin.math.pow
 @HiltViewModel
 class MortgageCalculatorViewModel @Inject constructor(
     private val mortgageCalculatorRepository: MortgageCalculatorRepository,
+    private val priceConverterRepository: PriceConverterRepository
 ) : ViewModel() {
 
-    val getMonthlyPayment: LiveData<Int> = liveData {
+    val getMonthlyPayment: LiveData<String> = liveData {
         combine(
             mortgageCalculatorRepository.getAmount(),
             mortgageCalculatorRepository.getRate(),
-            mortgageCalculatorRepository.getDuration()
-        ) { amount, rate, duration ->
+            mortgageCalculatorRepository.getDuration(),
+            priceConverterRepository.isDollarStateFlow
+
+        ) { amount, rate, duration, isDollar ->
 
             val currentRate = (rate / 100) / 12
             val time = duration * 12
 
             if ((amount == 0.0) || (rate == 0.0) || (duration == 0)) {
-                emit(0)
+                emit("0")
             } else {
-                emit((amount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt())
+                if (isDollar)
+                    emit("${(amount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()} $")
+                else
+                    emit("${(amount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()} €")
             }
         }.collect()
     }
 
-    fun setAmount(amount: Double) {
-        if (amount.toString() == "")
+    fun setAmount(amount: String) {
+        if (amount == "")
             mortgageCalculatorRepository.setAmount(0.0)
         else
-            mortgageCalculatorRepository.setAmount(amount)
+            mortgageCalculatorRepository.setAmount(amount.toDouble())
     }
 
     fun setRate(rate: String) {
@@ -47,11 +54,11 @@ class MortgageCalculatorViewModel @Inject constructor(
             mortgageCalculatorRepository.setRate(rate)
     }
 
-    fun setDuration(duration: Int) {
-        if (duration.toString() == "")
+    fun setDuration(duration: String) {
+        if (duration == "")
             mortgageCalculatorRepository.setDuration(0)
         else
-            mortgageCalculatorRepository.setDuration(duration)
+            mortgageCalculatorRepository.setDuration(duration.toInt())
 
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.R
@@ -114,11 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateMenuIcon(item: MenuItem) {
         viewmodel.iconStatus.observe(this) {
-            if (it) {
-                item.setIcon(R.drawable.dollar)
-            } else {
-                item.setIcon(R.drawable.euro)
-            }
+            if (it) item.setIcon(R.drawable.dollar) else item.setIcon(R.drawable.euro)
         }
     }
 

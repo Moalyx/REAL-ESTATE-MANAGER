@@ -8,13 +8,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PriceConverterRepository @Inject constructor() {
+class PriceConverterRepository @Inject constructor() : PriceConverterRepositoryInterface {
 
     private val isDollarMutableStateFlow = MutableStateFlow(true)
 
-    val isDollarStateFlow: StateFlow<Boolean> = isDollarMutableStateFlow.asStateFlow()
+    override val isDollarStateFlow: StateFlow<Boolean> = isDollarMutableStateFlow.asStateFlow()
 
-    fun convertPrice() {
+    override fun convertPrice() {
         isDollarMutableStateFlow.update { !it }
     }
 }

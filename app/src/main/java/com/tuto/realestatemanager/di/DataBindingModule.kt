@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.data
+package com.tuto.realestatemanager.di
 
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdIdRepositoryImpl
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
@@ -8,12 +8,18 @@ import com.tuto.realestatemanager.data.repository.connectivity.ConnectivityRepos
 import com.tuto.realestatemanager.data.repository.connectivity.ConnectivityRepositoryImpl
 import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepository
 import com.tuto.realestatemanager.data.repository.geocoding.GeocodingRepositoryImpl
+import com.tuto.realestatemanager.data.repository.location.LocationRepository
+import com.tuto.realestatemanager.data.repository.location.LocationRepositoryInterface
 import com.tuto.realestatemanager.domain.place.PlaceDetailRepository
 import com.tuto.realestatemanager.data.repository.placedetail.PlaceDetailRepositoryImpl
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepositoryImpl
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepositoryInterface
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepositoryImpl
+import com.tuto.realestatemanager.data.repository.search.SearchRepository
+import com.tuto.realestatemanager.data.repository.search.SearchRepositoryInterface
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepositoryImpl
 import dagger.Binds
@@ -57,5 +63,17 @@ abstract class DataBindingModule {
     @Binds
     @Singleton
     abstract fun bindsConnectivityRepository(impl : ConnectivityRepositoryImpl) : ConnectivityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsSearchRepository(impl : SearchRepository) : SearchRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindsLocationRepository(impl : LocationRepository) : LocationRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindsPriceConverterRepository(impl : PriceConverterRepository) : PriceConverterRepositoryInterface
 
 }

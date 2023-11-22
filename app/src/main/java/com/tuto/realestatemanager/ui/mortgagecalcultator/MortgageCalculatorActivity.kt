@@ -13,7 +13,6 @@ class MortgageCalculatorActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<MortgageCalculatorViewModel>()
 
-
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +21,7 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.duration.doAfterTextChanged {
-            viewModel.setDuration(it.toString().toInt())
+            viewModel.setDuration(it.toString())
         }
 
         binding.rate.doAfterTextChanged {
@@ -30,11 +29,11 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
 
         binding.totalAmount.doAfterTextChanged {
-            viewModel.setAmount(it.toString().toDouble())
+            viewModel.setAmount(it.toString())
         }
 
         viewModel.getMonthlyPayment.observe(this) {
-            binding.mensualitPayement.text = "$it$"
+            binding.mensualitPayement.text = it
         }
     }
 }

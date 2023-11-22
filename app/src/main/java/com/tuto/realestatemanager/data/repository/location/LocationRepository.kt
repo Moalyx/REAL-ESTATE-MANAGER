@@ -17,14 +17,14 @@ import javax.inject.Singleton
 @Suppress("DEPRECATION")
 class LocationRepository @Inject constructor(
     private val client : FusedLocationProviderClient
-){
+) : LocationRepositoryInterface{
     companion object {
         private const val UPDATE_INTERVAL_SECS = 2000L
         private const val FASTEST_UPDATE_INTERVAL_SECS = 2000L
     }
 
     @SuppressLint("MissingPermission")
-    fun getUserLocation(): Flow<Location> = callbackFlow {
+    override fun getUserLocation(): Flow<Location> = callbackFlow {
         val locationRequest = LocationRequest.create()
             .setFastestInterval(FASTEST_UPDATE_INTERVAL_SECS)
             .setInterval(UPDATE_INTERVAL_SECS)

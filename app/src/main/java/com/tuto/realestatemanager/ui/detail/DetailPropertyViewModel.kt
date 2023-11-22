@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailPropertyViewModel @Inject constructor(
     currentPropertyIdRepository: CurrentPropertyIdRepository,
-    val priceConverterRepository: PriceConverterRepository,
+    private val priceConverterRepository: PriceConverterRepository,
     private val propertyRepository: PropertyRepository,
     coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {

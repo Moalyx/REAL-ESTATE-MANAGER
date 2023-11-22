@@ -1,14 +1,11 @@
 package com.tuto.realestatemanager.data.repository.autocomplete
 
 import android.app.Application
-import android.widget.Toast
 import com.tuto.realestatemanager.BuildConfig
-import com.tuto.realestatemanager.MainApplication
 import com.tuto.realestatemanager.data.api.GoogleApi
 import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
 import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
-import java.io.IOException
 import javax.inject.Inject
 
 class AutocompleteRepositoryImpl @Inject constructor(

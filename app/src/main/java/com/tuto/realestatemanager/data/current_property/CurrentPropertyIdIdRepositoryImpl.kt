@@ -18,7 +18,5 @@ class CurrentPropertyIdIdRepositoryImpl @Inject constructor() : CurrentPropertyI
         currentPropertyIdMutableStateFlow.tryEmit(currentId)
     }
 
-    override val currentIdFlow: Flow<Long?> = currentPropertyIdMutableStateFlow.onEach {
-        Log.d("MOP", "currentPropertyIdMutableStateFlow to $it" )
-    }
+    override val currentIdFlow: Flow<Long?> = currentPropertyIdMutableStateFlow
 }

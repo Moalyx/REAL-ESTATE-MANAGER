@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository.MortgageCalculatorRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
+import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -14,7 +15,7 @@ import kotlin.math.pow
 @HiltViewModel
 class MortgageCalculatorViewModel @Inject constructor(
     private val mortgageCalculatorRepository: MortgageCalculatorRepository,
-    private val priceConverterRepository: PriceConverterRepository
+    private val isDollarFlowUseCase: IsDollarFlowUseCase
 ) : ViewModel() {
 
     val getMonthlyPayment: LiveData<String> = liveData {
@@ -22,7 +23,7 @@ class MortgageCalculatorViewModel @Inject constructor(
             mortgageCalculatorRepository.getAmount(),
             mortgageCalculatorRepository.getRate(),
             mortgageCalculatorRepository.getDuration(),
-            priceConverterRepository.isDollarStateFlow
+            isDollarFlowUseCase.invoke()
 
         ) { amount, rate, duration, isDollar ->
 

@@ -1,42 +1,35 @@
 package com.tuto.realestatemanager.ui.map
 
-import android.location.Location
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.data.repository.location.LocationRepository
-import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-import com.tuto.realestatemanager.data.repository.search.SearchRepository
-import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.property.GetAllPropertiesWithPhotosUseCase
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    locationRepository: LocationRepository,
-    searchRepository: SearchRepository,
-    propertyRepository: PropertyRepository,
-    val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    coroutineDispatchersProvider: CoroutineDispatchersProvider,
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    private val getParametersFlowUseCase: GetParametersFlowUseCase,
+    private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
+    val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
     private var isTablet = false
 
     val getMapViewState: LiveData<MapViewState> = liveData {
         combine(
-            propertyRepository.getAllPropertiesWithPhotosEntity(),
-            searchRepository.getParametersFlow(),
-            locationRepository.getUserLocation()
+            getAllPropertiesWithPhotosUseCase.invoke(),
+            getParametersFlowUseCase.invoke(),
+            getUserLocationFlowUseCase.invoke()
 
         ) { propertiesWithPhotosEntity, searchParameters, userLocation ->
 

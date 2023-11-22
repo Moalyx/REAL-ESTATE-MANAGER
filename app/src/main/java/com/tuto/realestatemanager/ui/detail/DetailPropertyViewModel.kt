@@ -5,11 +5,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
-import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
-import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
-import com.tuto.realestatemanager.ui.map.MapViewAction
+import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,17 +20,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailPropertyViewModel @Inject constructor(
-    currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val priceConverterRepository: PriceConverterRepository,
-    private val propertyRepository: PropertyRepository,
+    currentIdFlowUseCase: CurrentIdFlowUseCase,
+    isDollarFlowUseCase: IsDollarFlowUseCase,
+    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase,
     coroutineDispatchersProvider : CoroutineDispatchersProvider
 ) : ViewModel() {
 
-    private val isDollar = priceConverterRepository.isDollarStateFlow.value
+    private val isDollar = isDollarFlowUseCase.invoke().value
 
     val detailPropertyLiveData: LiveData<PropertyDetailViewState> =
-        currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
-            propertyRepository.getPropertyWithPhotoById(id).map { propertyWithPhotosEntity ->
+        currentIdFlowUseCase.invoke().filterNotNull().flatMapLatest { id ->
+            getPropertyWithPhotosByIdUseCase.invoke(id).map { propertyWithPhotosEntity ->
                 PropertyDetailViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,

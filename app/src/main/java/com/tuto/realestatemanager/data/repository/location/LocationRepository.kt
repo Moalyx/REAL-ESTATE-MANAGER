@@ -10,6 +10,7 @@ import com.google.android.gms.location.LocationResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,11 +31,12 @@ class LocationRepository @Inject constructor(
             .setInterval(UPDATE_INTERVAL_SECS)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-        val callBack = object : LocationCallback() {
+        val callBack: LocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                val location: Location? = locationResult.lastLocation
-                trySend(location!!)
+                locationResult.lastLocation?.let {
+                    trySend(it)
+                }
             }
         }
 

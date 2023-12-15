@@ -330,7 +330,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <SearchView
+                    <androidx.appcompat.widget.SearchView
                         android:id="@+id/searchview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -345,7 +345,8 @@
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:paddingStart="10dp"
-                        android:paddingEnd="10dp" />
+                        android:paddingEnd="10dp"
+                        android:visibility="visible"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/title_address"

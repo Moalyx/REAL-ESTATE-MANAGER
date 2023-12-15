@@ -28,8 +28,8 @@ class SearchAdapter(
     class SearchViewHolder(private val binding: ItemSearchBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(predictionViewState: PredictionViewState, listener: OnSearchClickListener) {
+
             binding.address.text = predictionViewState.address
-//            binding.complementAddress.text = predictionViewState.address
 
             binding.rawSearchview.setOnClickListener {
                 listener.onPredictionClicked(predictionViewState.id)

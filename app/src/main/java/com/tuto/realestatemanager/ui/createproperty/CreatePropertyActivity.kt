@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -52,15 +54,18 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.typeDropdown.inputType = InputType.TYPE_NULL
 
         val searchView = binding.searchview
-        searchView.setOnQueryTextListener(object : OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 viewModel.onAddressSearchChanged(p0)
+                Log.d("TAGOO", "onQueryTextChange() called with: p0 = $p0")
                 return false
+
             }
+
         })
 
         viewModel.placeDetailViewState.observe(this) {
@@ -76,12 +81,13 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         val searchAdapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
             override fun onPredictionClicked(id: String) {
-                viewModel.onGetAutocompleteAddressId(id)
+                viewModel.onSetAutocompleteAddressId(id)
                 binding.searchview.clearFocus()
                 searchView.setQuery("", false)
-                binding.predictionRecyclerview.isVisible
+                //binding.predictionRecyclerview.isVisible
             }
         })
+
         binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.predictionRecyclerview.adapter = searchAdapter
         viewModel.predictionListViewState.observe(this) {

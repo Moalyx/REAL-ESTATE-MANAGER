@@ -1,9 +1,11 @@
 package com.tuto.realestatemanager.ui.detail
 
+import android.util.Log
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
@@ -11,6 +13,9 @@ import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosB
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -29,12 +34,21 @@ class DetailPropertyViewModel @Inject constructor(
         getPropertyWithPhotosByIdUseCase.invoke(it)
     }
 
+    private val photoUriMutableStateFlow = MutableStateFlow<String?>(null)
+
+    fun setUri(uri :String){
+        photoUriMutableStateFlow.tryEmit(uri)
+    }
+
+    fun getUri() : LiveData<String> = photoUriMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
+
     val detailPropertyLiveData: LiveData<PropertyDetailViewState> = liveData {
         combine(
+            photoUriMutableStateFlow,
             getCurrentPropertyFlow,
             isDollarFlowUseCase.invoke()
         ){
-                propertyWithPhotosEntity, isDollar ->
+                photoUri, propertyWithPhotosEntity, isDollar ->
 
                 val propertyDetailViewState = PropertyDetailViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
@@ -60,11 +74,15 @@ class DetailPropertyViewModel @Inject constructor(
                     poiResto = propertyWithPhotosEntity.propertyEntity.poiResto,
                     poiSchool = propertyWithPhotosEntity.propertyEntity.poiSchool,
                     poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
-                    poiPark = propertyWithPhotosEntity.propertyEntity.poiPark
+                    poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
+                    photoUri = photoUri ?: ""
                 )
 
             emit(propertyDetailViewState)
-
+            Log.d(
+                "MIMI",
+                "$propertyDetailViewState"
+            )
         }.collect()
     }
 

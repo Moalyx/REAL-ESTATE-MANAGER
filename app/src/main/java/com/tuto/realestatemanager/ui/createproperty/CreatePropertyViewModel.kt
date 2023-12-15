@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -17,6 +18,10 @@ import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEnt
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
+import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
+import com.tuto.realestatemanager.domain.usecase.temporaryphoto.GetTemporaryPhotoListUseCase
+import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
@@ -34,24 +39,26 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
     private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase,
     private val getPredictionsUseCase: GetPredictionsUseCase,
     private val propertyRepository: PropertyRepository,
-    private val photoRepository: PhotoRepository,
-    private val autocompleteRepository: AutocompleteRepository,
+    getTemporaryPhotoListUseCase: GetTemporaryPhotoListUseCase,
     private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
-    private val temporaryPhotoRepository: TemporaryPhotoRepository,
+    private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
+    private val insertPhotoUseCase: InsertPhotoUseCase,
     converterRepository: PriceConverterRepository,
-    private val locationRepository: LocationRepository, //todo localisation directement en fonction du gps de l'agent
+    private val dispatcher : CoroutineContext,
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
 
-    fun onGetAutocompleteAddressId(id: String) {
+    fun onSetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
     }
 
@@ -76,27 +83,29 @@ class CreatePropertyViewModel @Inject constructor(
         )
     }
 
-    private val predictionsLivedata: Flow<Pair<String, Location>> = flow {
+    private val predictionsFlow: Flow<Pair<String, Location>> = flow {
         combine(
             addressSearchMutableStateFlow.filterNotNull(),
-            locationRepository.getUserLocation()
+            getUserLocationFlowUseCase.invoke()
         ) { address, location ->
 
             emit(Pair(address, location))
+
 
         }.collect()
     }
 
     private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
-        predictionsLivedata.mapLatest {
+        predictionsFlow.mapLatest {
             getPredictionsUseCase.invoke(
                 it.first,
                 "${it.second.latitude},${it.second.longitude}"
+
             )
-        }.asLiveData(Dispatchers.IO)
+        }.asLiveData(coroutineDispatchersProvider.io)
 
     private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
-        temporaryPhotoRepository.getTemporaryPhotoList()
+        getTemporaryPhotoListUseCase.invoke()
 
     val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
         temporaryPhotoStateFlow.asLiveData()
@@ -104,23 +113,6 @@ class CreatePropertyViewModel @Inject constructor(
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
     }
-
-//    private val agentLocalisation = locationRepository.getUserLocation().asLiveData(Dispatchers.IO)
-//    private val loc = agentLocalisation.value
-//    private val latLng = "${loc?.latitude}, ${loc?.longitude} "
-//
-//    private val userLocationLivedata: LiveData<Location> =
-//        locationRepository.getUserLocation().asLiveData(coroutineDispatchersProvider.io)
-//
-//    val locationlat = userLocationLivedata.value?.latitude.toString()
-//    val locationlng = userLocationLivedata.value?.longitude.toString()
-//    val looo = "$locationlat, $locationlng"
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private val predictionResponseLiveData2: LiveData<PredictionResponse> =
-//        addressSearchMutableStateFlow.filterNotNull().mapLatest {
-//            autocompleteRepository.getAutocompleteResult(it, latLng)
-//        }.asLiveData(Dispatchers.IO)
 
     val predictionListViewState: LiveData<List<PredictionViewState>> =
         predictionResponseLiveData.map {
@@ -191,7 +183,7 @@ class CreatePropertyViewModel @Inject constructor(
             val propertyId = propertyRepository.insertProperty(property)
 
             for (temporaryPhoto in temporaryPhotoStateFlow.value) {
-                photoRepository.insertPhoto(
+                insertPhotoUseCase.invoke(
                     PhotoEntity(
                         propertyId = propertyId,
                         photoUri = temporaryPhoto.uri,
@@ -199,7 +191,7 @@ class CreatePropertyViewModel @Inject constructor(
                     )
                 )
             }
-            temporaryPhotoRepository.onDeleteTemporaryPhotoRepo()
+            onDeleteTemporaryPhotoUseCase.invoke()
         }
     }
 

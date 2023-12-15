@@ -1,13 +1,22 @@
 package com.tuto.realestatemanager.ui.detail
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.util.Log
 import android.view.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +27,8 @@ import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.io.InputStream
 import java.time.LocalDate
 
 @AndroidEntryPoint
@@ -70,7 +81,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
         (requireActivity() as MenuHost).addMenuProvider(this)
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) { it ->
-            if(it != null){
+            if (it != null) {
                 binding.contentFrame.visibility = View.VISIBLE
                 binding.placeholderImage.visibility = View.GONE
             }
@@ -96,6 +107,13 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                 binding.status.text = "SOLD"
                 binding.soldDate.text = LocalDate.now().toString()
             }
+
+            Glide
+                .with(binding.mainPhoto)
+                .load(it.photoUri)
+                .centerCrop()
+                .into(binding.mainPhoto)
+
             viewmodel.isVisible(binding.poiAirport, it.poiAirport)
             viewmodel.isVisible(binding.poiBus, it.poiBus)
             viewmodel.isVisible(binding.poiPark, it.poiPark)
@@ -104,10 +122,18 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             viewmodel.isVisible(binding.poiTrain, it.poiTrain)
 
             val recyclerView: RecyclerView = binding.mediaRecyclerview
-            val adapter = PropertyDetailPhotoAdapter()
+            val adapter = PropertyDetailPhotoAdapter(
+                object : OnPhotoClickListener {
+                    override fun onPhotoClick(photoUri: String) {
+                        viewmodel.setUri(photoUri)
+                    }
+                }
+            )
+
             recyclerView.adapter = adapter
             viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) {
                 adapter.submitList(it.photoList)
+                Log.d("PLOP", "recup : ${it.photoUri} et \n${it.photoList}")
             }
 
             val zoom = 15
@@ -123,8 +149,6 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                 .into(binding.staticMap)
 
         }
-
-
 
         viewmodel.navigateSingleLiveEvent.observe(viewLifecycleOwner) {
             when (it) {

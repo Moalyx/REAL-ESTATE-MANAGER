@@ -61,7 +61,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 viewModel.onAddressSearchChanged(p0)
-                Log.d("TAGOO", "onQueryTextChange() called with: p0 = $p0")
                 return false
 
             }

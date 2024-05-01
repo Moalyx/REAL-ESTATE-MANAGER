@@ -22,6 +22,7 @@ class AutocompleteRepositoryImpl @Inject constructor(
         localisation: String,
     ): List<PredictionAddressEntity> {
 
+
         try {
 
             val response: PredictionResponse = googleApi.autocompleteResult(

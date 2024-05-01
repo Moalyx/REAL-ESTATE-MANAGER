@@ -79,10 +79,6 @@ class DetailPropertyViewModel @Inject constructor(
                 )
 
             emit(propertyDetailViewState)
-            Log.d(
-                "MIMI",
-                "$propertyDetailViewState"
-            )
         }.collect()
     }
 

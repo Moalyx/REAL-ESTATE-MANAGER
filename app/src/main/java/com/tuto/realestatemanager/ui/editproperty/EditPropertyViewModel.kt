@@ -3,13 +3,17 @@ package com.tuto.realestatemanager.ui.editproperty
 import android.widget.CheckBox
 import androidx.lifecycle.*
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
+import com.tuto.realestatemanager.data.repository.geocoding.model.Location
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.domain.usecase.geocode.GetLatLngPropertyLocationUseCase
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.ui.createproperty.CreateViewAction
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -20,6 +24,7 @@ class EditPropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
+    private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase
 
 
     ) : ViewModel() {
@@ -49,6 +54,7 @@ class EditPropertyViewModel @Inject constructor(
     val detailPropertyLiveData: LiveData<UpdatePropertyViewState> =
         currentPropertyIdRepository.currentIdFlow.filterNotNull().flatMapLatest { id ->
             propertyRepository.getPropertyById(id).map { propertyEntity ->
+
                 UpdatePropertyViewState(
                     propertyEntity.id,
                     propertyEntity.type,

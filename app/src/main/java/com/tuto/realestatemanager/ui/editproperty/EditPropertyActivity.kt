@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -106,6 +107,8 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.agent.setText(it.agent)
             lat = it.lat
             lng = it.lng
+
+            binding.complement.setText("$lat, $lng")
             viewModel.isChecked(binding.checkboxAirport, it.poiAirport)
             viewModel.isChecked(binding.checkboxBus, it.poiBus)
             viewModel.isChecked(binding.checkboxPark, it.poiPark)

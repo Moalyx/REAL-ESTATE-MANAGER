@@ -49,10 +49,10 @@ class PropertyListViewModel @Inject constructor(
             if (isInternetAvailable) {
                 for (property in propertiesWithPhotosEntity) {
                     if (property.propertyEntity.lat == null || property.propertyEntity.lng == null || property.propertyEntity.lat == 0.0 || property.propertyEntity.lng == 0.0) {
-                        val latLng = getLatLngPropertyLocationUseCase.invoke(
+                        val location = getLatLngPropertyLocationUseCase.invoke(
                             "${property.propertyEntity.address} ${property.propertyEntity.city} ${property.propertyEntity.zipCode} ${property.propertyEntity.state} ${property.propertyEntity.country}")
-                        property.propertyEntity.lat = latLng.results[0].geometry?.location?.lat
-                        property.propertyEntity.lng = latLng.results[0].geometry?.location?.lng
+                        property.propertyEntity.lat = location.lat
+                        property.propertyEntity.lng = location.lng
                         updatePropertyUseCase.invoke(property.propertyEntity)
                     }
                 }

@@ -39,12 +39,12 @@
                         android:src="@drawable/ic_launcher_background"
                         app:layout_collapseMode="parallax" />
 
-                    <androidx.appcompat.widget.Toolbar
-                        android:id="@+id/toolbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        app:layout_collapseMode="parallax"
-                        app:navigationIcon="@drawable/back_arrow" />
+<!--                    <androidx.appcompat.widget.Toolbar-->
+<!--                        android:id="@+id/toolbar"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="?attr/actionBarSize"-->
+<!--                        app:layout_collapseMode="parallax"-->
+<!--                        app:navigationIcon="@drawable/back_arrow" />-->
 
 
                 </com.google.android.material.appbar.CollapsingToolbarLayout>

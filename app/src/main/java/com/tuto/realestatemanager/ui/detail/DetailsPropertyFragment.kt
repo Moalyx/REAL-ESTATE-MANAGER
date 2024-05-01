@@ -169,7 +169,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             }
         }
 
-        //viewmodel.onNavigatetoMainActivity()
+        //viewmodel.onNavigateToMainActivity()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

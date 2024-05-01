@@ -1,7 +1,5 @@
 package com.tuto.realestatemanager.ui.editproperty
 
-import com.tuto.realestatemanager.model.PhotoEntity
-
 class UpdatePropertyViewState(
     val id: Long,
     val type: String,
@@ -28,4 +26,4 @@ class UpdatePropertyViewState(
     val poiBus: Boolean,
     val poiPark: Boolean,
     val isSold: Boolean
-) {}
+)

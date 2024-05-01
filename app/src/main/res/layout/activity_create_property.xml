@@ -369,6 +369,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
+                            android:focusable="false"
                             android:hint="Address"
                             android:textSize="15dp" />
 
@@ -396,6 +397,7 @@
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
                             android:inputType="numberDecimal"
+                            android:focusable="false"
                             android:textSize="15dp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -421,6 +423,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
+                            android:focusable="false"
                             android:hint="City"
                             android:textSize="15dp" />
 
@@ -447,6 +450,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
+                            android:focusable="false"
                             android:hint="State"
                             android:textSize="15dp" />
 
@@ -472,6 +476,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
+                            android:focusable="false"
                             android:hint="Zip Code"
                             android:textSize="15dp" />
 
@@ -498,6 +503,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
+                            android:focusable="false"
                             android:hint="Country"
                             android:textSize="15dp" />
 

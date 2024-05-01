@@ -76,7 +76,7 @@
                     android:layout_gravity="center"
                     android:drawableStart="@drawable/baseline_percent_24"
                     android:hint="Interest Rate"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>

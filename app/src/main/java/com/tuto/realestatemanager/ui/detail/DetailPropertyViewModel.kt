@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.detail
 
-import android.util.Log
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
@@ -14,12 +13,12 @@ import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -30,9 +29,12 @@ class DetailPropertyViewModel @Inject constructor(
     private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase
 ) : ViewModel() {
 
-    private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke().filterNotNull().flatMapLatest {
-        getPropertyWithPhotosByIdUseCase.invoke(it)
-    }
+    private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke()
+        .filterNotNull()
+        .onEach { photoUriMutableStateFlow.value = null }
+        .flatMapLatest {
+            getPropertyWithPhotosByIdUseCase.invoke(it)
+        }
 
     private val photoUriMutableStateFlow = MutableStateFlow<String?>(null)
 
@@ -63,8 +65,8 @@ class DetailPropertyViewModel @Inject constructor(
                     surface = propertyWithPhotosEntity.propertyEntity.surface,
                     description = propertyWithPhotosEntity.propertyEntity.description,
                     room = propertyWithPhotosEntity.propertyEntity.room,
-                    bathroom = propertyWithPhotosEntity.propertyEntity.bedroom,
-                    bedroom = propertyWithPhotosEntity.propertyEntity.bathroom,
+                    bedroom = propertyWithPhotosEntity.propertyEntity.bedroom,
+                    bathroom = propertyWithPhotosEntity.propertyEntity.bathroom,
                     agent = propertyWithPhotosEntity.propertyEntity.agent,
                     isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
                     saleSince = convertDate(propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince, isDollar),
@@ -75,7 +77,7 @@ class DetailPropertyViewModel @Inject constructor(
                     poiSchool = propertyWithPhotosEntity.propertyEntity.poiSchool,
                     poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
                     poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
-                    photoUri = photoUri ?: ""
+                    photoUri = photoUri ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri ?: ""
                 )
 
             emit(propertyDetailViewState)

@@ -142,36 +142,34 @@ class PropertyListViewModel @Inject constructor(
         val searchPriceMaxi = searchParameters.priceMaximum
         val propertyPrice = property.propertyEntity.price
 
-        return searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi
+        //return searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi
+        return (searchPriceMini == null || propertyPrice >= searchPriceMini) &&
+                (searchPriceMaxi == null || propertyPrice <= searchPriceMaxi)
     }
 
     private fun compareSurface(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
+
         val searchSurfaceMini = searchParameters.surfaceMinimum
         val searchSurfaceMaxi = searchParameters.surfaceMaximum
         val propertySurface = property.propertyEntity.surface
 
-        if (searchSurfaceMini == null || searchSurfaceMaxi == null || propertySurface in searchSurfaceMini..searchSurfaceMaxi) {
-            isMatching = true
-        }
-        return isMatching
+        return (searchSurfaceMini == null || propertySurface >= searchSurfaceMini) &&
+                (searchSurfaceMaxi == null || propertySurface <= searchSurfaceMaxi)
     }
 
     private fun compareCity(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
+
         val searchCity = searchParameters.city
         val propertyCity = property.propertyEntity.city
 
-        if (searchCity == null || searchCity == "" || searchCity == propertyCity) {
-            isMatching = true
-        }
-        return isMatching
+        return searchCity.isNullOrBlank() ||
+                propertyCity.equals(searchCity.trim(), ignoreCase = true)
     }
 
     private fun comparePoiTrain(

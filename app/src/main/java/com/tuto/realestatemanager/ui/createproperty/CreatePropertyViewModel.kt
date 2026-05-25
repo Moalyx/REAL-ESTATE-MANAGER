@@ -1,18 +1,13 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.tuto.realestatemanager.data.repository.location.LocationRepository
-import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
-import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
 import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
@@ -32,10 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -83,23 +77,21 @@ class CreatePropertyViewModel @Inject constructor(
         )
     }
 
-    private val predictionsFlow: Flow<Pair<String, Location>> = flow {
+    private val predictionsFlow: Flow<Pair<String, Location?>> =
         combine(
-            addressSearchMutableStateFlow.filterNotNull(),
+            addressSearchMutableStateFlow
+                .filterNotNull()
+                .filter { it.length >= 3 },
             getUserLocationFlowUseCase.invoke()
         ) { address, location ->
-
-            emit(Pair(address, location))
-
-
-        }.collect()
-    }
+            address to location
+        }
 
     private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
         predictionsFlow.mapLatest {
             getPredictionsUseCase.invoke(
                 it.first,
-                "${it.second.latitude},${it.second.longitude}"
+                "${it.second?.latitude},${it.second?.longitude}"
 
             )
         }.asLiveData(coroutineDispatchersProvider.io)

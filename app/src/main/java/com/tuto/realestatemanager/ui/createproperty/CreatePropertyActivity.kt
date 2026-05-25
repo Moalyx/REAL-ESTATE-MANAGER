@@ -4,15 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
@@ -90,13 +88,28 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.predictionRecyclerview.adapter = searchAdapter
         viewModel.predictionListViewState.observe(this) {
-            if (it.isEmpty() || it == null) {
-                Toast.makeText(this, "please enter an address manually", Toast.LENGTH_SHORT).show()
+
+            if (it.isNullOrEmpty()) {
+
+                binding.predictionRecyclerview.visibility = View.GONE
+
+                Toast.makeText(
+                    this,
+                    "please enter an address manually",
+                    Toast.LENGTH_SHORT
+                ).show()
+
             } else {
+
+                binding.predictionRecyclerview.visibility = View.VISIBLE
+
                 searchAdapter.submitList(it)
+
+                binding.predictionRecyclerview.post {
+                    binding.predictionRecyclerview.requestLayout()
+                }
             }
         }
-
         val adapter = CreatePropertyPhotoAdapter()
         binding.createUpdatePhotoRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.createUpdatePhotoRecyclerview.adapter = adapter

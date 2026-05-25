@@ -10,7 +10,6 @@ import com.google.android.gms.location.LocationResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,23 +24,38 @@ class LocationRepository @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    override fun getUserLocation(): Flow<Location> = callbackFlow {
+    override fun getUserLocation(): Flow<Location?> = callbackFlow {
+
+        client.lastLocation
+            .addOnSuccessListener { location ->
+                trySend(location)
+            }
+            .addOnFailureListener {
+                trySend(null)
+            }
+
         val locationRequest = LocationRequest.create()
             .setFastestInterval(FASTEST_UPDATE_INTERVAL_SECS)
             .setInterval(UPDATE_INTERVAL_SECS)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-        val callBack: LocationCallback = object : LocationCallback() {
+        val callback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
                 locationResult.lastLocation?.let {
                     trySend(it)
                 }
             }
         }
 
-        client.requestLocationUpdates(locationRequest, callBack, Looper.getMainLooper())
-        awaitClose { client.removeLocationUpdates(callBack) }
+        client.requestLocationUpdates(
+            locationRequest,
+            callback,
+            Looper.getMainLooper()
+        )
+
+        awaitClose {
+            client.removeLocationUpdates(callback)
+        }
     }
 
 

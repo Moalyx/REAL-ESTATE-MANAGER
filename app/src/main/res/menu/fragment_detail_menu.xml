@@ -2,13 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <item-->
-<!--        android:id="@+id/bank_loan"-->
-<!--        android:title="Bank loan"-->
-<!--        android:icon="@drawable/calculate"-->
-<!--        app:showAsAction="always"-->
-<!--        />-->
-
     <item
         android:id="@+id/edit_property"
         android:title="edit property"
@@ -16,13 +9,4 @@
         app:showAsAction="always"
         />
 
-<!--      <item-->
-<!--        android:id="@+id/currency"-->
-<!--        android:title="search property"-->
-<!--        android:icon="@drawable/dollar"-->
-<!--        app:showAsAction="always"-->
-<!--        />-->
-
 </menu>
-
-

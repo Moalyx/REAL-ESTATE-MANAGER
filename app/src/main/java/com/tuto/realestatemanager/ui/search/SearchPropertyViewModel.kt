@@ -3,7 +3,6 @@ package com.tuto.realestatemanager.ui.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.tuto.realestatemanager.data.repository.search.SearchRepository
 import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.Search.SetParametersUseCase
 import com.tuto.realestatemanager.model.SearchParameters

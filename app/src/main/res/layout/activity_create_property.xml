@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.createproperty.CreatePropertyActivity">
+    android:fillViewport="true">
 
     <FrameLayout
         android:id="@+id/container"
@@ -339,14 +340,13 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/prediction_recyclerview"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="220dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
+                        android:nestedScrollingEnabled="false"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:visibility="visible"/>
+                        android:visibility="gone"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/title_address"
@@ -355,23 +355,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
-
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/address"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:focusable="false"
                             android:hint="Address"
-                            android:textSize="15dp" />
+                            android:inputType="textPostalAddress"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -382,23 +376,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
-
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/complement"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:inputType="numberDecimal"
-                            android:focusable="false"
-                            android:textSize="15dp" />
+                            android:hint="GPS coordinates"
+                            android:inputType="text"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -410,22 +398,16 @@
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/city"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:focusable="false"
                             android:hint="City"
-                            android:textSize="15dp" />
+                            android:inputType="textCapWords"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -437,22 +419,16 @@
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/state"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:focusable="false"
                             android:hint="State"
-                            android:textSize="15dp" />
+                            android:inputType="textCapWords"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -464,21 +440,16 @@
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/zipcode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:focusable="false"
                             android:hint="Zip Code"
-                            android:textSize="15dp" />
+                            android:inputType="text"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -490,25 +461,18 @@
                         android:layout_marginTop="12dp"
                         app:boxBackgroundColor="#D2B3F8"
                         app:endIconMode="clear_text"
-                        app:endIconTint="#673AB7"
-
-                        app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
-                        app:layout_constraintEnd_toStartOf="@id/title_Rooms"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:endIconTint="#673AB7">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/country"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:drawableStart="@drawable/ic_baseline_location_24"
-                            android:focusable="false"
                             android:hint="Country"
-                            android:textSize="15dp" />
+                            android:inputType="textCapWords"
+                            android:textSize="15sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
-
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

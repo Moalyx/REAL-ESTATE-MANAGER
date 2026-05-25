@@ -1,7 +1,5 @@
 package com.tuto.realestatemanager.ui.detail
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity

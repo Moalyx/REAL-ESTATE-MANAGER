@@ -4,7 +4,5 @@ import android.location.Location
 import kotlinx.coroutines.flow.Flow
 
 interface LocationRepositoryInterface {
-
-    fun getUserLocation(): Flow<Location>
-
+    fun getUserLocation(): Flow<Location?>
 }

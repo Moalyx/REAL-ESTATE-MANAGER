@@ -3,16 +3,18 @@ package com.tuto.realestatemanager.ui.map
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.core.graphics.scale
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
@@ -27,42 +29,74 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private val viewModel by viewModels<MapViewModel>()
 
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
+    private val bitmap by lazy {
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.img)
+        val scaledBitmap = originalBitmap.scale(64, 64, false)
+        BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         getMapAsync(this)
-        initGoogleMaps()
+        //initGoogleMaps()
     }
 
-    private fun initGoogleMaps() {
-        val mapFragment: MapFragment = MapFragment.newInstance()
-        mapFragment.getMapAsync(this)
+//    private fun initGoogleMaps() {
+//        val mapFragment: MapFragment = MapFragment.newInstance()
+//        mapFragment.getMapAsync(this)
+//    }
+@Deprecated("Deprecated in Java")
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+    if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+        getMapAsync { map ->
+            if (
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                map.isMyLocationEnabled = true
+                map.uiSettings.isMyLocationButtonEnabled = true
+            } else {
+                map.uiSettings.isMyLocationButtonEnabled = false
+            }
+        }
     }
+}
 
     override fun onMapReady(map: GoogleMap) {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            map.isMyLocationEnabled = true
-        }
 
-        map.uiSettings.isMyLocationButtonEnabled = true
-        //map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        map.uiSettings.isMyLocationButtonEnabled = false
 
-
-        viewModel.getMapViewState.observe(this) { mapViewState ->
+        viewModel.getMapViewState.observe(viewLifecycleOwner) { mapViewState ->
 
             map.clear()
+
             val point = LatLng(mapViewState.lat, mapViewState.lng)
-            map.animateCamera(CameraUpdateFactory.zoomIn())
+
             val camera: CameraPosition =
-                CameraPosition.Builder().target(point).zoom(12.0F).bearing(0F).tilt(30F).build()
+                CameraPosition.Builder()
+                    .target(point)
+                    .zoom(12.0F)
+                    .bearing(0F)
+                    .tilt(30F)
+                    .build()
+
             map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
 
             map.addCircle(
@@ -74,38 +108,52 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
             )
 
             for (markerPlace in mapViewState.markers) {
-                if(markerPlace.lat != null && markerPlace.lng != null){
+                if (markerPlace.lat != null && markerPlace.lng != null) {
                     val marker = map.addMarker(
                         MarkerOptions()
-                            .position(
-                                LatLng(
-                                    markerPlace.lat,
-                                    markerPlace.lng
-                                )
-                            )
+                            .position(LatLng(markerPlace.lat, markerPlace.lng))
                             .title(markerPlace.description)
                             .snippet(markerPlace.address)
-
+                            .icon(bitmap)
                     )
-                    if (marker != null) {
-                        marker.tag = markerPlace.id
-                    }
-                }
 
+                    marker?.tag = markerPlace.id
+                }
             }
         }
 
         map.setOnMarkerClickListener { marker ->
-            viewModel.setMarkerId(marker.tag.toString().toLong())
-            //viewModel.onNavigationToDetailActivity()
-            return@setOnMarkerClickListener true
+            marker.tag?.toString()?.toLongOrNull()?.let { id ->
+                viewModel.setMarkerId(id)
+            }
+            true
         }
 
         viewModel.navigateSingleLiveEvent.observe(viewLifecycleOwner) {
             startActivity(Intent(requireContext(), DetailActivity::class.java))
-            //DetailActivity.navigate(requireContext())
         }
 
+        if (
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            map.isMyLocationEnabled = true
+            map.uiSettings.isMyLocationButtonEnabled = true
+        } else {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
     }
 
     override fun onResume() {

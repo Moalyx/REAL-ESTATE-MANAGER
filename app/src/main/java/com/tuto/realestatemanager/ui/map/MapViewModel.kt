@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -25,6 +24,8 @@ class MapViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var isTablet = false
+    private val defaultLat = 48.8566
+    private val defaultLng = 2.3522
 
     val getMapViewState: LiveData<MapViewState> = liveData {
         combine(
@@ -59,8 +60,8 @@ class MapViewModel @Inject constructor(
 //                propertyListMediatorLiveData.value =
                 emit(
                     MapViewState(
-                        lat = userLocation.latitude,
-                        lng = userLocation.longitude,
+                        lat = userLocation?.latitude ?: defaultLat,
+                        lng = userLocation?.longitude ?: defaultLng,
                         markers = markerPlaceList
                     )
                 )
@@ -102,14 +103,10 @@ class MapViewModel @Inject constructor(
                 }
 
 //                propertyListMediatorLiveData.value =
-                Log.d(
-                    "MOMM",
-                    "null() called with: propertiesWithPhotosEntity = $propertiesWithPhotosEntity, searchParameters = $searchParameters, userLocation = $userLocation"
-                )
                 emit(
                     MapViewState(
-                        userLocation.latitude,
-                        userLocation.longitude,
+                        userLocation?.latitude ?: defaultLat,
+                        userLocation?.longitude ?: defaultLng,
                         markerPlaceListFiltered
                     )
                 )

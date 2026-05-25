@@ -4,12 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
-import com.tuto.realestatemanager.ui.detail.DetailActivity
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.map.MapFragment
@@ -52,25 +50,23 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        if (binding.mainContainerDetail != null && supportFragmentManager.findFragmentById(binding.mainContainerDetail.id) == null) {
-            supportFragmentManager.beginTransaction()
-                .add(
-                    binding.mainContainerDetail.id,
-                    DetailsPropertyFragment()
-                )
-                .commit()
+        if (binding.mainContainerDetail != null) {
+            if (supportFragmentManager.findFragmentByTag("detail_fragment") == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(
+                        binding.mainContainerDetail.id,
+                        DetailsPropertyFragment(),
+                        "detail_fragment"
+                    )
+                    .commit()
+            }
+        } else {
+            val fragment = supportFragmentManager.findFragmentByTag("detail_fragment")
+                ?: supportFragmentManager.fragments.find { it is DetailsPropertyFragment }
 
-            binding.bottomNav.setOnItemSelectedListener {
-                when (it.itemId) {
-
-                    R.id.map -> supportFragmentManager.beginTransaction()
-                        .replace(binding.mainContainerList.id, MapFragment()).commit()
-
-                    R.id.list -> supportFragmentManager.beginTransaction()
-                        .replace(binding.mainContainerList.id, PropertyListFragment()).commit()
-
-                }
-                true
+            if (fragment != null) {
+                supportFragmentManager.beginTransaction().remove(fragment).commitNow()
+                invalidateOptionsMenu()
             }
         }
 
@@ -100,17 +96,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.bank_loan -> startActivity(Intent(this, MortgageCalculatorActivity::class.java))
-
-            R.id.search_property -> viewmodel.navigateToSearch()
-
+        return when (item.itemId) {
+            R.id.bank_loan -> {
+                startActivity(Intent(this, MortgageCalculatorActivity::class.java))
+                true
+            }
+            R.id.search_property -> {
+                viewmodel.navigateToSearch()
+                true
+            }
             R.id.currency -> {
                 updateMenuIcon(item)
                 viewmodel.converterPrice()
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return true
     }
 
     private fun updateMenuIcon(item: MenuItem) {

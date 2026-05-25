@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.tuto.realestatemanager.data.repository.location.LocationRepository
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +17,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val application: Application,
     private val priceConverterRepository: PriceConverterRepository,
-    private val locationRepository: LocationRepository
 ) : ViewModel() {
 
     private var isTablet: Boolean = false

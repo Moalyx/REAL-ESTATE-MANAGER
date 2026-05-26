@@ -18,49 +18,73 @@ class MortgageCalculatorViewModel @Inject constructor(
     private val isDollarFlowUseCase: IsDollarFlowUseCase
 ) : ViewModel() {
 
-    val getMonthlyPayment: LiveData<String> = liveData {
+    val loanAmountLiveData: LiveData<String> = liveData {
         combine(
-            mortgageCalculatorRepository.getAmount(),
-            mortgageCalculatorRepository.getRate(),
-            mortgageCalculatorRepository.getDuration(),
+            mortgageCalculatorRepository.getHousePrice(),
+            mortgageCalculatorRepository.getDownPayment(),
             isDollarFlowUseCase.invoke()
+        ) { housePrice, downPayment, isDollar ->
 
-        ) { amount, rate, duration, isDollar ->
+            val loanAmount = housePrice - downPayment
+            val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
 
-            val currentRate = (rate / 100) / 12
-            val time = duration * 12
+            val currency = if (isDollar) "$" else "€"
 
-            if ((amount == 0.0) || (rate == 0.0) || (duration == 0)) {
-                emit("0")
-            } else {
-                if (isDollar)
-                    emit("${(amount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()} $")
-                else
-                    emit("${(amount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))).toInt()} €")
-            }
+            emit("${safeLoanAmount.toInt()} $currency")
+
         }.collect()
     }
 
-    fun setAmount(amount: String) {
-        if (amount == "")
-            mortgageCalculatorRepository.setAmount(0.0)
-        else
-            mortgageCalculatorRepository.setAmount(amount.toDouble())
+    val getMonthlyPayment: LiveData<String> = liveData {
+        combine(
+            mortgageCalculatorRepository.getHousePrice(),
+            mortgageCalculatorRepository.getDownPayment(),
+            mortgageCalculatorRepository.getRate(),
+            mortgageCalculatorRepository.getDuration(),
+            isDollarFlowUseCase.invoke()
+        ) { housePrice, downPayment, rate, duration, isDollar ->
+
+            val loanAmount = housePrice - downPayment
+            val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
+
+            val currentRate = (rate / 100) / 12
+            val time = duration * 12
+            val currency = if (isDollar) "$" else "€"
+
+            if (safeLoanAmount == 0.0 || rate == 0.0 || duration == 0) {
+                emit("0 $currency")
+            } else {
+                val monthlyPayment =
+                    safeLoanAmount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))
+
+                emit("${monthlyPayment.toInt()} $currency")
+            }
+
+        }.collect()
+    }
+
+    fun setHousePrice(housePrice: String) {
+        mortgageCalculatorRepository.setHousePrice(
+            housePrice.toDoubleOrNull() ?: 0.0
+        )
+    }
+
+    fun setDownPayment(downPayment: String) {
+        mortgageCalculatorRepository.setDownPayment(
+            downPayment.toDoubleOrNull() ?: 0.0
+        )
     }
 
     fun setRate(rate: String) {
-        if (rate == "")
-            mortgageCalculatorRepository.setRate(0.0.toString())
-        else
-            mortgageCalculatorRepository.setRate(rate)
+        mortgageCalculatorRepository.setRate(
+            rate.toDoubleOrNull() ?: 0.0
+        )
     }
 
     fun setDuration(duration: String) {
-        if (duration == "")
-            mortgageCalculatorRepository.setDuration(0)
-        else
-            mortgageCalculatorRepository.setDuration(duration.toInt())
-
+        mortgageCalculatorRepository.setDuration(
+            duration.toIntOrNull() ?: 0
+        )
     }
 
     val navigateSingleLiveEvent: SingleLiveEvent<MortgageViewAction> = SingleLiveEvent()
@@ -68,5 +92,4 @@ class MortgageCalculatorViewModel @Inject constructor(
     fun onNavigateToMainActivity() {
         navigateSingleLiveEvent.setValue(MortgageViewAction.NavigateToMainActivity)
     }
-
 }

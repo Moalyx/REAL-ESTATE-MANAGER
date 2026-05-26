@@ -7,337 +7,204 @@
     android:layout_height="match_parent"
     tools:context=".ui.mortgagecalcultator.MortgageCalculatorActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-
-
-
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/back_arrow"
-                app:title="Mortgage calculator"
-                app:titleTextColor="@color/white" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:clickable="true"
+            android:focusable="true"
+            app:navigationIcon="@drawable/back_arrow"
+            app:title="Mortgage calculator"
+            app:titleTextColor="@color/white" />
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/loan_amount"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <!-- HOUSE PRICE -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/house_price_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
+            app:endIconMode="clear_text"
+            app:endIconTint="#673AB7">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/house_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
-                app:boxBackgroundColor="#D2B3F8"
-                app:endIconMode="clear_text"
-                app:endIconTint="#673AB7">
+                android:drawableStart="@drawable/ic_baseline_attach_money_24"
+                android:hint="House price"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/total_amount"
-                    android:layout_width="match_parent"
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- DOWN PAYMENT -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/down_payment_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
+            app:endIconMode="clear_text"
+            app:endIconTint="#673AB7">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/down_payment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_baseline_attach_money_24"
+                android:hint="Down payment"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- LOAN AMOUNT -->
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#D2B3F8"
+            android:elevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LOAN AMOUNT"
+                    android:textColor="@color/purple_500"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/loan_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="0 $"
+                    android:textColor="#03A9F4"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- INTEREST RATE -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/n_rate"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
+            app:endIconMode="clear_text"
+            app:endIconTint="#673AB7">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/baseline_percent_24"
+                android:hint="Interest rate"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- DURATION -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/n_duration"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
+            app:endIconMode="clear_text"
+            app:endIconTint="#673AB7">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/baseline_access_time_24"
+                android:hint="Duration (years)"
+                android:inputType="number"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- MONTHLY PAYMENT -->
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:backgroundTint="#D2B3F8"
+            android:elevation="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:drawableStart="@drawable/ic_baseline_attach_money_24"
-                    android:hint="Loan amount"
-                    android:inputType="number"
-                    android:textSize="15sp" />
+                    android:layout_marginTop="20dp"
+                    android:text="MONTHLY PAYMENT"
+                    android:textColor="#03A9F4"
+                    android:textSize="35sp"
+                    android:textStyle="bold" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/n_rate"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
-                app:boxBackgroundColor="#D2B3F8"
-                app:endIconMode="clear_text"
-                app:endIconTint="#673AB7">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/rate"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/monthly_payment"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:drawableStart="@drawable/baseline_percent_24"
-                    android:hint="Interest Rate"
-                    android:inputType="numberDecimal"
-                    android:textSize="15sp" />
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="800 $"
+                    android:textColor="@color/purple_500"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/n_duration"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
-                app:boxBackgroundColor="#D2B3F8"
-                app:endIconMode="clear_text"
-                app:endIconTint="#673AB7">
+        </androidx.cardview.widget.CardView>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/duration"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:drawableStart="@drawable/baseline_access_time_24"
-                    android:hint="Duration"
-                    android:inputType="number"
-                    android:textSize="15sp" />
+    </LinearLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="25dp"-->
-<!--                android:gravity="center"-->
-<!--                android:text="MORTGAGE CALCULATOR"-->
-<!--                android:textColor="@color/purple_700"-->
-<!--                android:textSize="30sp"-->
-<!--                android:textStyle="bold" />-->
-
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginHorizontal="12dp"-->
-<!--                android:layout_marginTop="25dp"-->
-<!--                android:backgroundTint="#D2B3F8"-->
-<!--                android:elevation="10dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:orientation="vertical">-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginTop="20dp"-->
-<!--                        android:text="LOAN AMOUNT"-->
-<!--                        android:textColor="@color/purple_500"-->
-<!--                        android:textSize="25sp"-->
-<!--                        android:textStyle="bold" />-->
-
-<!--                    <EditText-->
-<!--                        android:id="@+id/total_amount"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginHorizontal="12dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginBottom="10dp"-->
-<!--                        android:background="#03A9F4"-->
-<!--                        android:gravity="center"-->
-<!--                        android:hint="1000.000"-->
-<!--                        android:inputType="numberDecimal"-->
-<!--                        android:textColor="@color/purple_700"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent" />-->
-
-
-<!--                </LinearLayout>-->
-
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginHorizontal="12dp"-->
-<!--                android:layout_marginTop="25dp"-->
-<!--                android:backgroundTint="#D2B3F8"-->
-<!--                android:elevation="10dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:orientation="vertical">-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginTop="20dp"-->
-<!--                        android:text="INTEREST RATE"-->
-<!--                        android:textColor="@color/purple_500"-->
-<!--                        android:textSize="25sp"-->
-<!--                        android:textStyle="bold" />-->
-
-
-<!--                    <EditText-->
-<!--                        android:id="@+id/rate"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginHorizontal="12dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginBottom="10dp"-->
-<!--                        android:background="#03A9F4"-->
-<!--                        android:gravity="center"-->
-<!--                        android:hint="2.5%"-->
-<!--                        android:inputType="numberDecimal"-->
-<!--                        android:textColor="@color/purple_500"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toBottomOf="@id/total_amount" />-->
-
-
-<!--                </LinearLayout>-->
-
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginHorizontal="12dp"-->
-<!--                android:layout_marginTop="25dp"-->
-<!--                android:backgroundTint="#D2B3F8"-->
-<!--                android:elevation="10dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:orientation="vertical">-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginTop="20dp"-->
-<!--                        android:text="TERM OF THE LOAN"-->
-<!--                        android:textColor="@color/purple_500"-->
-<!--                        android:textSize="25sp"-->
-<!--                        android:textStyle="bold" />-->
-
-<!--                    <EditText-->
-<!--                        android:id="@+id/duration"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginHorizontal="12dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginBottom="10dp"-->
-<!--                        android:background="#03A9F4"-->
-<!--                        android:gravity="center"-->
-<!--                        android:hint="25 years"-->
-<!--                        android:inputType="number"-->
-<!--                        android:textColor="@color/purple_500"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toBottomOf="@id/rate" />-->
-
-
-<!--                </LinearLayout>-->
-
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-
-            <!--        <com.google.android.material.slider.Slider-->
-            <!--            android:layout_gravity="center"-->
-            <!--            android:id="@+id/sliderRate"-->
-            <!--            style="Widget.MaterialComponents.Slider"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_marginStart="16dp"-->
-            <!--            android:layout_marginEnd="16dp"-->
-            <!--            android:layout_marginBottom="16dp"-->
-            <!--            android:stepSize="0.5"-->
-            <!--            android:value="2"-->
-            <!--            android:valueFrom="2"-->
-            <!--            android:valueTo="6"-->
-            <!--            app:labelStyle="@style/Widget.MaterialComponents.Tooltip"-->
-            <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--            app:layout_constraintEnd_toStartOf="@+id/ivPlus2"-->
-            <!--            app:layout_constraintStart_toEndOf="@+id/ivMinus2"-->
-            <!--            app:layout_constraintTop_toBottomOf="@+id/tvMortgageRateValue" />-->
-
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="25dp"
-                android:backgroundTint="#D2B3F8"
-                android:elevation="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="20dp"
-                        android:text="MONTHLY PAYEMENT"
-                        android:textColor="#03A9F4"
-                        android:textSize="35sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/mensualité_payement"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:gravity="center"
-                        android:text="800$"
-                        android:textColor="@color/purple_500"
-                        android:textSize="40sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/duration" />
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-            <!--        <Button-->
-            <!--            android:layout_gravity="center"-->
-            <!--            android:id="@+id/button"-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            app:layout_constraintTop_toBottomOf="@id/mensualité_payement"-->
-            <!--            app:layout_constraintStart_toStartOf="parent"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            android:layout_marginTop="20dp"-->
-            <!--            android:text="calculate"/>-->
-
-
-        </LinearLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

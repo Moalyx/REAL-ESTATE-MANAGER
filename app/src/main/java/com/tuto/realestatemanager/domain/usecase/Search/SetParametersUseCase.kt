@@ -9,5 +9,7 @@ import javax.inject.Singleton
 class SetParametersUseCase @Inject constructor(
     private val searchRepositoryInterface: SearchRepositoryInterface
 ) {
-    fun invoke(searchParameters: SearchParameters) = searchRepositoryInterface.setParameters(searchParameters)
+    fun invoke(searchParameters: SearchParameters?) {
+        searchRepositoryInterface.setParameters(searchParameters)
+    }
 }

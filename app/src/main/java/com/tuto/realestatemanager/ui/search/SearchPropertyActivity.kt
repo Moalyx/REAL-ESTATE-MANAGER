@@ -26,8 +26,29 @@ class SearchPropertyActivity : AppCompatActivity() {
         setDropdownMenu()
 
 
-        viewModel.getParametersLiveData().observe(this) {
-            //todo rien a observer ici
+        viewModel.getParametersLiveData().observe(this) { parameters ->
+            parameters ?: return@observe
+
+            type = parameters.type
+
+            binding.typeDropdown.setText(parameters.type.orEmpty(), false)
+            binding.priceMin.setText(parameters.priceMinimum?.toString().orEmpty())
+            binding.priceMax.setText(parameters.priceMaximum?.toString().orEmpty())
+            binding.surfaceMinimum.setText(parameters.surfaceMinimum?.toString().orEmpty())
+            binding.surfaceMaximum.setText(parameters.surfaceMaximum?.toString().orEmpty())
+            binding.city.setText(parameters.city.orEmpty())
+
+            binding.checkboxtrTrain.isChecked = parameters.poiTrain
+            binding.checkboxAirport.isChecked = parameters.poiAirport
+            binding.checkboxRestaurant.isChecked = parameters.poiResto
+            binding.checkboxSchool.isChecked = parameters.poiSchool
+            binding.checkboxBus.isChecked = parameters.poiBus
+            binding.checkboxPark.isChecked = parameters.poiPark
+        }
+
+        binding.clearParametersButton.setOnClickListener {
+            viewModel.clearParameters()
+            viewModel.onNavigateToMainActivity()
         }
 
         viewModel.navigateSingleLiveEvent.observe(this) {

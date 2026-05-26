@@ -343,6 +343,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/point_of_interest" />
 
+        <Button
+            android:id="@+id/clear_parameters_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Clear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/validate_parameters_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

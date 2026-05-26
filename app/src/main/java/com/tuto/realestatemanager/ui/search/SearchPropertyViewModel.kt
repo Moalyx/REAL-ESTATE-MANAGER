@@ -96,6 +96,10 @@ class SearchPropertyViewModel @Inject constructor(
         return city
     }
 
+    fun clearParameters() {
+        setParametersUseCase.invoke(null)
+    }
+
     val navigateSingleLiveEvent: SingleLiveEvent<SearchViewAction> = SingleLiveEvent()
 
     fun onNavigateToMainActivity() {

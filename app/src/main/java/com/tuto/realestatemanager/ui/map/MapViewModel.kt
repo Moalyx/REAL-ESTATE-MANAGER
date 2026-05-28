@@ -104,10 +104,7 @@ class MapViewModel @Inject constructor(
                 }
 
 //                propertyListMediatorLiveData.value =
-                Log.d(
-                    "MOMM",
-                    "null() called with: propertiesWithPhotosEntity = $propertiesWithPhotosEntity, searchParameters = $searchParameters, userLocation = $userLocation"
-                )
+
                 emit(
                     MapViewState(
                         userLocation?.latitude ?: defaultLat,
@@ -139,52 +136,38 @@ class MapViewModel @Inject constructor(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
-        val searchPriceMini: Int? = searchParameters.priceMinimum
-        val searchPriceMaxi: Int? = searchParameters.priceMaximum
+        val searchPriceMini = searchParameters.priceMinimum
+        val searchPriceMaxi = searchParameters.priceMaximum
         val propertyPrice = property.propertyEntity.price
 
-        if (searchPriceMini == null && searchPriceMaxi == null) {
-            isMatching = true
-        } else if (searchPriceMini == null && (searchPriceMaxi != null && propertyPrice <= searchPriceMaxi)) {
-            isMatching = true
-        } else if (searchPriceMaxi == null && (searchPriceMini != null && propertyPrice >= searchPriceMini)) {
-            isMatching = true
-        } else if (searchPriceMini != null && searchPriceMaxi != null && propertyPrice in searchPriceMini..searchPriceMaxi) {
-            isMatching = true
-        }
-
-
-        return isMatching
+        //return searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi
+        return (searchPriceMini == null || propertyPrice >= searchPriceMini) &&
+                (searchPriceMaxi == null || propertyPrice <= searchPriceMaxi)
     }
 
     private fun compareSurface(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
+
         val searchSurfaceMini = searchParameters.surfaceMinimum
         val searchSurfaceMaxi = searchParameters.surfaceMaximum
         val propertySurface = property.propertyEntity.surface
 
-        if (searchSurfaceMini == null || searchSurfaceMaxi == null || propertySurface in searchSurfaceMini..searchSurfaceMaxi) {
-            isMatching = true
-        }
-        return isMatching
+        return (searchSurfaceMini == null || propertySurface >= searchSurfaceMini) &&
+                (searchSurfaceMaxi == null || propertySurface <= searchSurfaceMaxi)
     }
 
     private fun compareCity(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity,
     ): Boolean {
-        var isMatching = false
+
         val searchCity = searchParameters.city
         val propertyCity = property.propertyEntity.city
 
-        if (searchCity == null || searchCity == "" || searchCity == propertyCity) {
-            isMatching = true
-        }
-        return isMatching
+        return searchCity.isNullOrBlank() ||
+                propertyCity.equals(searchCity.trim(), ignoreCase = true)
     }
 
 

@@ -77,6 +77,12 @@ class PropertyListViewModel @Inject constructor(
                                 && comparePoiPark(searchParameters, property)
                     }
 
+                if (isTablet) {
+                    currentPropertyIdRepository.setCurrentId(
+                        filteredList.firstOrNull()?.propertyEntity?.id
+                    )
+                }
+
                 emit(mapPropertiesIntoViewState(filteredList, isDollar))
             }
         }.collect()

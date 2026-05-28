@@ -6,6 +6,6 @@ interface CurrentPropertyIdRepository {
 
     val currentIdFlow: Flow<Long?>
 
-    fun setCurrentId(currentId: Long)
+    fun setCurrentId(currentId: Long?)
 
 }

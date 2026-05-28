@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import java.text.DecimalFormat
 import javax.inject.Inject
@@ -30,32 +31,41 @@ class DetailPropertyViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke()
-        .filterNotNull()
         .onEach { photoUriMutableStateFlow.value = null }
-        .flatMapLatest {
-            getPropertyWithPhotosByIdUseCase.invoke(it)
+        .flatMapLatest { currentId ->
+            if (currentId == null) {
+                flowOf(null)
+            } else {
+                getPropertyWithPhotosByIdUseCase.invoke(currentId)
+            }
         }
 
     private val photoUriMutableStateFlow = MutableStateFlow<String?>(null)
 
-    fun setUri(uri :String){
+    fun setUri(uri: String) {
         photoUriMutableStateFlow.tryEmit(uri)
     }
 
-    fun getUri() : LiveData<String> = photoUriMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
+    fun getUri(): LiveData<String> =
+        photoUriMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
 
-    val detailPropertyLiveData: LiveData<PropertyDetailViewState> = liveData {
+    val detailPropertyLiveData: LiveData<PropertyDetailViewState?> = liveData {
         combine(
             photoUriMutableStateFlow,
             getCurrentPropertyFlow,
             isDollarFlowUseCase.invoke()
-        ){
-                photoUri, propertyWithPhotosEntity, isDollar ->
+        ) { photoUri, propertyWithPhotosEntity, isDollar ->
 
-                val propertyDetailViewState = PropertyDetailViewState(
+            if (propertyWithPhotosEntity == null) {
+                null
+            } else {
+                PropertyDetailViewState(
                     id = propertyWithPhotosEntity.propertyEntity.id,
                     type = propertyWithPhotosEntity.propertyEntity.type,
-                    convertMoney(propertyWithPhotosEntity.propertyEntity.price.toString(), isDollar),
+                    price = convertMoney(
+                        propertyWithPhotosEntity.propertyEntity.price.toString(),
+                        isDollar
+                    ),
                     photoList = propertyWithPhotosEntity.photos.map { it },
                     address = propertyWithPhotosEntity.propertyEntity.address,
                     city = propertyWithPhotosEntity.propertyEntity.city,
@@ -69,7 +79,10 @@ class DetailPropertyViewModel @Inject constructor(
                     bathroom = propertyWithPhotosEntity.propertyEntity.bathroom,
                     agent = propertyWithPhotosEntity.propertyEntity.agent,
                     isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
-                    saleSince = convertDate(propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince, isDollar),
+                    saleSince = convertDate(
+                        propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
+                        isDollar
+                    ),
                     saleDate = propertyWithPhotosEntity.propertyEntity.propertyDateOfSale,
                     poiTrain = propertyWithPhotosEntity.propertyEntity.poiTrain,
                     poiAirport = propertyWithPhotosEntity.propertyEntity.poiAirport,
@@ -77,11 +90,14 @@ class DetailPropertyViewModel @Inject constructor(
                     poiSchool = propertyWithPhotosEntity.propertyEntity.poiSchool,
                     poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
                     poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
-                    photoUri = photoUri ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri ?: ""
+                    photoUri = photoUri
+                        ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri
+                        ?: ""
                 )
-
-            emit(propertyDetailViewState)
-        }.collect()
+            }
+        }.collect {
+            emit(it)
+        }
     }
 
     private fun convertMoney(price: String, isDollar: Boolean): String {
@@ -95,18 +111,19 @@ class DetailPropertyViewModel @Inject constructor(
         return convertPrice
     }
 
-    private fun convertDate(date: String, isDollar: Boolean): String = if (isDollar) Utils.formatToUS(date) else date
+    private fun convertDate(date: String, isDollar: Boolean): String =
+        if (isDollar) Utils.formatToUS(date) else date
 
 
-    fun isVisible(view: ImageView, isVisible: Boolean): Boolean{
+    fun isVisible(view: ImageView, isVisible: Boolean): Boolean {
         view.isVisible = false
-        if(isVisible) view.isVisible = true
+        if (isVisible) view.isVisible = true
         return view.isVisible
     }
 
     val navigateSingleLiveEvent: SingleLiveEvent<DetailViewAction> = SingleLiveEvent()
 
-    fun onNavigateToEditActivity(){
+    fun onNavigateToEditActivity() {
         navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
     }
 

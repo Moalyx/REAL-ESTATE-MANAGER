@@ -51,7 +51,12 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
         binding.mediaRecyclerview.adapter = adapter
 
         viewmodel.detailPropertyLiveData.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
+            if (it == null) {
+                binding.contentFrame.visibility = View.GONE
+                binding.placeholderImage.visibility = View.VISIBLE
+                propertyId = 0
+                return@observe
+            }
 
             binding.contentFrame.visibility = View.VISIBLE
             binding.placeholderImage.visibility = View.GONE

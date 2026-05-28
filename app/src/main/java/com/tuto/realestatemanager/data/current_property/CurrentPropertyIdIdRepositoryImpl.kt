@@ -9,10 +9,10 @@ import javax.inject.Singleton
 @Singleton
 class CurrentPropertyIdIdRepositoryImpl @Inject constructor() : CurrentPropertyIdRepository {
 
-    private val currentPropertyIdMutableStateFlow = MutableSharedFlow<Long>(1)
+    private val currentPropertyIdMutableStateFlow = MutableSharedFlow<Long?>(1)
 
     @MainThread
-    override fun setCurrentId(currentId: Long) {
+    override fun setCurrentId(currentId: Long?) {
         currentPropertyIdMutableStateFlow.tryEmit(currentId)
     }
 

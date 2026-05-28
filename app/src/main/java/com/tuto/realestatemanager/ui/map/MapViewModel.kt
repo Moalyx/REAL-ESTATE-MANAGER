@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.map
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -103,6 +104,10 @@ class MapViewModel @Inject constructor(
                 }
 
 //                propertyListMediatorLiveData.value =
+                Log.d(
+                    "MOMM",
+                    "null() called with: propertiesWithPhotosEntity = $propertiesWithPhotosEntity, searchParameters = $searchParameters, userLocation = $userLocation"
+                )
                 emit(
                     MapViewState(
                         userLocation?.latitude ?: defaultLat,

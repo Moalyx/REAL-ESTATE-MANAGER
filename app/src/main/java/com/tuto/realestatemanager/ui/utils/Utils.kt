@@ -2,7 +2,8 @@ package com.tuto.realestatemanager.ui.utils
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 object Utils {
@@ -28,17 +29,24 @@ object Utils {
      *
      * @return
      */
-
     fun todayDate(): String {
-        val dateFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        val dateFormat: DateFormat =
+            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+
         return dateFormat.format(Date())
     }
 
     fun formatToUS(dateString: String): String {
-        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
-        val date: Date = inputFormat.parse(dateString) as Date
+
+        val inputFormat =
+            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+
+        val outputFormat =
+            SimpleDateFormat("yyyy/MM/dd", Locale.US)
+
+        val date = inputFormat.parse(dateString) ?: return ""
+
         return outputFormat.format(date)
     }
-
 }

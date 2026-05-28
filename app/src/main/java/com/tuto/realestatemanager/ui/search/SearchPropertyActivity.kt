@@ -64,6 +64,7 @@ class SearchPropertyActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         super.onBackPressed()
         viewModel.onNavigateToMainActivity()

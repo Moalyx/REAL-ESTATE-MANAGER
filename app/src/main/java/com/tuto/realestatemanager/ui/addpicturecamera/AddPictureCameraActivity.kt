@@ -23,16 +23,17 @@ class AddPictureCameraActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_CURRENT_PHOTO_URI = "KEY_CURRENT_PHOTO_URI"
+        private const val REQUEST_IMAGE_CAPTURE = 100
     }
 
     private val viewModel by viewModels<AddPictureCameraViewModel>()
 
-    private var fromEditPropertyActivity: String? = "edit_property"
-    private var getEditPropertyId = 0L
-
     private lateinit var binding: ActivityAddPictureCameraBinding
 
     private var currentPhotoUri: Uri? = null
+
+    private var fromEditPropertyActivity: String? = null
+    private var getEditPropertyId = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,84 +41,119 @@ class AddPictureCameraActivity : AppCompatActivity() {
         binding = ActivityAddPictureCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState != null) {
-            currentPhotoUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                savedInstanceState.getParcelable(KEY_CURRENT_PHOTO_URI, Uri::class.java)
-            } else {
-                @Suppress("DEPRECATION") // I KNOW
-                savedInstanceState.getParcelable(KEY_CURRENT_PHOTO_URI)
-            }
-        }
+        restoreCurrentPhotoUri(savedInstanceState)
 
         fromEditPropertyActivity = intent.getStringExtra("XXX")
         getEditPropertyId = intent.getLongExtra("edit_property", -1)
 
-        launchIntentCamera()
+        setupListeners()
 
-
+        if (savedInstanceState == null) {
+            launchIntentCamera()
+        } else {
+            displayPhoto()
+        }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        @Suppress("DEPRECATION") // ActivityResultContracts are equally bad since they can't be registered after onCreate...
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK) {
-            Glide.with(binding.mainImageViewPhoto)
-                .load(currentPhotoUri)
-                .into(binding.mainImageViewPhoto)
-        }
-
+    private fun setupListeners() {
         binding.addPictureButton.setOnClickListener {
+            val title = binding.title.text.toString().trim()
+            val uri = currentPhotoUri?.toString()
 
-            if (binding.title.text.toString() == "") {
-                Toast.makeText(this, "please enter a description", Toast.LENGTH_SHORT).show()
-            } else {
+            when {
+                title.isBlank() -> {
+                    Toast.makeText(this, "please enter a description", Toast.LENGTH_SHORT).show()
+                }
 
-                if (fromEditPropertyActivity == "XXX") {
+                uri.isNullOrBlank() -> {
+                    Toast.makeText(this, "photo missing", Toast.LENGTH_SHORT).show()
+                }
+
+                fromEditPropertyActivity == "XXX" -> {
                     viewModel.insertPhoto(
                         0,
                         getEditPropertyId,
-                        binding.title.text.toString(),
-                        currentPhotoUri.toString()
-
+                        title,
+                        uri
                     )
-                } else {
-                    viewModel.onAddTemporaryPhoto(
-                        title = binding.title.text?.toString(),
-                        uri = currentPhotoUri?.toString()
-                    )
+                    finish()
                 }
-                finish()
+
+                else -> {
+                    viewModel.onAddTemporaryPhoto(
+                        title = title,
+                        uri = uri
+                    )
+                    finish()
+                }
             }
         }
 
         binding.cancelButton.setOnClickListener {
             finish()
         }
+    }
 
+    private fun launchIntentCamera() {
+        currentPhotoUri = createImageUri()
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
+            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+    }
+
+    private fun createImageUri(): Uri {
+        val imageFile = File.createTempFile(
+            "JPEG_",
+            ".jpg",
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+
+        return FileProvider.getUriForFile(
+            this,
+            "${BuildConfig.APPLICATION_ID}.provider",
+            imageFile
+        )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode != REQUEST_IMAGE_CAPTURE) return
+
+        if (resultCode == Activity.RESULT_OK) {
+            displayPhoto()
+        } else {
+            finish()
+        }
+    }
+
+    private fun displayPhoto() {
+        currentPhotoUri?.let { uri ->
+            Glide.with(this)
+                .load(uri)
+                .into(binding.mainImageViewPhoto)
+        }
+    }
+
+    private fun restoreCurrentPhotoUri(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) return
+
+        currentPhotoUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            savedInstanceState.getParcelable(KEY_CURRENT_PHOTO_URI, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            savedInstanceState.getParcelable(KEY_CURRENT_PHOTO_URI)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         outState.putParcelable(KEY_CURRENT_PHOTO_URI, currentPhotoUri)
-    }
-
-    private fun launchIntentCamera() {
-        currentPhotoUri = FileProvider.getUriForFile(
-            this,
-            BuildConfig.APPLICATION_ID + ".provider",
-            File.createTempFile(
-                "JPEG_",
-                ".jpg",
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            )
-        )
-
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            .putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
-
-        startActivityForResult(intent, 0)
     }
 }

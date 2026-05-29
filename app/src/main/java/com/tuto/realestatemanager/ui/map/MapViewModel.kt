@@ -52,7 +52,8 @@ class MapViewModel @Inject constructor(
                                 property.propertyEntity.description,
                                 property.propertyEntity.address,
                                 property.propertyEntity.lat,
-                                property.propertyEntity.lng
+                                property.propertyEntity.lng,
+                                property.propertyEntity.propertySold
                             )
                         )
                     }
@@ -97,7 +98,8 @@ class MapViewModel @Inject constructor(
                                 property.propertyEntity.description,
                                 property.propertyEntity.address,
                                 property.propertyEntity.lat,
-                                property.propertyEntity.lng
+                                property.propertyEntity.lng,
+                                property.propertyEntity.propertySold
                             )
                         )
                     }

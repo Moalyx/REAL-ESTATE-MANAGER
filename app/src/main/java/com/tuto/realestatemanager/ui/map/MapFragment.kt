@@ -33,8 +33,14 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 
-    private val bitmap by lazy {
-        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.img)
+    private val bitmapNotSold by lazy {
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.property_not_sold)
+        val scaledBitmap = originalBitmap.scale(64, 64, false)
+        BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+    }
+
+    private val bitmapSold by lazy {
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.property_sold)
         val scaledBitmap = originalBitmap.scale(64, 64, false)
         BitmapDescriptorFactory.fromBitmap(scaledBitmap)
     }
@@ -114,7 +120,7 @@ override fun onRequestPermissionsResult(
                             .position(LatLng(markerPlace.lat, markerPlace.lng))
                             .title(markerPlace.description)
                             .snippet(markerPlace.address)
-                            .icon(bitmap)
+                            .icon(if (markerPlace.isSold) bitmapSold else bitmapNotSold)
                     )
 
                     marker?.tag = markerPlace.id

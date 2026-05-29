@@ -6,5 +6,6 @@ data class MarkerPlace(
     val address: String,
     val lat: Double?,
     val lng: Double?,
+    val isSold: Boolean
 
 )

@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.editproperty
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,6 +39,7 @@ class EditPropertyActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<EditPropertyViewModel>()
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

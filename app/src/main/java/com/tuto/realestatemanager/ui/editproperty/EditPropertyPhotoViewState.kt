@@ -4,6 +4,7 @@ data class EditPropertyPhotoViewState(
 
     val id: Long,
     val photoTitle: String,
-    val photoUri: String
+    val photoUri: String,
+    val isTemporary: Boolean
 
 )

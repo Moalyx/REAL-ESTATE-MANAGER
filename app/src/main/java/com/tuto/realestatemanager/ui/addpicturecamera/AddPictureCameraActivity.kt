@@ -70,11 +70,9 @@ class AddPictureCameraActivity : AppCompatActivity() {
                 }
 
                 fromEditPropertyActivity == "XXX" -> {
-                    viewModel.insertPhoto(
-                        0,
-                        getEditPropertyId,
-                        title,
-                        uri
+                    viewModel.onAddTemporaryPhoto(
+                        title = title,
+                        uri = uri
                     )
                     finish()
                 }

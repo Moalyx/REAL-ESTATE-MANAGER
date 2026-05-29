@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ItemPropertyBinding
 
 class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.ViewHolder>(PropertyDiffCallback) {
@@ -34,12 +35,17 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
                 binding.isSoldText.visibility = View.GONE
             }
 
-            Glide
-                .with(binding.propertyPhoto)
-                //.load(propertyViewState.photoList.first().photoUri) //todo verifier pourquoi cela ne fonctionne plus
-                .load(propertyViewState.photoList[0].photoUri)
-                .centerCrop()
-                .into(binding.propertyPhoto)
+            val firstPhoto = propertyViewState.photoList.firstOrNull()
+
+            if (firstPhoto != null) {
+                Glide
+                    .with(binding.propertyPhoto)
+                    .load(firstPhoto.photoUri)
+                    .centerCrop()
+                    .into(binding.propertyPhoto)
+            } else {
+                binding.propertyPhoto.setImageResource(R.drawable.real_estate)
+            }
         }
     }
 

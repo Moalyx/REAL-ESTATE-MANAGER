@@ -24,7 +24,8 @@ class EditPropertyPhotoAdapter(
         holder.bind(getItem(position), listener)
     }
 
-    class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ItemPropertyPhotoDetailBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(photo: EditPropertyPhotoViewState, listener: OnDeletePhotoListener) {
 
             Glide
@@ -34,10 +35,10 @@ class EditPropertyPhotoAdapter(
                 .into(binding.itemPropertyPhotoDetail)
 
             binding.itemPropertyPhotoTitle.text = photo.photoTitle
-//
-//            binding.de.setOnClickListener{  //todo implemente delete dans la recyclerview de l'edit activity
-//                listener.onDeletePhotoListener(photo.id)
-//            }
+
+            binding.deleteButton.setOnClickListener {
+                listener.onDeletePhotoListener(photo)
+            }
 
         }
     }
@@ -46,7 +47,7 @@ class EditPropertyPhotoAdapter(
         override fun areItemsTheSame(
             oldItem: EditPropertyPhotoViewState,
             newItem: EditPropertyPhotoViewState
-        ): Boolean = oldItem.photoUri== newItem.photoUri
+        ): Boolean = oldItem.photoUri == newItem.photoUri
 
         override fun areContentsTheSame(
             oldItem: EditPropertyPhotoViewState,
@@ -55,9 +56,8 @@ class EditPropertyPhotoAdapter(
     }
 
     interface OnDeletePhotoListener {
-
-        fun onDeletePhotoListener(photoId: Long)
-
+        fun onDeletePhotoListener(photo: EditPropertyPhotoViewState)
     }
+
 
 }

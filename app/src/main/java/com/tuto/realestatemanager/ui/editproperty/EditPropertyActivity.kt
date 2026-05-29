@@ -76,8 +76,8 @@ class EditPropertyActivity : AppCompatActivity() {
 
         val adapter = EditPropertyPhotoAdapter(
             object : EditPropertyPhotoAdapter.OnDeletePhotoListener {
-                override fun onDeletePhotoListener(photoId: Long) {  //todo regler probleme gestion delete
-                    //viewModel.OnDeletePhoto(photoId)
+                override fun onDeletePhotoListener(photo: EditPropertyPhotoViewState) {
+                    viewModel.onDeleteEditPhoto(photo)
                 }
             }
         )
@@ -153,6 +153,7 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         binding.dismissButton.setOnClickListener {
+            viewModel.clearTemporaryPhotos()
             finish()
         }
 
@@ -163,8 +164,8 @@ class EditPropertyActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        viewModel.clearTemporaryPhotos()
         super.onBackPressed()
-        viewModel.onNavigateToDetailActivity()
     }
 
 }

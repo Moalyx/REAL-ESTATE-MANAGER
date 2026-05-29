@@ -66,15 +66,12 @@ class AddPhotoActivity : AppCompatActivity() {
                 }
 
                 fromEditPropertyActivity == "XXX" -> {
-                    viewModel.insertPhoto(
-                        id = 0,
-                        propertyId = getEditPropertyId,
+                    viewModel.onAddTemporaryPhoto(
                         title = title,
                         uri = uri
                     )
                     finish()
                 }
-
                 else -> {
                     viewModel.onAddTemporaryPhoto(
                         title = title,

@@ -110,17 +110,17 @@ class CreatePropertyActivity : AppCompatActivity() {
                 }
             }
         }
-        val adapter = CreatePropertyPhotoAdapter()
+        val adapter = CreatePropertyPhotoAdapter { temporaryPhoto ->
+            viewModel.deleteTemporaryPhoto(temporaryPhoto)
+        }
+
         binding.createUpdatePhotoRecyclerview.layoutManager = LinearLayoutManager(this)
+
         binding.createUpdatePhotoRecyclerview.adapter = adapter
 
-        viewModel.temporaryPhotoLiveData.observe(this) {
-            if (it.isEmpty() || it == null) {
-                onePhotoAtLeast = false
-            } else {
-                onePhotoAtLeast = true
-                adapter.submitList(it)
-            }
+        viewModel.temporaryPhotoLiveData.observe(this) { temporaryPhotos ->
+            onePhotoAtLeast = temporaryPhotos.isNotEmpty()
+            adapter.submitList(temporaryPhotos)
         }
 
         binding.addPictureButton.setOnClickListener {

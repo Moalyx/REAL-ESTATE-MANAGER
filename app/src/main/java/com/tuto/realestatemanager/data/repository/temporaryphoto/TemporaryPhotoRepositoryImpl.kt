@@ -24,5 +24,13 @@ class TemporaryPhotoRepositoryImpl @Inject constructor() : TemporaryPhotoReposit
 
     override fun getTemporaryPhotoList(): StateFlow<List<TemporaryPhoto>> = temporaryPhotoListFlow
 
+    override fun deleteTemporaryPhoto(temporaryPhoto: TemporaryPhoto) {
+        temporaryPhotoListFlow.update { currentList ->
+            currentList.filter { photo ->
+                photo.id != temporaryPhoto.id
+            }
+        }
+    }
+
 
 }

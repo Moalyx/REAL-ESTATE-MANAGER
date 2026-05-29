@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-    mainApplication: Application,
+    private val mainApplication: Application,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
     private val updatePropertyUseCase: UpdatePropertyUseCase,
@@ -46,18 +46,38 @@ class PropertyListViewModel @Inject constructor(
             isInternetAvailableUseCase.invoke()
         ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable ->
 
-            if (isInternetAvailable) {
-                for (property in propertiesWithPhotosEntity) {
-                    if (property.propertyEntity.lat == null || property.propertyEntity.lng == null || property.propertyEntity.lat == 0.0 || property.propertyEntity.lng == 0.0) {
-                        val location = getLatLngPropertyLocationUseCase.invoke(
-                            "${property.propertyEntity.address} ${property.propertyEntity.city} ${property.propertyEntity.zipCode} ${property.propertyEntity.state} ${property.propertyEntity.country}")
-                        property.propertyEntity.lat = location.lat
-                        property.propertyEntity.lng = location.lng
-                        updatePropertyUseCase.invoke(property.propertyEntity)
-                    }
+            val propertiesWithoutLocation = propertiesWithPhotosEntity.filter { property ->
+                property.propertyEntity.lat == null ||
+                        property.propertyEntity.lng == null ||
+                        property.propertyEntity.lat == 0.0 ||
+                        property.propertyEntity.lng == 0.0
+            }
+
+            if (isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
+
+                for (property in propertiesWithoutLocation) {
+
+                    val location = getLatLngPropertyLocationUseCase.invoke(
+                        "${property.propertyEntity.address} " +
+                                "${property.propertyEntity.city} " +
+                                "${property.propertyEntity.zipCode} " +
+                                "${property.propertyEntity.state} " +
+                                "${property.propertyEntity.country}"
+                    )
+
+                    property.propertyEntity.lat = location.lat
+                    property.propertyEntity.lng = location.lng
+
+                    updatePropertyUseCase.invoke(property.propertyEntity)
                 }
-            }else{
-                Toast.makeText(mainApplication,"No internet some property may not appear on the map", Toast.LENGTH_SHORT).show()
+
+            } else if (!isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
+
+                Toast.makeText(
+                    mainApplication,
+                    "No internet some property may not appear on the map",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             if (searchParameters == null) {

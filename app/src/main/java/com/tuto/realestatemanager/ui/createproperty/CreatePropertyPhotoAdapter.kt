@@ -9,7 +9,9 @@ import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.databinding.ItemAddPictureRecyclerviewBinding
 import com.tuto.realestatemanager.model.TemporaryPhoto
 
-class CreatePropertyPhotoAdapter :
+class CreatePropertyPhotoAdapter(
+    private val onDeleteClicked: (TemporaryPhoto) -> Unit
+) :
     ListAdapter<TemporaryPhoto, CreatePropertyPhotoAdapter.ViewHolder>(PropertyDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
@@ -21,12 +23,12 @@ class CreatePropertyPhotoAdapter :
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onDeleteClicked)
     }
 
     class ViewHolder(private val binding: ItemAddPictureRecyclerviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(tempPhoto: TemporaryPhoto) {
+        fun bind(tempPhoto: TemporaryPhoto, onDeleteClicked: (TemporaryPhoto) -> Unit) {
             Glide
                 .with(binding.photo)
                 .load(tempPhoto.uri)
@@ -34,6 +36,9 @@ class CreatePropertyPhotoAdapter :
                 .into(binding.photo)
 
             binding.photoTitle.text = tempPhoto.title
+            binding.deleteButton.setOnClickListener {
+                onDeleteClicked(tempPhoto)
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.GetTemporaryPhotoListUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
@@ -44,6 +45,7 @@ class CreatePropertyViewModel @Inject constructor(
     private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
     private val insertPhotoUseCase: InsertPhotoUseCase,
+    private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
     converterRepository: PriceConverterRepository,
     private val dispatcher : CoroutineContext,
     private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase
@@ -98,6 +100,10 @@ class CreatePropertyViewModel @Inject constructor(
 
     private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
         getTemporaryPhotoListUseCase.invoke()
+
+    fun deleteTemporaryPhoto(temporaryPhoto: TemporaryPhoto) {
+        deleteTemporaryPhotoUseCase.invoke(temporaryPhoto)
+    }
 
     val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
         temporaryPhotoStateFlow.asLiveData()

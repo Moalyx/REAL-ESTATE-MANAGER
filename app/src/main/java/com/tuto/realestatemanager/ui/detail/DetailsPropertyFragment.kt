@@ -111,11 +111,24 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             val address = "${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}"
 
             val staticMap =
-                "https://maps.googleapis.com/maps/api/staticmap?center=$address&markers=${it.address}&zoom=$zoom&size=$size&key=$apiKey"
+                "https://maps.googleapis.com/maps/api/staticmap" +
+                        "?center=$address" +
+                        "&zoom=$zoom" +
+                        "&size=$size" +
+                        "&markers=color:red%7C$address" +
+                        "&key=$apiKey"
 
-            Glide.with(requireContext())
-                .load(staticMap)
-                .into(binding.staticMap)
+            if (it.hasInternet) {
+                Glide.with(requireContext())
+                    .load(staticMap)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                    .error(R.drawable.staticmap_unvailabe)
+                    .into(binding.staticMap)
+            } else {
+                Glide.with(requireContext()).clear(binding.staticMap)
+                binding.staticMap.setImageResource(R.drawable.staticmap_unvailabe)
+            }
 
         }
 

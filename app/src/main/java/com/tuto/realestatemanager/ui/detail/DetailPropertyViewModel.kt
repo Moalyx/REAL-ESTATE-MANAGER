@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class DetailPropertyViewModel @Inject constructor(
     currentIdFlowUseCase: CurrentIdFlowUseCase,
     isDollarFlowUseCase: IsDollarFlowUseCase,
-    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase
+    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke()
@@ -53,8 +55,9 @@ class DetailPropertyViewModel @Inject constructor(
         combine(
             photoUriMutableStateFlow,
             getCurrentPropertyFlow,
-            isDollarFlowUseCase.invoke()
-        ) { photoUri, propertyWithPhotosEntity, isDollar ->
+            isDollarFlowUseCase.invoke(),
+            isInternetAvailableUseCase.invoke()
+        ) { photoUri, propertyWithPhotosEntity, isDollar, hasInternet ->
 
             if (propertyWithPhotosEntity == null) {
                 null
@@ -92,7 +95,8 @@ class DetailPropertyViewModel @Inject constructor(
                     poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
                     photoUri = photoUri
                         ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri
-                        ?: ""
+                        ?: "",
+                    hasInternet = hasInternet
                 )
             }
         }.collect {

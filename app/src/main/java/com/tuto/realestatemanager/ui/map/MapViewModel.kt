@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetAllPropertiesWithPhotosUseCase
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
@@ -21,7 +22,7 @@ class MapViewModel @Inject constructor(
     private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
     private val getParametersFlowUseCase: GetParametersFlowUseCase,
     private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
-    val currentPropertyIdRepository: CurrentPropertyIdRepository,
+    val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
     private var isTablet = false

@@ -27,5 +27,6 @@ data class PropertyDetailViewState(
     val poiSchool: Boolean,
     val poiBus: Boolean,
     val poiPark: Boolean,
-    val photoUri: String
+    val photoUri: String,
+    val hasInternet: Boolean
 )

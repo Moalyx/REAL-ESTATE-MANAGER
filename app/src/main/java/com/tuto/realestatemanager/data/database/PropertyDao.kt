@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.data.database
 
+import android.database.Cursor
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -64,5 +65,16 @@ interface PropertyDao {
 
     @Query("DELETE FROM photo_table WHERE propertyId =:propertyId")
     suspend fun deleteAllPropertyPhotos(propertyId: Long)
+
+    ////////// CONTENT PROVIDER //////////
+
+    @Query("SELECT * FROM property_table")
+    fun getAllPropertiesWithCursor(): Cursor
+
+    @Query("SELECT * FROM property_table WHERE id = :id")
+    fun getPropertyByIdWithCursor(id: Long): Cursor
+
+    @Query("SELECT * FROM photo_table")
+    fun getAllPhotosWithCursor(): Cursor
 
 }

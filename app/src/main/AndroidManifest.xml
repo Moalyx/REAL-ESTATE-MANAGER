@@ -77,14 +77,10 @@
         </activity>
 
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
+            android:name=".data.content_provider.ContentProvider"
+            android:authorities="com.tuto.realestatemanager.provider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

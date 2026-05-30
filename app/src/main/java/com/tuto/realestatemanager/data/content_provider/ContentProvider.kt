@@ -36,7 +36,7 @@ class ContentProvider : ContentProvider() {
         private const val PROPERTY_BY_ID = 3
     }
 
-    private lateinit var propertyDao: PropertyDao
+    lateinit var propertyDao: PropertyDao
 
     override fun onCreate(): Boolean {
 

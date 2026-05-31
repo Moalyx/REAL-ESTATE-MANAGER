@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.list
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import com.tuto.realestatemanager.model.SearchParameters
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import java.text.DecimalFormat
@@ -36,15 +38,27 @@ class PropertyListViewModel @Inject constructor(
     private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase
 ) : ViewModel() {
 
-    private var isTablet = false
+    private var isTablet = MutableStateFlow(false)
+
+    private val selectionFlow = combine(
+        currentPropertyIdRepository.currentIdFlow,
+        isTablet
+    ) { currentPropertyId, isTablet ->
+        Pair(currentPropertyId, isTablet)
+    }
 
     val propertyListLiveData: LiveData<List<PropertyViewState>> = liveData {
         combine(
             getAllPropertiesWithPhotosUseCase.invoke(),
             getParametersFlowUseCase.invoke(),
             isDollarFlowUseCase.invoke(),
-            isInternetAvailableUseCase.invoke()
-        ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable ->
+            isInternetAvailableUseCase.invoke(),
+            selectionFlow,
+
+        ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable, selection ->
+
+            val currentPropertyId = selection.first
+            val isTablet = selection.second
 
             val propertiesWithoutLocation = propertiesWithPhotosEntity.filter { property ->
                 property.propertyEntity.lat == null ||
@@ -81,7 +95,7 @@ class PropertyListViewModel @Inject constructor(
             }
 
             if (searchParameters == null) {
-                emit(mapPropertiesIntoViewState(propertiesWithPhotosEntity, isDollar))
+                emit(mapPropertiesIntoViewState(propertiesWithPhotosEntity, isDollar, currentPropertyId, isTablet))
             } else {
                 val filteredList: List<PropertyWithPhotosEntity> =
                     propertiesWithPhotosEntity.filter { property ->
@@ -103,7 +117,7 @@ class PropertyListViewModel @Inject constructor(
                     )
                 }
 
-                emit(mapPropertiesIntoViewState(filteredList, isDollar))
+                emit(mapPropertiesIntoViewState(filteredList, isDollar, currentPropertyId,isTablet))
             }
         }.collect()
     }
@@ -115,6 +129,8 @@ class PropertyListViewModel @Inject constructor(
     private fun mapPropertiesIntoViewState(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>,
         isDollar: Boolean,
+        currentPropertyId: Long?,
+        isTablet: Boolean,
     ): List<PropertyViewState> = propertiesWithPhotosEntity.map { propertyWithPhotosEntity ->
         PropertyViewState(
             id = propertyWithPhotosEntity.propertyEntity.id,
@@ -131,7 +147,8 @@ class PropertyListViewModel @Inject constructor(
                     navigateSingleLiveEvent.setValue(ListViewAction.NavigateToDetailActivity)
                 }
                 currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
-            }
+            },
+            isSelected = isTablet && propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
         )
     }
 
@@ -257,7 +274,7 @@ class PropertyListViewModel @Inject constructor(
         navigateSingleLiveEvent.setValue(ListViewAction.NavigateToCreateActvity)
     }
     fun onConfigurationChanged(isTablet: Boolean) {
-        this.isTablet = isTablet
+        this.isTablet.value = isTablet
     }
 
 }

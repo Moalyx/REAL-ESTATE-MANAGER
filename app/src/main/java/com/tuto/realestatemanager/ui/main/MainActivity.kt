@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
                 "Property successfully added",
                 Snackbar.LENGTH_LONG
             ).show()
+            intent.removeExtra("property_created")
         }
 
         setSupportActionBar(binding.toolbar)

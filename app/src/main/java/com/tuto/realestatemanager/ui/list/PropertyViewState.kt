@@ -9,5 +9,6 @@ data class PropertyViewState(
     val photoList: List<PhotoEntity>,
     val city: String,
     val isSold: Boolean,
-    val onItemClicked: () -> Unit
+    val onItemClicked: () -> Unit,
+    val isSelected: Boolean
 )

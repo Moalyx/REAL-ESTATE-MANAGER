@@ -7,6 +7,7 @@
     android:background="?selectableItemBackground">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/property_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardElevation="8dp"
@@ -22,12 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="#E0D1FA"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+<!--            <ImageView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="#E0D1FA"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent" />-->
 
             <ImageView
                 android:id="@+id/property_photo"

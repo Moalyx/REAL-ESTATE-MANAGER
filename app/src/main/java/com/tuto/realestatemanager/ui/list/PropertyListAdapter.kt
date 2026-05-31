@@ -3,6 +3,7 @@ package com.tuto.realestatemanager.ui.list
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,22 @@ class PropertyListAdapter : ListAdapter<PropertyViewState, PropertyListAdapter.V
             binding.propertyPrice.text = propertyViewState.price
             binding.itemProperty.setOnClickListener {
                 propertyViewState.onItemClicked.invoke()
+            }
+
+            if (propertyViewState.isSelected) {
+                binding.propertyCard.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        binding.root.context,
+                        R.color.selected_property
+                    )
+                )
+            } else {
+                binding.propertyCard.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        binding.root.context,
+                        R.color.normal_property
+                    )
+                )
             }
 
             if (propertyViewState.isSold){

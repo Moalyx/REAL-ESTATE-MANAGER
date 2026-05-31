@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
@@ -22,10 +23,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (intent.getBooleanExtra("property_created", false)) {
+            Snackbar.make(
+                binding.root,
+                "Property successfully added",
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)

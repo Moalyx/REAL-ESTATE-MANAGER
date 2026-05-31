@@ -5,12 +5,12 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,8 +19,6 @@ class ConnectivityRepositoryImpl @Inject constructor(
     private val context: Application
 ) : ConnectivityRepository {
 
-
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun isInternetAvailable(): Flow<Boolean> = callbackFlow {
 
         val connectivityManager =
@@ -30,8 +28,7 @@ class ConnectivityRepositoryImpl @Inject constructor(
             val network = connectivityManager.activeNetwork
             val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-            return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
-                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
         }
 
         trySend(checkInternet())
@@ -54,11 +51,18 @@ class ConnectivityRepositoryImpl @Inject constructor(
             }
         }
 
-        connectivityManager.registerDefaultNetworkCallback(callback)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(callback)
+        } else {
+            val networkRequest = NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build()
+
+            connectivityManager.registerNetworkCallback(networkRequest, callback)
+        }
 
         awaitClose {
             connectivityManager.unregisterNetworkCallback(callback)
         }
-    }
-
+    }.distinctUntilChanged()
 }

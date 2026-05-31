@@ -198,7 +198,9 @@ class CreatePropertyActivity : AppCompatActivity() {
         }
 
         viewModel.navigateSingleLiveEvent.observe(this) {
-            startActivity(Intent(this, MainActivity::class.java))
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("property_created", true)
+            startActivity(intent)
         }
 
     }

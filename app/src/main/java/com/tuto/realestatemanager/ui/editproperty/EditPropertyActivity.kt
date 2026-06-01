@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class EditPropertyActivity : AppCompatActivity() {
 
     private var type = ""
+    private var onePhotoAtLeast = false
 
     companion object {
         const val XXX = "XXX"
@@ -87,13 +88,14 @@ class EditPropertyActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        viewModel.getAllPhotoLiveData.observe(this) {
-            adapter.submitList(it)
+        viewModel.getAllPhotoLiveData.observe(this) {photos ->
+            onePhotoAtLeast = photos.isNotEmpty()
+            adapter.submitList(photos)
         }
 
         viewModel.detailPropertyLiveData.observe(this) {
             type = it.type
-            binding.typeDropdown.setText(it.type)
+            binding.typeDropdown.setText(it.type, false)
             binding.description.setText(it.description, TextView.BufferType.EDITABLE)
             binding.price.setText(it.price.toString())
             binding.surface.setText(it.surface.toString(), TextView.BufferType.EDITABLE).toString()
@@ -121,37 +123,68 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            lat?.let { lat ->
-                lng?.let { lng ->
-                    viewModel.updateProperty(
-                        propertyId,
-                        type,
-                        Integer.parseInt(binding.price.text.toString()),
-                        binding.address.text.toString(),
-                        binding.city.text.toString(),
-                        binding.state.text.toString(),
-                        Integer.parseInt(binding.zipcode.text.toString()),
-                        binding.country.text.toString(),
-                        Integer.parseInt(binding.surface.text.toString()),
-                        lat,
-                        lng,
-                        binding.description.text.toString(),
-                        Integer.parseInt(binding.rooms.text.toString()),
-                        Integer.parseInt(binding.bedrooms.text.toString()),
-                        Integer.parseInt(binding.bathrooms.text.toString()),
-                        binding.agent.text.toString(),
-                        binding.checkboxSaleStatus.isChecked,
-                        binding.checkboxtrTrain.isChecked,
-                        binding.date.text.toString(),
-                        binding.checkboxAirport.isChecked,
-                        binding.checkboxRestaurant.isChecked,
-                        binding.checkboxSchool.isChecked,
-                        binding.checkboxBus.isChecked,
-                        binding.checkboxPark.isChecked
-                    )
+
+            if (!onePhotoAtLeast) {
+                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
+            } else {
+
+                type = binding.typeDropdown.text.toString()
+
+                val price = binding.price.text.toString()
+                val address = binding.address.text.toString()
+                val city = binding.city.text.toString()
+                val state = binding.state.text.toString()
+                val zipcode = binding.zipcode.text.toString()
+                val country = binding.country.text.toString()
+                val surface = binding.surface.text.toString()
+                val description = binding.description.text.toString()
+                val rooms = binding.rooms.text.toString()
+                val bedrooms = binding.bedrooms.text.toString()
+                val bathrooms = binding.bathrooms.text.toString()
+                val agent = binding.agent.text.toString()
+
+                if (
+                    type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
+                    state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
+                    description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
+                    bathrooms.isEmpty() || agent.isEmpty()
+                ) {
+                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
+                } else {
+                    lat?.let { lat ->
+                        lng?.let { lng ->
+                            viewModel.updateProperty(
+                                propertyId,
+                                type,
+                                price.toInt(),
+                                address,
+                                city,
+                                state,
+                                zipcode.toInt(),
+                                country,
+                                surface.toInt(),
+                                lat,
+                                lng,
+                                description,
+                                rooms.toInt(),
+                                bedrooms.toInt(),
+                                bathrooms.toInt(),
+                                agent,
+                                binding.checkboxSaleStatus.isChecked,
+                                binding.checkboxtrTrain.isChecked,
+                                binding.date.text.toString(),
+                                binding.checkboxAirport.isChecked,
+                                binding.checkboxRestaurant.isChecked,
+                                binding.checkboxSchool.isChecked,
+                                binding.checkboxBus.isChecked,
+                                binding.checkboxPark.isChecked
+                            )
+                        }
+                    }
+
+                    viewModel.onNavigateToDetailActivity()
                 }
             }
-            viewModel.onNavigateToDetailActivity()
         }
 
         binding.dismissButton.setOnClickListener {

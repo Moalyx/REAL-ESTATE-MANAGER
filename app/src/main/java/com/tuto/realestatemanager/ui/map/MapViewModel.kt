@@ -1,12 +1,10 @@
 package com.tuto.realestatemanager.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
-import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetAllPropertiesWithPhotosUseCase
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
@@ -22,7 +20,7 @@ class MapViewModel @Inject constructor(
     private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
     private val getParametersFlowUseCase: GetParametersFlowUseCase,
     private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
-    val currentPropertyIdRepository: CurrentPropertyIdRepository
+    private val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
     private var isTablet = false
@@ -33,15 +31,10 @@ class MapViewModel @Inject constructor(
         combine(
             getAllPropertiesWithPhotosUseCase.invoke(),
             getParametersFlowUseCase.invoke(),
-            getUserLocationFlowUseCase.invoke()
+            getUserLocationFlowUseCase.invoke(),
+            currentPropertyIdRepository.currentIdFlow
 
-        ) { propertiesWithPhotosEntity, searchParameters, userLocation ->
-
-            //val markerPlaceList = mutableListOf<MarkerPlace>()
-
-//            if (userLocation == null) return
-//
-//            if (propertiesWithPhotosEntity == null) return
+        ) { propertiesWithPhotosEntity, searchParameters, userLocation, selectedMarkerId ->
 
             if (searchParameters == null) {
                 val markerPlaceList = mutableListOf<MarkerPlace>()
@@ -65,7 +58,8 @@ class MapViewModel @Inject constructor(
                     MapViewState(
                         lat = userLocation?.latitude ?: defaultLat,
                         lng = userLocation?.longitude ?: defaultLng,
-                        markers = markerPlaceList
+                        markers = markerPlaceList,
+                        selectedMarkerId = selectedMarkerId
                     )
                 )
 
@@ -110,9 +104,10 @@ class MapViewModel @Inject constructor(
 
                 emit(
                     MapViewState(
-                        userLocation?.latitude ?: defaultLat,
-                        userLocation?.longitude ?: defaultLng,
-                        markerPlaceListFiltered
+                        lat = userLocation?.latitude ?: defaultLat,
+                        lng = userLocation?.longitude ?: defaultLng,
+                        markers = markerPlaceListFiltered,
+                        selectedMarkerId = selectedMarkerId
                     )
                 )
             }
@@ -171,15 +166,6 @@ class MapViewModel @Inject constructor(
 
         return searchCity.isNullOrBlank() ||
                 propertyCity.equals(searchCity.trim(), ignoreCase = true)
-    }
-
-
-    private fun compareParameters(
-        searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
-    ): Boolean {
-
-        return true
     }
 
     private fun comparePoiTrain(

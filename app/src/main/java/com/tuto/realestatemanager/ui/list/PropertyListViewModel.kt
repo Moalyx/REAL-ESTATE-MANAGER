@@ -1,7 +1,6 @@
 package com.tuto.realestatemanager.ui.list
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -76,7 +75,7 @@ class PropertyListViewModel @Inject constructor(
                                 "${property.propertyEntity.city} " +
                                 "${property.propertyEntity.zipCode} " +
                                 "${property.propertyEntity.state} " +
-                                "${property.propertyEntity.country}"
+                                property.propertyEntity.country
                     )
 
                     property.propertyEntity.lat = location.lat
@@ -148,7 +147,7 @@ class PropertyListViewModel @Inject constructor(
                 }
                 currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
             },
-            isSelected = isTablet && propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
+            isSelected = propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
         )
     }
 

@@ -40,8 +40,20 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
     }
 
     private val bitmapSold by lazy {
-        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.property_sold)
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.icon_sold_text)
         val scaledBitmap = originalBitmap.scale(64, 64, false)
+        BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+    }
+
+    private val bitmapNotSoldSelected by lazy {
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.property_not_sold)
+        val scaledBitmap = originalBitmap.scale(120, 120, false)
+        BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+    }
+
+    private val bitmapSoldSelected by lazy {
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.icon_sold_text)
+        val scaledBitmap = originalBitmap.scale(120, 120, false)
         BitmapDescriptorFactory.fromBitmap(scaledBitmap)
     }
 
@@ -49,13 +61,9 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         getMapAsync(this)
-        //initGoogleMaps()
+
     }
 
-//    private fun initGoogleMaps() {
-//        val mapFragment: MapFragment = MapFragment.newInstance()
-//        mapFragment.getMapAsync(this)
-//    }
 @Deprecated("Deprecated in Java")
 override fun onRequestPermissionsResult(
     requestCode: Int,
@@ -120,7 +128,15 @@ override fun onRequestPermissionsResult(
                             .position(LatLng(markerPlace.lat, markerPlace.lng))
                             .title(markerPlace.description)
                             .snippet(markerPlace.address)
-                            .icon(if (markerPlace.isSold) bitmapSold else bitmapNotSold)
+                            .icon(
+                                when {
+                                    markerPlace.id == mapViewState.selectedMarkerId && markerPlace.isSold -> bitmapSoldSelected
+                                    markerPlace.id == mapViewState.selectedMarkerId -> bitmapNotSoldSelected
+                                    markerPlace.isSold -> bitmapSold
+                                    else -> bitmapNotSold
+                                }
+                            )
+                            .anchor(0.5f, 1f)
                     )
 
                     marker?.tag = markerPlace.id

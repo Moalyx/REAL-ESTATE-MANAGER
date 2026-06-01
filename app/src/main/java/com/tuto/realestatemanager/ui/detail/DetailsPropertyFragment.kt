@@ -6,6 +6,7 @@ import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -96,12 +97,12 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                 .centerInside()
                 .into(binding.mainPhoto)
 
-            viewmodel.isVisible(binding.poiAirport, it.poiAirport)
-            viewmodel.isVisible(binding.poiBus, it.poiBus)
-            viewmodel.isVisible(binding.poiPark, it.poiPark)
-            viewmodel.isVisible(binding.poiSchool, it.poiSchool)
-            viewmodel.isVisible(binding.poiResto, it.poiResto)
-            viewmodel.isVisible(binding.poiTrain, it.poiTrain)
+            binding.poiAirport.isVisible = it.poiAirport
+            binding.poiBus.isVisible = it.poiBus
+            binding.poiPark.isVisible = it.poiPark
+            binding.poiSchool.isVisible = it.poiSchool
+            binding.poiResto.isVisible = it.poiResto
+            binding.poiTrain.isVisible = it.poiTrain
 
             adapter.submitList(it.photoList)
 

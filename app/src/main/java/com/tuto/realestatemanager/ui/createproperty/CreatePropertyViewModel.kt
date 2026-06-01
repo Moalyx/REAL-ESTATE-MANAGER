@@ -13,6 +13,7 @@ import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEnt
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
 import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
+import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
@@ -48,11 +49,15 @@ class CreatePropertyViewModel @Inject constructor(
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
     converterRepository: PriceConverterRepository,
     private val dispatcher : CoroutineContext,
-    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
+
+    val hasInternetLiveData: LiveData<Boolean> =
+        isInternetAvailableUseCase.invoke().asLiveData()
 
     fun onSetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
@@ -90,11 +95,17 @@ class CreatePropertyViewModel @Inject constructor(
         }
 
     private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
-        predictionsFlow.mapLatest {
-            getPredictionsUseCase.invoke(
-                it.first,
-                "${it.second?.latitude},${it.second?.longitude}"
+        predictionsFlow.mapLatest { (address, location) ->
 
+            val localisation = if (location != null) {
+                "${location.latitude},${location.longitude}"
+            } else {
+                "48.8566,2.3522"
+            }
+
+            getPredictionsUseCase.invoke(
+                address,
+                localisation
             )
         }.asLiveData(coroutineDispatchersProvider.io)
 

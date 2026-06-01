@@ -93,12 +93,6 @@ class CreatePropertyActivity : AppCompatActivity() {
 
                 binding.predictionRecyclerview.visibility = View.GONE
 
-                Toast.makeText(
-                    this,
-                    "please enter an address manually",
-                    Toast.LENGTH_SHORT
-                ).show()
-
             } else {
 
                 binding.predictionRecyclerview.visibility = View.VISIBLE
@@ -110,6 +104,20 @@ class CreatePropertyActivity : AppCompatActivity() {
                 }
             }
         }
+
+        viewModel.hasInternetLiveData.observe(this) { hasInternet ->
+
+            if (!hasInternet) {
+                Toast.makeText(
+                    this,
+                    "please enter an address manually",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+
+
         val adapter = CreatePropertyPhotoAdapter { temporaryPhoto ->
             viewModel.deleteTemporaryPhoto(temporaryPhoto)
         }

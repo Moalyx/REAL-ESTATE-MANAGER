@@ -125,21 +125,10 @@ class DetailPropertyViewModel @Inject constructor(
     private fun convertDate(date: String, isDollar: Boolean): String =
         if (isDollar) Utils.formatToUS(date) else date
 
-
-    fun isVisible(view: ImageView, isVisible: Boolean): Boolean {
-        view.isVisible = false
-        if (isVisible) view.isVisible = true
-        return view.isVisible
-    }
-
     val navigateSingleLiveEvent: SingleLiveEvent<DetailViewAction> = SingleLiveEvent()
 
     fun onNavigateToEditActivity() {
         navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
     }
-
-//    fun onNavigateToMainActivity(){
-//        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToMainActivity)
-//    }
 
 }

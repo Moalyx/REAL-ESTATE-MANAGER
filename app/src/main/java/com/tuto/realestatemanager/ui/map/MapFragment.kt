@@ -33,6 +33,8 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 
+    private var hasCameraMoved = false
+
     private val bitmapNotSold by lazy {
         val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.property_not_sold)
         val scaledBitmap = originalBitmap.scale(64, 64, false)
@@ -111,8 +113,10 @@ override fun onRequestPermissionsResult(
                     .tilt(30F)
                     .build()
 
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
-
+            if (!hasCameraMoved) {
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(camera))
+                hasCameraMoved = true
+            }
             map.addCircle(
                 CircleOptions()
                     .center(point)

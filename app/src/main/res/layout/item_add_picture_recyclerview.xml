@@ -22,7 +22,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#8FFF"
+        android:background="#88000000"
         app:layout_constraintBottom_toBottomOf="@id/photoTitle"
         app:layout_constraintEnd_toEndOf="@id/photoTitle"
         app:layout_constraintStart_toStartOf="@id/photoTitle"

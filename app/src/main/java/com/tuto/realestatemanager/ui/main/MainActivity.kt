@@ -126,7 +126,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateMenuIcon(item: MenuItem) {
         viewmodel.iconStatus.observe(this) {
-            if (it) item.setIcon(R.drawable.dollar) else item.setIcon(R.drawable.euro)
+            if (it) {
+                item.setIcon(R.drawable.euro)
+            } else {
+                item.setIcon(R.drawable.dollar)
+            }
         }
     }
 

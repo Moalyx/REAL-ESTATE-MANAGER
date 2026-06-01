@@ -135,12 +135,12 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         binding.saveButton.setOnClickListener {
 
-
             if (!onePhotoAtLeast) {
                 Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
             } else {
 
                 type = binding.typeDropdown.text.toString()
+
                 val price = binding.price.text.toString()
                 val address = binding.address.text.toString()
                 val city = binding.city.text.toString()
@@ -154,31 +154,50 @@ class CreatePropertyActivity : AppCompatActivity() {
                 val bathrooms = binding.bathrooms.text.toString()
                 val agent = binding.agent.text.toString()
 
-                if (type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
+                if (
+                    type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
                     state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
                     description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
                     bathrooms.isEmpty() || agent.isEmpty()
                 ) {
-                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
                 } else {
+
+                    val priceInt = price.toIntOrNull()
+                    val zipcodeInt = zipcode.toIntOrNull()
+                    val surfaceInt = surface.toIntOrNull()
+                    val roomsInt = rooms.toIntOrNull()
+                    val bedroomsInt = bedrooms.toIntOrNull()
+                    val bathroomsInt = bathrooms.toIntOrNull()
+
+                    if (
+                        priceInt == null ||
+                        zipcodeInt == null ||
+                        surfaceInt == null ||
+                        roomsInt == null ||
+                        bedroomsInt == null ||
+                        bathroomsInt == null
+                    ) {
+                        Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
 
                     viewModel.createProperty(
                         type,
-                        price.toInt(),
-                        binding.address.text.toString(),
-                        binding.city.text.toString(),
-                        binding.state.text.toString(),
-                        binding.zipcode.text.toString().toInt(),
-                        binding.country.text.toString(),
-                        binding.surface.text.toString().toInt(),
+                        priceInt,
+                        address,
+                        city,
+                        state,
+                        zipcodeInt,
+                        country,
+                        surfaceInt,
                         lat,
                         lng,
-                        binding.description.text.toString(),
-                        binding.rooms.text.toString().toInt(),
-                        binding.bedrooms.text.toString().toInt(),
-                        binding.bathrooms.text.toString().toInt(),
-                        binding.agent.text.toString(),
+                        description,
+                        roomsInt,
+                        bedroomsInt,
+                        bathroomsInt,
+                        agent,
                         binding.checkboxSaleStatus.isChecked,
                         binding.checkboxtrTrain.isChecked,
                         binding.checkboxAirport.isChecked,
@@ -187,6 +206,7 @@ class CreatePropertyActivity : AppCompatActivity() {
                         binding.checkboxBus.isChecked,
                         binding.checkboxPark.isChecked
                     )
+
                     viewModel.onNavigateToMainActivity()
                     finish()
                 }

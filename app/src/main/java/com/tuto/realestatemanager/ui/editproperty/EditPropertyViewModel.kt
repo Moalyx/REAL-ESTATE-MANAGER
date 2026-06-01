@@ -15,6 +15,7 @@ import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
+import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -172,7 +173,7 @@ class EditPropertyViewModel @Inject constructor(
         poiBus: Boolean,
         poiPark: Boolean
     ) {
-        val dateOfSale = "Not yet sold"
+        val dateOfSale = if (isSold) Utils.todayDate() else "Not yet sold"
         val property = PropertyEntity(
             id = id,
             type = type,

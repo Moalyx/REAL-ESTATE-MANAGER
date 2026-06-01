@@ -86,7 +86,14 @@ class DetailPropertyViewModel @Inject constructor(
                         propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
                         isDollar
                     ),
-                    saleDate = propertyWithPhotosEntity.propertyEntity.propertyDateOfSale,
+                    saleDate = if (
+                        propertyWithPhotosEntity.propertyEntity.propertySold &&
+                        propertyWithPhotosEntity.propertyEntity.propertyDateOfSale != "Not yet sold"
+                    ) {
+                        convertDate(propertyWithPhotosEntity.propertyEntity.propertyDateOfSale, isDollar)
+                    } else {
+                        propertyWithPhotosEntity.propertyEntity.propertyDateOfSale
+                    },
                     poiTrain = propertyWithPhotosEntity.propertyEntity.poiTrain,
                     poiAirport = propertyWithPhotosEntity.propertyEntity.poiAirport,
                     poiResto = propertyWithPhotosEntity.propertyEntity.poiResto,

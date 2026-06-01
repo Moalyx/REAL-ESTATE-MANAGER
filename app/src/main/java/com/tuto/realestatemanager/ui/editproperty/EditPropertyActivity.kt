@@ -151,24 +151,44 @@ class EditPropertyActivity : AppCompatActivity() {
                 ) {
                     Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
                 } else {
+
+                    val priceInt = price.toIntOrNull()
+                    val zipcodeInt = zipcode.toIntOrNull()
+                    val surfaceInt = surface.toIntOrNull()
+                    val roomsInt = rooms.toIntOrNull()
+                    val bedroomsInt = bedrooms.toIntOrNull()
+                    val bathroomsInt = bathrooms.toIntOrNull()
+
+                    if (
+                        priceInt == null ||
+                        zipcodeInt == null ||
+                        surfaceInt == null ||
+                        roomsInt == null ||
+                        bedroomsInt == null ||
+                        bathroomsInt == null
+                    ) {
+                        Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
                     lat?.let { lat ->
                         lng?.let { lng ->
                             viewModel.updateProperty(
                                 propertyId,
                                 type,
-                                price.toInt(),
+                                priceInt,
                                 address,
                                 city,
                                 state,
-                                zipcode.toInt(),
+                                zipcodeInt,
                                 country,
-                                surface.toInt(),
+                                surfaceInt,
                                 lat,
                                 lng,
                                 description,
-                                rooms.toInt(),
-                                bedrooms.toInt(),
-                                bathrooms.toInt(),
+                                roomsInt,
+                                bedroomsInt,
+                                bathroomsInt,
                                 agent,
                                 binding.checkboxSaleStatus.isChecked,
                                 binding.checkboxtrTrain.isChecked,

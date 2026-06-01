@@ -149,7 +149,7 @@ class CreatePropertyViewModel @Inject constructor(
 
         val saleSince: String = Utils.todayDate()
 
-        val dateOfSale = "Not yet sold"
+        val dateOfSale = if (isSold) Utils.todayDate() else "Not yet sold"
         val property = PropertyEntity(
             type = type,
             price = convertMoney(price.toString(), isDollar).toInt(),

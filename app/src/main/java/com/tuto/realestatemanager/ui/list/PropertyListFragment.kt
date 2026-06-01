@@ -63,4 +63,9 @@ class PropertyListFragment : Fragment() {
         viewModel.onConfigurationChanged(resources.getBoolean(R.bool.isTablet))
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }

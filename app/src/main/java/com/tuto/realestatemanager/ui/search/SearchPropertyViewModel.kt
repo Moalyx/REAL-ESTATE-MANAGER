@@ -39,10 +39,10 @@ class SearchPropertyViewModel @Inject constructor(
         setParametersUseCase.invoke(
             SearchParameters(
                 typeParameter(type),
-                priceMiniParameter(priceMini)?.toInt(),
-                priceMaxiParameter(priceMaxi)?.toInt(),
-                surfaceMiniParameter(surfaceMini)?.toInt(),
-                surfaceMaxiParameter(surfaceMaxi)?.toInt(),
+                priceMiniParameter(priceMini)?.toIntOrNull(),
+                priceMaxiParameter(priceMaxi)?.toIntOrNull(),
+                surfaceMiniParameter(surfaceMini)?.toIntOrNull(),
+                surfaceMaxiParameter(surfaceMaxi)?.toIntOrNull(),
                 cityParameter(city),
                 poiTrain,
                 poiAirport,

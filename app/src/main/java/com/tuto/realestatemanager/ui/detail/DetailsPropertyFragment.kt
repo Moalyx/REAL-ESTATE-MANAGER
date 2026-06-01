@@ -87,7 +87,7 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                 binding.status.setTextColor(
                     ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark)
                 )
-                binding.soldDate.text = LocalDate.now().toString()
+                binding.soldDate.text = it.saleDate
             }
 
             Glide
@@ -164,6 +164,11 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             }
             else -> false
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

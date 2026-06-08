@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
+
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
@@ -48,9 +48,8 @@ class CreatePropertyViewModel @Inject constructor(
     private val insertPhotoUseCase: InsertPhotoUseCase,
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
     converterRepository: PriceConverterRepository,
-    private val dispatcher : CoroutineContext,
-    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
+    getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)

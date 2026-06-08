@@ -2,7 +2,12 @@ package com.tuto.realestatemanager.ui.detail
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -16,7 +21,6 @@ import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 
 @AndroidEntryPoint
 class DetailsPropertyFragment : Fragment(), MenuProvider {
@@ -160,7 +164,9 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.edit_property -> {
-                viewmodel.onNavigateToEditActivity()
+                if (propertyId != 0L) {
+                    viewmodel.onNavigateToEditActivity()
+                }
                 true
             }
             else -> false

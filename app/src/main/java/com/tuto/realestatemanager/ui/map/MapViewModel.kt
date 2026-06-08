@@ -52,6 +52,9 @@ class MapViewModel @Inject constructor(
                         )
                     }
                 }
+                if (markerPlaceList.isEmpty()) {
+                    currentPropertyIdRepository.setCurrentId(null)
+                }
 
 //                propertyListMediatorLiveData.value =
                 emit(
@@ -98,6 +101,10 @@ class MapViewModel @Inject constructor(
                             )
                         )
                     }
+                }
+
+                if (markerPlaceListFiltered.isEmpty()) {
+                    currentPropertyIdRepository.setCurrentId(null)
                 }
 
 //                propertyListMediatorLiveData.value =

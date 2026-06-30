@@ -1,354 +1,366 @@
-//package com.tuto.realestatemanager.ui.createproperty
-//
-//import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-//import com.tuto.realestatemanager.TestCoroutineRule
-//import com.tuto.realestatemanager.domain.autocomplete.AutocompleteRepository
-//import com.tuto.realestatemanager.data.repository.autocomplete.model.PredictionResponse
-//import com.tuto.realestatemanager.data.repository.autocomplete.model.Predictions
-//import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
-//import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-//import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
-//import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
-//import com.tuto.realestatemanager.model.PhotoEntity
-//import com.tuto.realestatemanager.model.PropertyEntity
-//import com.tuto.realestatemanager.model.TemporaryPhoto
-//import io.mockk.*
-//import kotlinx.coroutines.flow.MutableStateFlow
-//import kotlinx.coroutines.test.runCurrent
-//import org.junit.Before
-//import org.junit.Rule
-//import org.junit.Test
-//import java.time.Clock
-//import java.time.Instant
-//import java.time.ZoneOffset
-//
-//
-//class CreatePropertyViewModelTest {
-//
-//    companion object {
-//        //FOR PROPERTYREPOSITORY
-//        private const val PROPERTY_ID = 0L
-//        private const val TYPE = "type"
-//        private const val PRICE = 0
-//        private const val ADDRESS = "ADDRESS"
-//        private const val CITY = "CITY"
-//        private const val STATE = "STATE"
-//        private const val ZIPCODE = 75000
-//        private const val COUNTRY = "COUNTRY"
-//        private const val SURFACE = 100
-//        private const val LAT = 48.0
-//        private const val LNG = 20.0
-//        private const val DESCRIPTION = "DESCRIPTION"
-//        private const val ROOM = 2
-//        private const val BEDROOM = 2
-//        private const val BATHROOM = 2
-//        private const val AGENT = "AGENT"
-//        private const val IS_PROPERTY_SOLD = true
-//        private const val SALESINCE = "2023-05-10"
-//        private const val SOLD_AT = "estate available for sale"
-//        private const val POITRAIN = true
-//        private const val POIAIRPORT = true
-//        private const val POIRESTO = true
-//        private const val POISCHOOL = true
-//        private const val POIBUS = true
-//        private const val POIPARK = true
-//
-//        private const val NEW_PROPERTY_ID = 42L
-//
-//        //FOR PLACEDETAIL
-//        private const val PLACE_ID = "0"
-//
-//        //FOR PHOTOREPOSITORY
-//        private const val PHOTO_ID = 0L
-//        private const val PHOTO_URI = "PHOTO_URI"
-//        private const val PHOTO_TITLE = "PHOTO_TITLE"
-//
-//        //FOR AUTOCOMPLETEREPOSITORY
-//        private const val INPUT_AUTOCOMPLETE = "3"
-//
-//        //FOR TEMPORARYPHOTO
-//        private const val PHOTO_1_TITLE = "PHOTO_1_TITLE"
-//        private const val PHOTO_1_URI = "PHOTO_1_URI"
-//        private const val PHOTO_2_TITLE = "PHOTO_1_TITLE"
-//        private const val PHOTO_2_URI = "PHOTO_1_URI"
-//
-//    }
-//
-//    @get:Rule
-//    val testCoroutineRule = TestCoroutineRule()
-//
-//    @get:Rule
-//    val instantTaskExecutorRule = InstantTaskExecutorRule()
-//
-//    private val temporaryPhotosMutableStateFlow =
-//        MutableStateFlow<List<TemporaryPhoto>>(emptyList())
-//
-//    private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase = mockk()
-//    private val propertyRepository: PropertyRepository = mockk()
-//    private val photoRepository: PhotoRepository = mockk()
-//    private val autocompleteRepository: AutocompleteRepository = mockk()
-//    private val temporaryPhotoRepository: TemporaryPhotoRepository = mockk()
-//
-//    private lateinit var createPropertyViewModel: CreatePropertyViewModel
-//
-//    @Before
-//    fun setUp() {
-//
-//        val temporaryPhoto = listOf(
-//            TemporaryPhoto(
-//                title = PHOTO_1_TITLE,
-//                uri = PHOTO_1_URI
-//            ),
-//            TemporaryPhoto(
-//                title = PHOTO_2_TITLE,
-//                uri = PHOTO_2_URI
-//            )
-//        )
-//        temporaryPhotosMutableStateFlow.value = temporaryPhoto
-//
-//        every { temporaryPhotoRepository.getTemporaryPhotoList() } returns temporaryPhotosMutableStateFlow
-//
-//
-//
-//        createPropertyViewModel = CreatePropertyViewModel(
-//            getPlaceAddressComponentsUseCase = getPlaceAddressComponentsUseCase,
-//            propertyRepository = propertyRepository,
-//            photoRepository = photoRepository,
-//            autocompleteRepository = autocompleteRepository,
-//            clock = Clock.fixed(
-//                Instant.ofEpochSecond(1683743909), // 10/05/2023 - 20:38:29
-//                ZoneOffset.UTC,
-//            ),
-//            coroutineDispatchersProvider = testCoroutineRule.getTestCoroutineDispatcherProvider(),
-//            temporaryPhotoRepository = temporaryPhotoRepository,
-//        )
-//
-//
-////        coEvery { getPlaceAddressComponentsUseCase.invoke(PLACE_ID) } returns
-////            AddressComponentsEntity(
-////                "12",
-////                ADDRESS,
-////                CITY,
-////                STATE,
-////                "75000",
-////                COUNTRY,
-////                LAT,
-////                LNG
-////            )
-////
-////        coEvery {
-////            photoRepository.insertPhoto(
-////                PhotoEntity(
-////                    PHOTO_ID.toLong(),
-////                    PROPERTY_ID,
-////                    PHOTO_URI,
-////                    PHOTO_TITLE
-////                )
-////            )
-////        }
-////
-////        coEvery { autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE) } returns PredictionResponse()
-//    }
-//
-//    @Test
-//    fun getPredictions() = testCoroutineRule.runTest {
-//
-//        val predictionResponse = PredictionResponse(
-//            ArrayList<Predictions>()
-//
-//        )
-//
-//
-////        coEvery { getPlaceAddressComponentsUseCase.invoke(PLACE_ID) } returns
-////                AddressComponentsEntity(
-////                    "12",
-////                    ADDRESS,
-////                    CITY,
-////                    STATE,
-////                    "75000",
-////                    COUNTRY,
-////                    LAT,
-////                    LNG
-////                )
-//        coEvery { autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE) } returns predictionResponse
-//
-//        //when
-//
-////        createPropertyViewModel.onGetAutocompleteAddressId(INPUT_AUTOCOMPLETE)
-//
-//        //createPropertyViewModel.predictions
-//        runCurrent()
-//
-//        coVerify {
-//            autocompleteRepository.getAutocompleteResult(INPUT_AUTOCOMPLETE)
-//        }
-//        confirmVerified(propertyRepository)
-//
-//    }
-//
-//
-//    @Test
-//    fun nominal_case() = testCoroutineRule.runTest {
-//
-//        // Given
-//        val propertyEntity = PropertyEntity(
-//            id = PROPERTY_ID,
-//            type = TYPE,
-//            price = PRICE,
-//            address = ADDRESS,
-//            city = CITY,
-//            state = STATE,
-//            zipCode = ZIPCODE,
-//            country = COUNTRY,
-//            surface = SURFACE,
-//            lat = LAT,
-//            lng = LNG,
-//            description = DESCRIPTION,
-//            room = ROOM,
-//            bedroom = BEDROOM,
-//            bathroom = BATHROOM,
-//            agent = AGENT,
-//            propertySold = IS_PROPERTY_SOLD,
-//            propertyOnSaleSince = SALESINCE,
-//            propertyDateOfSale = SOLD_AT,
-//            poiTrain = POITRAIN,
-//            poiAirport = POIAIRPORT,
-//            poiResto = POIRESTO,
-//            poiSchool = POISCHOOL,
-//            poiBus = POIBUS,
-//            poiPark = POIPARK
-//        )
-//        coEvery { propertyRepository.insertProperty(propertyEntity) } returns NEW_PROPERTY_ID
-//
-//        // When
-//        createPropertyViewModel.createProperty(
-//            type = TYPE,
-//            price = PRICE,
-//            address = ADDRESS,
-//            city = CITY,
-//            state = STATE,
-//            zipcode = ZIPCODE,
-//            country = COUNTRY,
-//            surface = SURFACE,
-//            lat = LAT,
-//            lng = LNG,
-//            description = DESCRIPTION,
-//            room = ROOM,
-//            bedroom = BEDROOM,
-//            bathroom = BATHROOM,
-//            agent = AGENT,
-//            isSold = IS_PROPERTY_SOLD,
-//            poiTrain = POITRAIN,
-//            poiAirport = POIAIRPORT,
-//            poiResto = POIRESTO,
-//            poiSchool = POISCHOOL,
-//            poiBus = POIBUS,
-//            poiPark = POIPARK,
-//        )
-//        runCurrent()
-//
-//        // Then
-//        coVerify(exactly = 1) {
-//            propertyRepository.insertProperty(propertyEntity)
-//        }
-//        confirmVerified(propertyRepository)
-//    }
-//
-//    @Test
-//    fun getPropertyFromRepository() = testCoroutineRule.runTest {
-//        // Given
-//        val propertyEntity = PropertyEntity(
-//            id = PROPERTY_ID,
-//            type = TYPE,
-//            price = PRICE,
-//            address = ADDRESS,
-//            city = CITY,
-//            state = STATE,
-//            zipCode = ZIPCODE,
-//            country = COUNTRY,
-//            surface = SURFACE,
-//            lat = LAT,
-//            lng = LNG,
-//            description = DESCRIPTION,
-//            room = ROOM,
-//            bedroom = BEDROOM,
-//            bathroom = BATHROOM,
-//            agent = AGENT,
-//            propertySold = IS_PROPERTY_SOLD,
-//            propertyOnSaleSince = SALESINCE,
-//            propertyDateOfSale = SOLD_AT,
-//            poiTrain = POITRAIN,
-//            poiAirport = POIAIRPORT,
-//            poiResto = POIRESTO,
-//            poiSchool = POISCHOOL,
-//            poiBus = POIBUS,
-//            poiPark = POIPARK
-//        )
-//        coEvery { propertyRepository.insertProperty(propertyEntity) } returns NEW_PROPERTY_ID
-//
-//        val photoEntity = PhotoEntity(
-//            0,
-//            NEW_PROPERTY_ID,
-//            PHOTO_1_URI,
-//            PHOTO_1_TITLE
-//        )
-//
-//        coJustRun {
-//            photoRepository.insertPhoto(photoEntity)
-//        }
-//
-//        val photoEntity2 = PhotoEntity(
-//            0,
-//            NEW_PROPERTY_ID,
-//            PHOTO_2_URI,
-//            PHOTO_2_TITLE
-//        )
-//
-//        coJustRun {
-//            photoRepository.insertPhoto(photoEntity2)
-//        }
-//
-//        // When
-//        createPropertyViewModel.createProperty(
-//            type = TYPE,
-//            price = PRICE,
-//            address = ADDRESS,
-//            city = CITY,
-//            state = STATE,
-//            zipcode = ZIPCODE,
-//            country = COUNTRY,
-//            surface = SURFACE,
-//            lat = LAT,
-//            lng = LNG,
-//            description = DESCRIPTION,
-//            room = ROOM,
-//            bedroom = BEDROOM,
-//            bathroom = BATHROOM,
-//            agent = AGENT,
-//            isSold = IS_PROPERTY_SOLD,
-//            poiTrain = POITRAIN,
-//            poiAirport = POIAIRPORT,
-//            poiResto = POIRESTO,
-//            poiSchool = POISCHOOL,
-//            poiBus = POIBUS,
-//            poiPark = POIPARK,
-//        )
-//        runCurrent()
-//
-//        // Then
-//        coVerify() {
-//            propertyRepository.insertProperty(propertyEntity)
-//
-//        }
-//
-//        coVerify() {
-//            photoRepository.insertPhoto(photoEntity)
-//            photoRepository.insertPhoto(photoEntity2)
-//        }
-//
-//        confirmVerified(propertyRepository)
-//        confirmVerified(photoRepository)
-//    }
-//
-//
-//}
+package com.tuto.realestatemanager.ui.createproperty
+
+import android.location.Location
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
+import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
+import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
+import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
+import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
+import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
+import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
+import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
+import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
+import com.tuto.realestatemanager.domain.usecase.temporaryphoto.GetTemporaryPhotoListUseCase
+import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
+import com.tuto.realestatemanager.model.PhotoEntity
+import com.tuto.realestatemanager.model.PropertyEntity
+import com.tuto.realestatemanager.model.TemporaryPhoto
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class CreatePropertyViewModelTest {
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase = mockk()
+    private val getPredictionsUseCase: GetPredictionsUseCase = mockk()
+    private val propertyRepository: PropertyRepository = mockk()
+    private val getTemporaryPhotoListUseCase: GetTemporaryPhotoListUseCase = mockk()
+    private val coroutineDispatchersProvider: CoroutineDispatchersProvider = mockk()
+    private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase = mockk(relaxed = true)
+    private val insertPhotoUseCase: InsertPhotoUseCase = mockk(relaxed = true)
+    private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase = mockk(relaxed = true)
+    private val converterRepository: PriceConverterRepository = mockk()
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase = mockk()
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase = mockk()
+
+    private val temporaryPhotoFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
+    private val isDollarFlow = MutableStateFlow(true)
+    private val userLocationFlow = MutableStateFlow<Location?>(null)
+    private val internetFlow = MutableStateFlow(true)
+
+    private lateinit var viewModel: CreatePropertyViewModel
+
+    @Before
+    fun setUp() {
+        every { coroutineDispatchersProvider.io } returns UnconfinedTestDispatcher()
+
+        every { getTemporaryPhotoListUseCase.invoke() } returns temporaryPhotoFlow
+        every { converterRepository.isDollarStateFlow } returns isDollarFlow
+        every { getUserLocationFlowUseCase.invoke() } returns userLocationFlow
+        every { isInternetAvailableUseCase.invoke() } returns internetFlow
+
+        viewModel = CreatePropertyViewModel(
+            getPlaceAddressComponentsUseCase = getPlaceAddressComponentsUseCase,
+            getPredictionsUseCase = getPredictionsUseCase,
+            propertyRepository = propertyRepository,
+            getTemporaryPhotoListUseCase = getTemporaryPhotoListUseCase,
+            coroutineDispatchersProvider = coroutineDispatchersProvider,
+            onDeleteTemporaryPhotoUseCase = onDeleteTemporaryPhotoUseCase,
+            insertPhotoUseCase = insertPhotoUseCase,
+            deleteTemporaryPhotoUseCase = deleteTemporaryPhotoUseCase,
+            converterRepository = converterRepository,
+            getUserLocationFlowUseCase = getUserLocationFlowUseCase,
+            isInternetAvailableUseCase = isInternetAvailableUseCase
+        )
+    }
+
+    @Test
+    fun `createProperty should insert property`() = runTest {
+        coEvery { propertyRepository.insertProperty(any()) } returns 42L
+
+        viewModel.createProperty(
+            type = "House",
+            price = 300000,
+            address = "10 rue test",
+            city = "Paris",
+            state = "France",
+            zipcode = 75000,
+            country = "France",
+            surface = 80,
+            lat = 48.8566,
+            lng = 2.3522,
+            description = "description",
+            room = 4,
+            bedroom = 2,
+            bathroom = 1,
+            agent = "Agent",
+            isSold = false,
+            poiTrain = true,
+            poiAirport = false,
+            poiResto = true,
+            poiSchool = false,
+            poiBus = true,
+            poiPark = false
+        )
+
+        coVerify(exactly = 1) {
+            propertyRepository.insertProperty(
+                match<PropertyEntity> {
+                    it.type == "House" &&
+                            it.price == 300000 &&
+                            it.address == "10 rue test" &&
+                            it.city == "Paris" &&
+                            it.zipCode == 75000 && !it.propertySold && it.poiTrain && it.poiResto && it.poiBus
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `createProperty should insert temporary photos with new property id`() = runTest {
+        temporaryPhotoFlow.value = listOf(
+            TemporaryPhoto(title = "Salon", uri = "uri_1"),
+            TemporaryPhoto(title = "Cuisine", uri = "uri_2")
+        )
+
+        coEvery { propertyRepository.insertProperty(any()) } returns 42L
+
+        viewModel.createProperty(
+            type = "House",
+            price = 300000,
+            address = "10 rue test",
+            city = "Paris",
+            state = "France",
+            zipcode = 75000,
+            country = "France",
+            surface = 80,
+            lat = 48.8566,
+            lng = 2.3522,
+            description = "description",
+            room = 4,
+            bedroom = 2,
+            bathroom = 1,
+            agent = "Agent",
+            isSold = false,
+            poiTrain = false,
+            poiAirport = false,
+            poiResto = false,
+            poiSchool = false,
+            poiBus = false,
+            poiPark = false
+        )
+
+        coVerify {
+            insertPhotoUseCase.invoke(
+                PhotoEntity(
+                    propertyId = 42L,
+                    photoUri = "uri_1",
+                    photoTitle = "Salon"
+                )
+            )
+        }
+
+        coVerify {
+            insertPhotoUseCase.invoke(
+                PhotoEntity(
+                    propertyId = 42L,
+                    photoUri = "uri_2",
+                    photoTitle = "Cuisine"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `createProperty should clear temporary photos after creation`() = runTest {
+        temporaryPhotoFlow.value = listOf(
+            TemporaryPhoto(title = "Salon", uri = "uri_1")
+        )
+
+        coEvery { propertyRepository.insertProperty(any()) } returns 42L
+
+        viewModel.createProperty(
+            type = "House",
+            price = 300000,
+            address = "10 rue test",
+            city = "Paris",
+            state = "France",
+            zipcode = 75000,
+            country = "France",
+            surface = 80,
+            lat = 48.8566,
+            lng = 2.3522,
+            description = "description",
+            room = 4,
+            bedroom = 2,
+            bathroom = 1,
+            agent = "Agent",
+            isSold = false,
+            poiTrain = false,
+            poiAirport = false,
+            poiResto = false,
+            poiSchool = false,
+            poiBus = false,
+            poiPark = false
+        )
+
+        verify {
+            onDeleteTemporaryPhotoUseCase.invoke()
+        }
+    }
+
+    @Test
+    fun `temporaryPhotoLiveData should expose temporary photos`() = runTest {
+        temporaryPhotoFlow.value = listOf(
+            TemporaryPhoto(title = "Photo 1", uri = "uri_1"),
+            TemporaryPhoto(title = "Photo 2", uri = "uri_2")
+        )
+
+        val result = viewModel.temporaryPhotoLiveData.getOrAwaitValue()
+
+        assertEquals(2, result.size)
+        assertEquals("Photo 1", result[0].title)
+        assertEquals("uri_1", result[0].uri)
+    }
+
+    @Test
+    fun `deleteTemporaryPhoto should call use case`() {
+        val temporaryPhoto = TemporaryPhoto(
+            title = "Photo",
+            uri = "uri"
+        )
+
+        viewModel.deleteTemporaryPhoto(temporaryPhoto)
+
+        verify {
+            deleteTemporaryPhotoUseCase.invoke(temporaryPhoto)
+        }
+    }
+
+    @Test
+    fun `onNavigateToMainActivity should emit navigation event`() {
+        viewModel.onNavigateToMainActivity()
+
+        assertEquals(
+            CreateViewAction.NavigateToMainActivity,
+            viewModel.navigateSingleLiveEvent.getOrAwaitValue()
+        )
+    }
+
+    @Test
+    fun `hasInternetLiveData should expose internet state`() {
+        internetFlow.value = false
+
+        val result = viewModel.hasInternetLiveData.getOrAwaitValue()
+
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun `onAddressSearchChanged should expose prediction list`() = runTest {
+        val location: Location = mockk()
+        every { location.latitude } returns 48.8566
+        every { location.longitude } returns 2.3522
+
+        userLocationFlow.value = location
+
+        coEvery {
+            getPredictionsUseCase.invoke("Par", "48.8566,2.3522")
+        } returns listOf(
+            PredictionAddressEntity(
+                prediction = "Paris",
+                placeId = "place_id_1"
+            )
+        )
+
+        viewModel.onAddressSearchChanged("Par")
+
+        val result = viewModel.predictionListViewState.getOrAwaitValue()
+
+        assertEquals(1, result.size)
+        assertEquals("Paris", result[0].address)
+        assertEquals("place_id_1", result[0].id)
+    }
+
+    @Test
+    fun `onSetAutocompleteAddressId should expose place detail`() = runTest {
+        coEvery {
+            getPlaceAddressComponentsUseCase.invoke("place_id_1")
+        } returns AddressComponentsEntity(
+            streetNumber = "10",
+            fullAddress = "10 rue test",
+            city = "Paris",
+            state = "France",
+            zipCode = "75000",
+            country = "France",
+            lat = 48.8566,
+            lng = 2.3522
+        )
+
+        viewModel.onSetAutocompleteAddressId("place_id_1")
+
+        val result = viewModel.placeDetailViewState.getOrAwaitValue()
+
+        assertEquals("10", result.number)
+        assertEquals("10 rue test", result.address)
+        assertEquals("Paris", result.city)
+        assertEquals("75000", result.zipCode)
+    }
+
+    class MainDispatcherRule(
+        private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
+    ) : TestWatcher() {
+
+        override fun starting(description: Description) {
+            Dispatchers.setMain(testDispatcher)
+        }
+
+        override fun finished(description: Description) {
+            Dispatchers.resetMain()
+        }
+    }
+
+    private fun <T> LiveData<T>.getOrAwaitValue(): T {
+        var data: T? = null
+        val latch = CountDownLatch(1)
+
+        val observer = object : Observer<T> {
+            override fun onChanged(value: T) {
+                data = value
+                latch.countDown()
+                this@getOrAwaitValue.removeObserver(this)
+            }
+        }
+
+        observeForever(observer)
+
+        if (!latch.await(2, TimeUnit.SECONDS)) {
+            removeObserver(observer)
+            throw TimeoutException("LiveData value was never set.")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return data as T
+    }
+}

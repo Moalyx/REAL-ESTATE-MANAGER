@@ -10,6 +10,7 @@
         android:id="@+id/property_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/property_photo"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -20,7 +21,7 @@
         app:layout_constraintBottom_toBottomOf="@id/property_photo"
         app:layout_constraintStart_toStartOf="@id/property_photo"
         app:layout_constraintEnd_toEndOf="@id/property_photo"
-        android:hint="GARDEN"
+        android:hint="@string/garden"
         android:textSize="25sp"
         android:background="#99000000"
         />

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.mortgagecalcultator.MortgageCalculatorActivity">
+    tools:context=".ui.mortgagecalculator.MortgageCalculatorActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,8 +23,6 @@
             app:titleTextColor="@color/white" />
 
 
-        <!-- HOUSE PRICE -->
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/house_price_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -42,14 +39,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
-                android:hint="House price"
+                android:hint="@string/house_price"
                 android:inputType="numberDecimal"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- DOWN PAYMENT -->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/down_payment_layout"
@@ -67,14 +62,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
-                android:hint="Down payment"
+                android:hint="@string/down_payment"
                 android:inputType="numberDecimal"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- LOAN AMOUNT -->
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -93,7 +86,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="LOAN AMOUNT"
+                    android:text="@string/loan_amount"
                     android:textColor="@color/purple_500"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -103,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="0 $"
+                    android:text="@string/_0"
                     android:textColor="#03A9F4"
                     android:textSize="28sp"
                     android:textStyle="bold" />
@@ -112,8 +105,6 @@
 
         </androidx.cardview.widget.CardView>
 
-
-        <!-- INTEREST RATE -->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/n_rate"
@@ -131,14 +122,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/baseline_percent_24"
-                android:hint="Interest rate"
+                android:hint="@string/interest_rate"
                 android:inputType="numberDecimal"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- DURATION -->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/n_duration"
@@ -156,14 +145,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/baseline_access_time_24"
-                android:hint="Duration (years)"
+                android:hint="@string/duration_years"
                 android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- MONTHLY PAYMENT -->
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -184,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    android:text="MONTHLY PAYMENT"
+                    android:text="@string/monthly_payment"
                     android:textColor="#03A9F4"
                     android:textSize="35sp"
                     android:textStyle="bold" />
@@ -196,7 +183,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:text="800 $"
+                    android:text="@string/_800"
                     android:textColor="@color/purple_500"
                     android:textSize="40sp"
                     android:textStyle="bold" />

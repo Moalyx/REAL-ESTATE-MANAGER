@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_launcher_background"
-        android:contentDescription="property photo" />
+        android:contentDescription="@string/property_photo" />
 
     <View
         android:layout_width="0dp"
@@ -44,11 +44,12 @@
 
     <ImageButton
         android:id="@+id/delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
         android:layout_marginStart="10dp"
         android:background="@color/white"
+        android:contentDescription="@string/delete"
         android:src="@drawable/ic_baseline_delete_24"
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintStart_toEndOf="@id/photo"

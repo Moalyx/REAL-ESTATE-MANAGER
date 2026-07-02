@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/edit_property"
-        android:title="edit property"
+        android:title="@string/edit_property"
         android:icon="@drawable/ic_baseline_edit_24"
         app:showAsAction="always"
         />

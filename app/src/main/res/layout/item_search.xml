@@ -10,7 +10,7 @@
         android:id="@+id/address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="4 rue des bergeries"
+        android:text="@string/_4_rue_des_bergeries"
         android:textColor="@color/black"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="parent"

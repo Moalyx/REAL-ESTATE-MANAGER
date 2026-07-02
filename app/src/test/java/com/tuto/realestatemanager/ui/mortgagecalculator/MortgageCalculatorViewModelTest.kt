@@ -1,30 +1,20 @@
 package com.tuto.realestatemanager.ui.mortgagecalculator
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository.MortgageCalculatorRepository
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
+import com.tuto.realestatemanager.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MortgageCalculatorViewModelTest {
@@ -83,15 +73,16 @@ class MortgageCalculatorViewModelTest {
     }
 
     @Test
-    fun `loanAmountLiveData should return zero when down payment is higher than house price`() = runTest {
-        housePriceFlow.value = 100000.0
-        downPaymentFlow.value = 150000.0
-        isDollarFlow.value = true
+    fun `loanAmountLiveData should return zero when down payment is higher than house price`() =
+        runTest {
+            housePriceFlow.value = 100000.0
+            downPaymentFlow.value = 150000.0
+            isDollarFlow.value = true
 
-        val result = viewModel.loanAmountLiveData.getOrAwaitValue()
+            val result = viewModel.loanAmountLiveData.getOrAwaitValue()
 
-        assertEquals("0 $", result)
-    }
+            assertEquals("0 $", result)
+        }
 
     @Test
     fun `getMonthlyPayment should calculate monthly payment`() = runTest {
@@ -209,39 +200,4 @@ class MortgageCalculatorViewModelTest {
         )
     }
 
-    class MainDispatcherRule(
-        private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
-    ) : TestWatcher() {
-
-        override fun starting(description: Description) {
-            Dispatchers.setMain(testDispatcher)
-        }
-
-        override fun finished(description: Description) {
-            Dispatchers.resetMain()
-        }
-    }
-
-    private fun <T> LiveData<T>.getOrAwaitValue(): T {
-        var data: T? = null
-        val latch = CountDownLatch(1)
-
-        val observer = object : Observer<T> {
-            override fun onChanged(value: T) {
-                data = value
-                latch.countDown()
-                this@getOrAwaitValue.removeObserver(this)
-            }
-        }
-
-        observeForever(observer)
-
-        if (!latch.await(2, TimeUnit.SECONDS)) {
-            removeObserver(observer)
-            throw TimeoutException("LiveData value was never set.")
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return data as T
-    }
 }

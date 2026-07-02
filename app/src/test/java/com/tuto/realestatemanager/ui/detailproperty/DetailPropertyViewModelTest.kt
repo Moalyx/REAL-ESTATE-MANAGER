@@ -1,26 +1,24 @@
-package com.tuto.realestatemanager.ui.detail
+package com.tuto.realestatemanager.ui.detailproperty
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
+import com.tuto.realestatemanager.getOrAwaitValue
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
+import com.tuto.realestatemanager.observeForTesting
+import com.tuto.realestatemanager.ui.detail.DetailPropertyViewModel
+import com.tuto.realestatemanager.ui.detail.DetailViewAction
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -28,11 +26,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DetailPropertyViewModelTest {
@@ -180,53 +173,6 @@ class DetailPropertyViewModelTest {
             DetailViewAction.NavigateToEditActivity,
             viewModel.navigateSingleLiveEvent.getOrAwaitValue()
         )
-    }
-
-    class MainDispatcherRule(
-        private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
-    ) : TestWatcher() {
-
-        override fun starting(description: Description) {
-            Dispatchers.setMain(testDispatcher)
-        }
-
-        override fun finished(description: Description) {
-            Dispatchers.resetMain()
-        }
-    }
-
-    private fun <T> LiveData<T>.getOrAwaitValue(): T {
-        var data: T? = null
-        val latch = CountDownLatch(1)
-
-        val observer = object : Observer<T> {
-            override fun onChanged(value: T) {
-                data = value
-                latch.countDown()
-                this@getOrAwaitValue.removeObserver(this)
-            }
-        }
-
-        observeForever(observer)
-
-        if (!latch.await(2, TimeUnit.SECONDS)) {
-            removeObserver(observer)
-            throw TimeoutException("LiveData value was never set.")
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return data as T
-    }
-
-    private fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
-        val observer = Observer<T> { }
-
-        try {
-            observeForever(observer)
-            block()
-        } finally {
-            removeObserver(observer)
-        }
     }
 
     private fun createPropertyWithPhotos(

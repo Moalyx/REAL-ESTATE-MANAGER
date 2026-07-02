@@ -2,8 +2,7 @@ package com.tuto.realestatemanager.ui.createproperty
 
 import android.location.Location
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
@@ -17,6 +16,7 @@ import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCa
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.GetTemporaryPhotoListUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
+import com.tuto.realestatemanager.getOrAwaitValue
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
@@ -26,22 +26,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreatePropertyViewModelTest {
@@ -328,39 +319,4 @@ class CreatePropertyViewModelTest {
         assertEquals("75000", result.zipCode)
     }
 
-    class MainDispatcherRule(
-        private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
-    ) : TestWatcher() {
-
-        override fun starting(description: Description) {
-            Dispatchers.setMain(testDispatcher)
-        }
-
-        override fun finished(description: Description) {
-            Dispatchers.resetMain()
-        }
-    }
-
-    private fun <T> LiveData<T>.getOrAwaitValue(): T {
-        var data: T? = null
-        val latch = CountDownLatch(1)
-
-        val observer = object : Observer<T> {
-            override fun onChanged(value: T) {
-                data = value
-                latch.countDown()
-                this@getOrAwaitValue.removeObserver(this)
-            }
-        }
-
-        observeForever(observer)
-
-        if (!latch.await(2, TimeUnit.SECONDS)) {
-            removeObserver(observer)
-            throw TimeoutException("LiveData value was never set.")
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return data as T
-    }
 }

@@ -29,19 +29,19 @@ class AutocompleteRepositoryImpl @Inject constructor(
                 address
             )
 
-            val addresses: List<Pair<String, String>?> = response.predictions.map {
+            val addresses: List<Pair<String, String>> = response.predictions.map {
                 val predictionAddress = it.description ?: ""
                 val id = it.placeId ?: ""
                 predictionAddress to id
             }
 
-            return addresses.filterNotNull().map {
+            return addresses.map {
                 PredictionAddressEntity(
                     prediction = it.first,
                     placeId = it.second
                 )
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return emptyList()
         }
 

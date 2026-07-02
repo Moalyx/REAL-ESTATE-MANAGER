@@ -21,6 +21,13 @@ import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentDetailsPropertyBinding
 import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import java.io.File
+import java.io.FileOutputStream
+
 
 @AndroidEntryPoint
 class DetailsPropertyFragment : Fragment(), MenuProvider {
@@ -113,7 +120,9 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             val zoom = 15
             val size = "1200x1200"
             val apiKey = BuildConfig.GOOGLE_PLACES_KEY
-            val address = "${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}"
+
+            val address =
+                "${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}"
 
             val staticMap =
                 "https://maps.googleapis.com/maps/api/staticmap" +
@@ -123,16 +132,51 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                         "&markers=color:red%7C$address" +
                         "&key=$apiKey"
 
-            if (it.hasInternet) {
+            val localStaticMapFile = File(
+                requireContext().filesDir,
+                "static_map_${it.id}.png"
+            )
+
+            if (localStaticMapFile.exists()) {
+
                 Glide.with(requireContext())
-                    .load(staticMap)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                    .error(R.drawable.staticmap_unvailabe)
+                    .load(localStaticMapFile)
                     .into(binding.staticMap)
+
+            } else if (it.hasInternet) {
+
+                Glide.with(requireContext())
+                    .asBitmap()
+                    .load(staticMap)
+                    .into(object : CustomTarget<Bitmap>() {
+
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap>?
+                        ) {
+
+                            binding.staticMap.setImageBitmap(resource)
+
+                            FileOutputStream(localStaticMapFile).use { outputStream ->
+                                resource.compress(
+                                    Bitmap.CompressFormat.PNG,
+                                    100,
+                                    outputStream
+                                )
+                            }
+                        }
+
+                        override fun onLoadCleared(
+                            placeholder: Drawable?
+                        ) {
+                        }
+                    })
+
             } else {
-                Glide.with(requireContext()).clear(binding.staticMap)
-                binding.staticMap.setImageResource(R.drawable.staticmap_unvailabe)
+
+                binding.staticMap.setImageResource(
+                    R.drawable.staticmap_unvailabe
+                )
             }
 
         }

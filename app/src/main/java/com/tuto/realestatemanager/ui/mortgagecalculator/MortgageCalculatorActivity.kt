@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.ui.mortgagecalcultator
+package com.tuto.realestatemanager.ui.mortgagecalculator
 
 import android.annotation.SuppressLint
 import android.os.Bundle

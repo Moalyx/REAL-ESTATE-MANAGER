@@ -38,7 +38,7 @@ class SearchPropertyActivity : AppCompatActivity() {
             binding.surfaceMaximum.setText(parameters.surfaceMaximum?.toString().orEmpty())
             binding.city.setText(parameters.city.orEmpty())
 
-            binding.checkboxtrTrain.isChecked = parameters.poiTrain
+            binding.checkboxTrain.isChecked = parameters.poiTrain
             binding.checkboxAirport.isChecked = parameters.poiAirport
             binding.checkboxRestaurant.isChecked = parameters.poiResto
             binding.checkboxSchool.isChecked = parameters.poiSchool
@@ -96,7 +96,7 @@ class SearchPropertyActivity : AppCompatActivity() {
                 binding.surfaceMinimum.text.toString(),
                 binding.surfaceMaximum.text.toString(),
                 binding.city.text.toString(),
-                binding.checkboxtrTrain.isChecked,
+                binding.checkboxTrain.isChecked,
                 binding.checkboxAirport.isChecked,
                 binding.checkboxRestaurant.isChecked,
                 binding.checkboxSchool.isChecked,

@@ -43,7 +43,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         )
         binding.typeDropdown.setAdapter(dropdownAdapter)
         binding.typeDropdown.threshold
-
+        binding.checkboxSaleStatus.visibility = View.GONE
         binding.typeDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
                 type = parent.getItemAtPosition(position).toString()
@@ -207,7 +207,7 @@ class CreatePropertyActivity : AppCompatActivity() {
                         bathroomsInt,
                         agent,
                         binding.checkboxSaleStatus.isChecked,
-                        binding.checkboxtrTrain.isChecked,
+                        binding.checkboxTrain.isChecked,
                         binding.checkboxAirport.isChecked,
                         binding.checkboxRestaurant.isChecked,
                         binding.checkboxSchool.isChecked,

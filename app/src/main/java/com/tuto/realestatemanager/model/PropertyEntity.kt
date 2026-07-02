@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "property_table")
-data class PropertyEntity constructor(
+data class PropertyEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "price") val price: Int,

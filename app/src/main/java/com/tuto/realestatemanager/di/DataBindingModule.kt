@@ -18,7 +18,7 @@ import com.tuto.realestatemanager.data.repository.priceconverterrepository.Price
 import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepositoryInterface
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepositoryImpl
-import com.tuto.realestatemanager.data.repository.search.SearchRepository
+import com.tuto.realestatemanager.data.repository.search.SearchRepositoryImpl
 import com.tuto.realestatemanager.data.repository.search.SearchRepositoryInterface
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepository
 import com.tuto.realestatemanager.data.repository.temporaryphoto.TemporaryPhotoRepositoryImpl
@@ -66,7 +66,7 @@ abstract class DataBindingModule {
 
     @Binds
     @Singleton
-    abstract fun bindsSearchRepository(impl : SearchRepository) : SearchRepositoryInterface
+    abstract fun bindsSearchRepository(impl : SearchRepositoryImpl) : SearchRepositoryInterface
 
     @Binds
     @Singleton

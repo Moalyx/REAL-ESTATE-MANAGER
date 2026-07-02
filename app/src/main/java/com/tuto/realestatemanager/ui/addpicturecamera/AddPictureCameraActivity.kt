@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.addpicturecamera
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -124,7 +123,7 @@ class AddPictureCameraActivity : AppCompatActivity() {
 
         if (requestCode != REQUEST_IMAGE_CAPTURE) return
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             displayPhoto()
         } else {
             finish()

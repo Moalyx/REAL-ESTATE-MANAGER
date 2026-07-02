@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SearchRepository @Inject constructor() : SearchRepositoryInterface {
+class SearchRepositoryImpl @Inject constructor() : SearchRepositoryInterface {
 
     private val searchParametersMutableStateFlow: MutableStateFlow<SearchParameters?> =
         MutableStateFlow(null)

@@ -118,7 +118,7 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxPark, it.poiPark)
             viewModel.isChecked(binding.checkboxSchool, it.poiSchool)
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
-            viewModel.isChecked(binding.checkboxtrTrain, it.poiTrain)
+            viewModel.isChecked(binding.checkboxTrain, it.poiTrain)
             viewModel.isChecked(binding.checkboxSaleStatus, it.isSold)
         }
 
@@ -191,7 +191,7 @@ class EditPropertyActivity : AppCompatActivity() {
                                 bathroomsInt,
                                 agent,
                                 binding.checkboxSaleStatus.isChecked,
-                                binding.checkboxtrTrain.isChecked,
+                                binding.checkboxTrain.isChecked,
                                 binding.date.text.toString(),
                                 binding.checkboxAirport.isChecked,
                                 binding.checkboxRestaurant.isChecked,

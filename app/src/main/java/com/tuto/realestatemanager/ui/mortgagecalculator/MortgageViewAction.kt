@@ -1,4 +1,4 @@
-package com.tuto.realestatemanager.ui.mortgagecalcultator
+package com.tuto.realestatemanager.ui.mortgagecalculator
 
 sealed class MortgageViewAction {
     object NavigateToMainActivity : MortgageViewAction()

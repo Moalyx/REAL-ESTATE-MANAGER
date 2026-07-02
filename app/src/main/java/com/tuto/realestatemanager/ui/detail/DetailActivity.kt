@@ -1,6 +1,7 @@
 package com.tuto.realestatemanager.ui.detail
 
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.databinding.ActivityDetailBinding
@@ -20,9 +21,13 @@ class DetailActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.detailToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.detailToolbar.setNavigationOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            viewmodel.onNavigateToMainActivity()
         }
 
         if (savedInstanceState == null) {
@@ -37,12 +42,6 @@ class DetailActivity : AppCompatActivity() {
                 else -> {}
             }
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        viewmodel.onNavigateToMainActivity()
     }
 
 }

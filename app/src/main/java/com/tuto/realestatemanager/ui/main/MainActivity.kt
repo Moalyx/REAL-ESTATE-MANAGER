@@ -12,7 +12,7 @@ import com.tuto.realestatemanager.databinding.ActivityMainBinding
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
 import com.tuto.realestatemanager.ui.list.PropertyListFragment
 import com.tuto.realestatemanager.ui.map.MapFragment
-import com.tuto.realestatemanager.ui.mortgagecalcultator.MortgageCalculatorActivity
+import com.tuto.realestatemanager.ui.mortgagecalculator.MortgageCalculatorActivity
 import com.tuto.realestatemanager.ui.search.SearchPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -85,8 +84,13 @@ class MainActivity : AppCompatActivity() {
 //                MainViewAction.NavigateToDetailActivity -> startActivity(DetailActivity.navigate(
 //                    this))
 
-                MainViewAction.NavigateToSearch -> startActivity(Intent(this,
-                    SearchPropertyActivity::class.java))
+                MainViewAction.NavigateToSearch -> startActivity(
+                    Intent(
+                        this,
+                        SearchPropertyActivity::class.java
+                    )
+                )
+
                 else -> {}
             }
         }
@@ -99,9 +103,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.edit_property_menu, menu)
-        updateMenuIcon(menu!!.findItem(R.id.currency))
+        menuInflater.inflate(R.menu.edit_property_menu, menu)
+
+        val currencyItem = menu!!.findItem(R.id.currency)
+
+        viewmodel.iconStatus.observe(this) { isDollar ->
+            if (isDollar) {
+                currencyItem.setIcon(R.drawable.euro)
+            } else {
+                currencyItem.setIcon(R.drawable.dollar)
+            }
+        }
+
         return true
     }
 
@@ -111,26 +124,18 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, MortgageCalculatorActivity::class.java))
                 true
             }
+
             R.id.search_property -> {
                 viewmodel.navigateToSearch()
                 true
             }
+
             R.id.currency -> {
-                updateMenuIcon(item)
                 viewmodel.converterPrice()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
-    private fun updateMenuIcon(item: MenuItem) {
-        viewmodel.iconStatus.observe(this) {
-            if (it) {
-                item.setIcon(R.drawable.euro)
-            } else {
-                item.setIcon(R.drawable.dollar)
-            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

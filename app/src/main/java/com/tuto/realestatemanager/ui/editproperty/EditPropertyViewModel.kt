@@ -1,11 +1,14 @@
 package com.tuto.realestatemanager.ui.editproperty
 
 import android.widget.CheckBox
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
-import com.tuto.realestatemanager.domain.usecase.geocode.GetLatLngPropertyLocationUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeletePhotoByIdUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
@@ -18,7 +21,12 @@ import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,22 +35,16 @@ class EditPropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository,
     private val photoRepository: PhotoRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase,
     private val deletePhotoByIdUseCase: DeletePhotoByIdUseCase,
     private val insertPhotoUseCase: InsertPhotoUseCase,
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
-    private val getTemporaryPhotoListUseCase: GetTemporaryPhotoListUseCase,
+    getTemporaryPhotoListUseCase: GetTemporaryPhotoListUseCase,
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase
 
 
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val deletedPhotoIdsMutableStateFlow = MutableStateFlow<List<Long>>(emptyList())
-    private val addedPhotosMutableStateFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
-
-    fun addTemporaryPhotoInEdit(temporaryPhoto: TemporaryPhoto) {
-        addedPhotosMutableStateFlow.value += temporaryPhoto
-    }
 
     val getAllPhotoLiveData: LiveData<List<EditPropertyPhotoViewState>> = liveData {
         combine(
@@ -96,8 +98,7 @@ class EditPropertyViewModel @Inject constructor(
     }
 
     fun markPhotoAsDeleted(photoId: Long) {
-        deletedPhotoIdsMutableStateFlow.value =
-            deletedPhotoIdsMutableStateFlow.value + photoId
+        deletedPhotoIdsMutableStateFlow.value += photoId
     }
 
     fun setPropertyId(id: Long) {
@@ -224,19 +225,13 @@ class EditPropertyViewModel @Inject constructor(
 
     }
 
-    fun deletePhoto(photoId: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            deletePhotoByIdUseCase.invoke(photoId)
-        }
-    }
-
     fun clearTemporaryPhotos() {
         onDeleteTemporaryPhotoUseCase.invoke()
     }
 
     val navigateSingleLiveEvent: SingleLiveEvent<EditViewAction> = SingleLiveEvent()
 
-    fun onNavigateToDetailActivity(){
+    fun onNavigateToDetailActivity() {
         navigateSingleLiveEvent.setValue(EditViewAction.NavigateFromEditToDetailActivity)
     }
 

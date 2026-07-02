@@ -20,6 +20,7 @@ class AddPhotoActivity : AppCompatActivity() {
 
     companion object {
         private const val INTENT_REQUEST_CODE = 100
+        private const val KEY_PHOTO_URI = "KEY_PHOTO_URI"
     }
 
     private val viewModel by viewModels<AddPhotoDialogFragmentViewModel>()
@@ -40,7 +41,18 @@ class AddPhotoActivity : AppCompatActivity() {
         getEditPropertyId = intent.getLongExtra("edit_property", -1)
 
         setupListeners()
-        launchIntent()
+
+        permanentPhotoUri = savedInstanceState
+            ?.getString(KEY_PHOTO_URI)
+            ?.let { Uri.parse(it) }
+
+        if (permanentPhotoUri != null) {
+            Glide.with(this)
+                .load(permanentPhotoUri)
+                .into(binding.image)
+        } else {
+            launchIntent()
+        }
     }
 
     private fun setupListeners() {
@@ -154,6 +166,14 @@ class AddPhotoActivity : AppCompatActivity() {
             "${BuildConfig.APPLICATION_ID}.provider",
             file
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        permanentPhotoUri?.let {
+            outState.putString(KEY_PHOTO_URI, it.toString())
+        }
     }
 
     private fun launchIntent() {

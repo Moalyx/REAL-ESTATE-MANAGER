@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
@@ -13,9 +15,11 @@ import androidx.appcompat.R
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.SearchView
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
+import com.tuto.realestatemanager.ui.createproperty.SearchAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +27,8 @@ class EditPropertyActivity : AppCompatActivity() {
 
     private var type = ""
     private var onePhotoAtLeast = false
+    private var isUpdatingAddressFromAutocomplete = false
+    private var isBindingPropertyDetails = false
 
     companion object {
         const val XXX = "XXX"
@@ -34,9 +40,11 @@ class EditPropertyActivity : AppCompatActivity() {
             return intent
         }
     }
+    private var previousDateOfSale: String = "Not yet sold"
+    private var wasSold: Boolean = false
 
-    private var lat: Double? = 0.0
-    private var lng: Double? = 0.0
+    private var lat: Double? = null
+    private var lng: Double? = null
 
     private val viewModel by viewModels<EditPropertyViewModel>()
 
@@ -46,6 +54,80 @@ class EditPropertyActivity : AppCompatActivity() {
 
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.typeDropdown.inputType = InputType.TYPE_NULL
+
+        val searchView = binding.searchview
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+                viewModel.onAddressSearchChanged(query)
+                return false
+            }
+        })
+
+        val addressTextWatcher = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!isUpdatingAddressFromAutocomplete && !isBindingPropertyDetails) {
+                    lat = null
+                    lng = null
+                }
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) = Unit
+        }
+
+        binding.address.addTextChangedListener(addressTextWatcher)
+        binding.city.addTextChangedListener(addressTextWatcher)
+        binding.zipcode.addTextChangedListener(addressTextWatcher)
+        binding.state.addTextChangedListener(addressTextWatcher)
+        binding.country.addTextChangedListener(addressTextWatcher)
+
+        viewModel.placeDetailViewState.observe(this) {
+            isUpdatingAddressFromAutocomplete = true
+
+            binding.address.setText("${it.number} ${it.address}")
+            binding.zipcode.setText(it.zipCode)
+            binding.state.setText(it.state)
+            binding.country.setText(it.country)
+            binding.city.setText(it.city)
+
+            lat = it.lat
+            lng = it.lng
+
+            isUpdatingAddressFromAutocomplete = false
+        }
+
+        val searchAdapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
+            override fun onPredictionClicked(id: String) {
+                viewModel.onSetAutocompleteAddressId(id)
+                binding.searchview.clearFocus()
+                searchView.setQuery("", false)
+            }
+        })
+
+        binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.predictionRecyclerview.adapter = searchAdapter
+
+        viewModel.predictionListViewState.observe(this) { predictions ->
+
+            if (predictions.isNullOrEmpty()) {
+                binding.predictionRecyclerview.visibility = View.GONE
+            } else {
+                binding.predictionRecyclerview.visibility = View.VISIBLE
+                searchAdapter.submitList(predictions)
+
+                binding.predictionRecyclerview.post {
+                    binding.predictionRecyclerview.requestLayout()
+                }
+            }
+        }
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
@@ -94,6 +176,8 @@ class EditPropertyActivity : AppCompatActivity() {
         }
 
         viewModel.detailPropertyLiveData.observe(this) {
+            isBindingPropertyDetails = true
+
             type = it.type
             binding.typeDropdown.setText(it.type, false)
             binding.description.setText(it.description, TextView.BufferType.EDITABLE)
@@ -109,10 +193,13 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.country.setText(it.country, TextView.BufferType.EDITABLE)
             binding.date.setText(it.saleSince)
             binding.agent.setText(it.agent)
+
             lat = it.lat
             lng = it.lng
 
-            binding.complement.setText("$lat, $lng")
+            previousDateOfSale = it.dateOfSale
+            wasSold = it.isSold
+
             viewModel.isChecked(binding.checkboxAirport, it.poiAirport)
             viewModel.isChecked(binding.checkboxBus, it.poiBus)
             viewModel.isChecked(binding.checkboxPark, it.poiPark)
@@ -120,6 +207,8 @@ class EditPropertyActivity : AppCompatActivity() {
             viewModel.isChecked(binding.checkboxRestaurant, it.poiResto)
             viewModel.isChecked(binding.checkboxTrain, it.poiTrain)
             viewModel.isChecked(binding.checkboxSaleStatus, it.isSold)
+
+            isBindingPropertyDetails = false
         }
 
         binding.saveButton.setOnClickListener {
@@ -171,38 +260,36 @@ class EditPropertyActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
 
-                    lat?.let { lat ->
-                        lng?.let { lng ->
-                            viewModel.updateProperty(
-                                propertyId,
-                                type,
-                                priceInt,
-                                address,
-                                city,
-                                state,
-                                zipcodeInt,
-                                country,
-                                surfaceInt,
-                                lat,
-                                lng,
-                                description,
-                                roomsInt,
-                                bedroomsInt,
-                                bathroomsInt,
-                                agent,
-                                binding.checkboxSaleStatus.isChecked,
-                                binding.checkboxTrain.isChecked,
-                                binding.date.text.toString(),
-                                binding.checkboxAirport.isChecked,
-                                binding.checkboxRestaurant.isChecked,
-                                binding.checkboxSchool.isChecked,
-                                binding.checkboxBus.isChecked,
-                                binding.checkboxPark.isChecked
-                            )
-                        }
-                    }
+                    viewModel.updateProperty(
+                        propertyId,
+                        type,
+                        priceInt,
+                        address,
+                        city,
+                        state,
+                        zipcodeInt,
+                        country,
+                        surfaceInt,
+                        lat,
+                        lng,
+                        description,
+                        roomsInt,
+                        bedroomsInt,
+                        bathroomsInt,
+                        agent,
+                        binding.checkboxSaleStatus.isChecked,
+                        wasSold,
+                        previousDateOfSale,
+                        binding.checkboxTrain.isChecked,
+                        binding.date.text.toString(),
+                        binding.checkboxAirport.isChecked,
+                        binding.checkboxRestaurant.isChecked,
+                        binding.checkboxSchool.isChecked,
+                        binding.checkboxBus.isChecked,
+                        binding.checkboxPark.isChecked
+                    )
 
-                    viewModel.onNavigateToDetailActivity()
+//                    viewModel.onNavigateToDetailActivity()
                 }
             }
         }

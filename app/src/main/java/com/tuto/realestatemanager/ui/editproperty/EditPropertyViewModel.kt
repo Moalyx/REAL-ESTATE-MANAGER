@@ -9,6 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
+import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
+import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
+import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
+import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeletePhotoByIdUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
@@ -29,6 +33,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.location.Location
+import androidx.lifecycle.map
+import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
+import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
+import com.tuto.realestatemanager.ui.createproperty.PlaceDetailViewState
+import com.tuto.realestatemanager.ui.createproperty.PredictionViewState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.mapLatest
 
 @HiltViewModel
 class EditPropertyViewModel @Inject constructor(
@@ -39,12 +52,87 @@ class EditPropertyViewModel @Inject constructor(
     private val insertPhotoUseCase: InsertPhotoUseCase,
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
     getTemporaryPhotoListUseCase: GetTemporaryPhotoListUseCase,
-    private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase
+    private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
+    private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase,
+    private val getPredictionsUseCase: GetPredictionsUseCase,
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    private val coroutineDispatchersProvider: CoroutineDispatchersProvider,
 
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val deletedPhotoIdsMutableStateFlow = MutableStateFlow<List<Long>>(emptyList())
+    private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
+    private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
+
+    fun onAddressSearchChanged(address: String?) {
+        addressSearchMutableStateFlow.value = address
+    }
+
+    fun onSetAutocompleteAddressId(id: String) {
+        placeIdMutableStateFlow.value = id
+    }
+
+    private val placeDetailAddress: LiveData<AddressComponentsEntity> =
+        placeIdMutableStateFlow
+            .filterNotNull()
+            .mapLatest { placeId ->
+                getPlaceAddressComponentsUseCase.invoke(placeId)
+            }
+            .filterNotNull()
+            .asLiveData(coroutineDispatchersProvider.io)
+
+    val placeDetailViewState: LiveData<PlaceDetailViewState> =
+        placeDetailAddress.map { addressComponents ->
+            PlaceDetailViewState(
+                number = addressComponents.streetNumber,
+                address = addressComponents.fullAddress,
+                city = addressComponents.city,
+                zipCode = addressComponents.zipCode,
+                state = addressComponents.state,
+                country = addressComponents.country,
+                lat = addressComponents.lat,
+                lng = addressComponents.lng
+            )
+        }
+
+    private val predictionsFlow: Flow<Pair<String, Location?>> =
+        combine(
+            addressSearchMutableStateFlow
+                .filterNotNull()
+                .filter { it.length >= 3 },
+            getUserLocationFlowUseCase.invoke()
+        ) { address, location ->
+            address to location
+        }
+
+    private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
+        predictionsFlow
+            .mapLatest { (address, location) ->
+
+                val localisation = if (location != null) {
+                    "${location.latitude},${location.longitude}"
+                } else {
+                    "40.7128,-74.0060"
+                }
+
+                getPredictionsUseCase.invoke(
+                    address,
+                    localisation
+                )
+            }
+            .asLiveData(coroutineDispatchersProvider.io)
+
+    val predictionListViewState: LiveData<List<PredictionViewState>> =
+        predictionResponseLiveData.map { predictions ->
+            predictions.map { prediction ->
+                PredictionViewState(
+                    address = prediction.prediction,
+                    id = prediction.placeId
+                )
+            }
+        }
+
 
     val getAllPhotoLiveData: LiveData<List<EditPropertyPhotoViewState>> = liveData {
         combine(
@@ -131,6 +219,7 @@ class EditPropertyViewModel @Inject constructor(
                     propertyEntity.bathroom,
                     propertyEntity.bedroom,
                     propertyEntity.propertyOnSaleSince,
+                    propertyEntity.propertyDateOfSale,
                     propertyEntity.poiTrain,
                     propertyEntity.poiAirport,
                     propertyEntity.poiResto,
@@ -158,14 +247,16 @@ class EditPropertyViewModel @Inject constructor(
         zipcode: Int,
         country: String,
         surface: Int,
-        lat: Double,
-        lng: Double,
+        lat: Double?,
+        lng: Double?,
         description: String,
         room: Int,
         bedroom: Int,
         bathroom: Int,
         agent: String,
         isSold: Boolean,
+        wasSold: Boolean,
+        previousDateOfSale: String,
         poiTrain: Boolean,
         saleSince: String,
         poiAirport: Boolean,
@@ -174,7 +265,11 @@ class EditPropertyViewModel @Inject constructor(
         poiBus: Boolean,
         poiPark: Boolean
     ) {
-        val dateOfSale = if (isSold) Utils.todayDate() else "Not yet sold"
+        val dateOfSale = when {
+            !isSold -> "Not yet sold"
+            wasSold -> previousDateOfSale
+            else -> Utils.todayDate()
+        }
         val property = PropertyEntity(
             id = id,
             type = type,
@@ -221,6 +316,8 @@ class EditPropertyViewModel @Inject constructor(
 
             onDeleteTemporaryPhotoUseCase.invoke()
             deletedPhotoIdsMutableStateFlow.value = emptyList()
+
+            navigateSingleLiveEvent.postValue(EditViewAction.NavigateFromEditToDetailActivity)
         }
 
     }
@@ -230,10 +327,5 @@ class EditPropertyViewModel @Inject constructor(
     }
 
     val navigateSingleLiveEvent: SingleLiveEvent<EditViewAction> = SingleLiveEvent()
-
-    fun onNavigateToDetailActivity() {
-        navigateSingleLiveEvent.setValue(EditViewAction.NavigateFromEditToDetailActivity)
-    }
-
 
 }

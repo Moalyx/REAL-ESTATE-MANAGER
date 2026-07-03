@@ -23,8 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<CreatePropertyViewModel>()
-    private var lat: Double = 0.0
-    private var lng: Double = 0.0
+    private var lat: Double? = null
+    private var lng: Double? = null
     private var onePhotoAtLeast = false
 
     @SuppressLint("SetTextI18n")
@@ -71,7 +71,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             binding.state.setText(it.state)
             binding.country.setText(it.country)
             binding.city.setText(it.city)
-            binding.complement.setText(it.lat.toString() + it.lng.toString())
+            //binding.complement.setText(it.lat.toString() + it.lng.toString())
             lat = it.lat
             lng = it.lng
         }
@@ -81,7 +81,6 @@ class CreatePropertyActivity : AppCompatActivity() {
                 viewModel.onSetAutocompleteAddressId(id)
                 binding.searchview.clearFocus()
                 searchView.setQuery("", false)
-                //binding.predictionRecyclerview.isVisible
             }
         })
 
@@ -215,8 +214,8 @@ class CreatePropertyActivity : AppCompatActivity() {
                         binding.checkboxPark.isChecked
                     )
 
-                    viewModel.onNavigateToMainActivity()
-                    finish()
+//                    viewModel.onNavigateToMainActivity()
+//                    finish()
                 }
             }
         }
@@ -229,6 +228,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("property_created", true)
             startActivity(intent)
+            finish()
         }
 
     }

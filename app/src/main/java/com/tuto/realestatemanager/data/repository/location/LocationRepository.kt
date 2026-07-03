@@ -1,8 +1,12 @@
 package com.tuto.realestatemanager.data.repository.location
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Application
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -16,8 +20,10 @@ import javax.inject.Singleton
 @Singleton
 @Suppress("DEPRECATION")
 class LocationRepository @Inject constructor(
-    private val client : FusedLocationProviderClient
-) : LocationRepositoryInterface{
+    private val client: FusedLocationProviderClient,
+    private val application: Application
+) : LocationRepositoryInterface {
+
     companion object {
         private const val UPDATE_INTERVAL_SECS = 2000L
         private const val FASTEST_UPDATE_INTERVAL_SECS = 2000L
@@ -25,6 +31,12 @@ class LocationRepository @Inject constructor(
 
     @SuppressLint("MissingPermission")
     override fun getUserLocation(): Flow<Location?> = callbackFlow {
+
+        if (!hasLocationPermission()) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
 
         client.lastLocation
             .addOnSuccessListener { location ->
@@ -41,9 +53,7 @@ class LocationRepository @Inject constructor(
 
         val callback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation?.let {
-                    trySend(it)
-                }
+                trySend(locationResult.lastLocation)
             }
         }
 
@@ -58,5 +68,14 @@ class LocationRepository @Inject constructor(
         }
     }
 
-
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            application,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    application,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
 }

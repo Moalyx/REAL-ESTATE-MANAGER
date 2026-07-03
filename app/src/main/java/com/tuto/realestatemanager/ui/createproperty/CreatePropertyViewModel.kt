@@ -99,7 +99,7 @@ class CreatePropertyViewModel @Inject constructor(
             val localisation = if (location != null) {
                 "${location.latitude},${location.longitude}"
             } else {
-                "48.8566,2.3522"
+                "40.7128,-74.0060"
             }
 
             getPredictionsUseCase.invoke(
@@ -141,8 +141,8 @@ class CreatePropertyViewModel @Inject constructor(
         zipcode: Int,
         country: String,
         surface: Int,
-        lat: Double,
-        lng: Double,
+        lat: Double?,
+        lng: Double?,
         description: String,
         room: Int,
         bedroom: Int,
@@ -200,6 +200,8 @@ class CreatePropertyViewModel @Inject constructor(
                 )
             }
             onDeleteTemporaryPhotoUseCase.invoke()
+
+            navigateSingleLiveEvent.postValue(CreateViewAction.NavigateToMainActivity)
         }
     }
 

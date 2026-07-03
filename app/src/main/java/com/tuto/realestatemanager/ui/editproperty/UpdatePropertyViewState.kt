@@ -4,7 +4,6 @@ class UpdatePropertyViewState(
     val id: Long,
     val type: String,
     val price: Int,
-    //val photoList: List<PhotoEntity>, //todo changer en photoentity puis change adapter
     val address: String,
     val city: String,
     val zipcode: Int,
@@ -19,6 +18,7 @@ class UpdatePropertyViewState(
     val bathroom: Int,
     val bedroom: Int,
     val saleSince: String,
+    val dateOfSale: String,
     val poiTrain: Boolean,
     val poiAirport: Boolean,
     val poiResto: Boolean,

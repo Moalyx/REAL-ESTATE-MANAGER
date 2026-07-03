@@ -132,9 +132,13 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
                         "&markers=color:red%7C$address" +
                         "&key=$apiKey"
 
+            val mapCacheKey = address
+                .lowercase()
+                .replace("[^a-z0-9]".toRegex(), "_")
+
             val localStaticMapFile = File(
                 requireContext().filesDir,
-                "static_map_${it.id}.png"
+                "static_map_${it.id}_$mapCacheKey.png"
             )
 
             if (localStaticMapFile.exists()) {

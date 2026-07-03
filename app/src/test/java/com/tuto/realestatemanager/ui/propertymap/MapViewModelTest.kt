@@ -160,8 +160,8 @@ class MapViewModelTest {
 
         val result = viewModel.getMapViewState.getOrAwaitValue()
 
-        assertEquals(48.8566, result.lat, 0.0)
-        assertEquals(2.3522, result.lng, 0.0)
+        assertEquals(40.7128, result.lat, 0.0)
+        assertEquals(-74.0060, result.lng, 0.0)
     }
 
     @Test

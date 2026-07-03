@@ -10,18 +10,34 @@ class GeocodingRepositoryImpl @Inject constructor(
     private val googleApi: GoogleApi
 ) : GeocodingRepository {
 
-    override suspend fun getLatLngLocation(address : String) : LocationEntity{
+    override suspend fun getLatLngLocation(address: String): LocationEntity {
 
-        val response : GeocodingResponse = googleApi.getLatLngLocation(BuildConfig.GOOGLE_PLACES_KEY, address)
+        return try {
+            val response: GeocodingResponse =
+                googleApi.getLatLngLocation(BuildConfig.GOOGLE_PLACES_KEY, address)
 
-        val lat = response.results[0].geometry?.location?.lat
-        val lng = response.results[0].geometry?.location?.lng
+            if (response.status != "OK") {
+                return LocationEntity(
+                    lat = null,
+                    lng = null
+                )
+            }
 
-        return LocationEntity(
-            lat,
-            lng
-        )
+            val location = response.results
+                .firstOrNull()
+                ?.geometry
+                ?.location
+
+            LocationEntity(
+                lat = location?.lat,
+                lng = location?.lng
+            )
+
+        } catch (e: Exception) {
+            LocationEntity(
+                lat = null,
+                lng = null
+            )
+        }
     }
-
-
 }

@@ -19,8 +19,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // Utilisez des variables d'environnement ou un fichier secrets.properties
-        // au lieu de hardcoder les clés API directement
     }
 
     buildFeatures {

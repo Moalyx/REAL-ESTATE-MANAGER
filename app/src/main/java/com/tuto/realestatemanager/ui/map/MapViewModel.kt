@@ -24,8 +24,8 @@ class MapViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var isTablet = false
-    private val defaultLat = 48.8566
-    private val defaultLng = 2.3522
+    private val defaultLat = 40.7128
+    private val defaultLng = -74.0060
 
     val getMapViewState: LiveData<MapViewState> = liveData {
         combine(

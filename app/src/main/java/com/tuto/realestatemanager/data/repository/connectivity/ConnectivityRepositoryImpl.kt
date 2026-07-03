@@ -29,7 +29,8 @@ class ConnectivityRepositoryImpl @Inject constructor(
                 val network = connectivityManager.activeNetwork
                 val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-                capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+                capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
+                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
             } else {
                 @Suppress("DEPRECATION")
                 connectivityManager.activeNetworkInfo?.isConnected == true

@@ -87,7 +87,8 @@
         <provider
             android:name=".data.content_provider.ContentProvider"
             android:authorities="com.tuto.realestatemanager.provider"
-            android:exported="false" />
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
 
     </application>
 

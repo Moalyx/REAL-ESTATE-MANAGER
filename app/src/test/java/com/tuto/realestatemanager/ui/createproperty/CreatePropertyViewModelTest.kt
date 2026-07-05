@@ -3,7 +3,6 @@ package com.tuto.realestatemanager.ui.createproperty
 import android.location.Location
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.MainDispatcherRule
-import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
 import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
@@ -51,12 +50,10 @@ class CreatePropertyViewModelTest {
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase = mockk(relaxed = true)
     private val insertPhotoUseCase: InsertPhotoUseCase = mockk(relaxed = true)
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase = mockk(relaxed = true)
-    private val converterRepository: PriceConverterRepository = mockk()
     private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase = mockk()
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase = mockk()
 
     private val temporaryPhotoFlow = MutableStateFlow<List<TemporaryPhoto>>(emptyList())
-    private val isDollarFlow = MutableStateFlow(true)
     private val userLocationFlow = MutableStateFlow<Location?>(null)
     private val internetFlow = MutableStateFlow(true)
 
@@ -67,7 +64,6 @@ class CreatePropertyViewModelTest {
         every { coroutineDispatchersProvider.io } returns UnconfinedTestDispatcher()
 
         every { getTemporaryPhotoListUseCase.invoke() } returns temporaryPhotoFlow
-        every { converterRepository.isDollarStateFlow } returns isDollarFlow
         every { getUserLocationFlowUseCase.invoke() } returns userLocationFlow
         every { isInternetAvailableUseCase.invoke() } returns internetFlow
 
@@ -80,7 +76,6 @@ class CreatePropertyViewModelTest {
             onDeleteTemporaryPhotoUseCase = onDeleteTemporaryPhotoUseCase,
             insertPhotoUseCase = insertPhotoUseCase,
             deleteTemporaryPhotoUseCase = deleteTemporaryPhotoUseCase,
-            converterRepository = converterRepository,
             getUserLocationFlowUseCase = getUserLocationFlowUseCase,
             isInternetAvailableUseCase = isInternetAvailableUseCase
         )
@@ -122,7 +117,11 @@ class CreatePropertyViewModelTest {
                             it.price == 300000 &&
                             it.address == "10 rue test" &&
                             it.city == "Paris" &&
-                            it.zipCode == 75000 && !it.propertySold && it.poiTrain && it.poiResto && it.poiBus
+                            it.zipCode == 75000 &&
+                            !it.propertySold &&
+                            it.poiTrain &&
+                            it.poiResto &&
+                            it.poiBus
                 }
             )
         }
@@ -318,5 +317,4 @@ class CreatePropertyViewModelTest {
         assertEquals("Paris", result.city)
         assertEquals("75000", result.zipCode)
     }
-
 }

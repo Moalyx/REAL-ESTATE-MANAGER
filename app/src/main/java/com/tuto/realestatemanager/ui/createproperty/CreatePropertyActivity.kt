@@ -35,6 +35,9 @@ class CreatePropertyActivity : AppCompatActivity() {
         val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.tvDateOfPublication.visibility = View.GONE
+        binding.titleDate.visibility = View.GONE
+
         var type: String
 
 

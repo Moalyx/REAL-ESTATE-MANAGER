@@ -44,7 +44,7 @@ object Utils {
         val outputFormat =
             SimpleDateFormat("MM/dd/yyyy", Locale.US)
 
-        val date = inputFormat.parse(dateString) ?: return ""
+        val date = inputFormat.parse(dateString) ?: return dateString
 
         return outputFormat.format(date)
     }

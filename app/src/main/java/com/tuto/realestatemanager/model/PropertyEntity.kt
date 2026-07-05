@@ -27,7 +27,7 @@ data class PropertyEntity(
     @ColumnInfo(name = "date_of_sale") val propertyDateOfSale: String,
     @ColumnInfo(name = "poi_train") val poiTrain: Boolean,
     @ColumnInfo(name = "poi_airport") val poiAirport: Boolean,
-    @ColumnInfo(name = "poi_ resto") val poiResto: Boolean,
+    @ColumnInfo(name = "poi_resto") val poiResto: Boolean,
     @ColumnInfo(name = "poi_school") val poiSchool: Boolean,
     @ColumnInfo(name = "poi_bus") val poiBus: Boolean,
     @ColumnInfo(name = "poi_park") val poiPark: Boolean,

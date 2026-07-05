@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.tuto.realestatemanager.data.repository.priceconverterrepository.PriceConverterRepository
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
 import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
@@ -25,7 +24,6 @@ import com.tuto.realestatemanager.model.TemporaryPhoto
 import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +33,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
@@ -47,7 +44,6 @@ class CreatePropertyViewModel @Inject constructor(
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
     private val insertPhotoUseCase: InsertPhotoUseCase,
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
-    converterRepository: PriceConverterRepository,
     getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
     isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
@@ -55,82 +51,87 @@ class CreatePropertyViewModel @Inject constructor(
     private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
     private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
 
+    val navigateSingleLiveEvent: SingleLiveEvent<CreateViewAction> = SingleLiveEvent()
+
     val hasInternetLiveData: LiveData<Boolean> =
         isInternetAvailableUseCase.invoke().asLiveData()
 
-    fun onSetAutocompleteAddressId(id: String) {
-        placeIdMutableStateFlow.value = id
-    }
-
-    private val isDollar: Boolean = converterRepository.isDollarStateFlow.value
-
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
-        placeIdMutableStateFlow.filterNotNull().mapLatest {
-            getPlaceAddressComponentsUseCase.invoke(it)
-        }.filterNotNull()
-            .asLiveData(Dispatchers.IO)
+        placeIdMutableStateFlow
+            .filterNotNull()
+            .mapLatest { placeId ->
+                getPlaceAddressComponentsUseCase.invoke(placeId)
+            }
+            .filterNotNull()
+            .asLiveData(coroutineDispatchersProvider.io)
 
-    val placeDetailViewState: LiveData<PlaceDetailViewState> = placeDetailAddress.map {
-        PlaceDetailViewState(
-            number = it.streetNumber,
-            address = it.fullAddress,
-            city = it.city,
-            zipCode = it.zipCode,
-            state = it.state,
-            country = it.country,
-            lat = it.lat,
-            lng = it.lng
-        )
-    }
+    val placeDetailViewState: LiveData<PlaceDetailViewState> =
+        placeDetailAddress.map { addressComponents ->
+            PlaceDetailViewState(
+                number = addressComponents.streetNumber,
+                address = addressComponents.fullAddress,
+                city = addressComponents.city,
+                zipCode = addressComponents.zipCode,
+                state = addressComponents.state,
+                country = addressComponents.country,
+                lat = addressComponents.lat,
+                lng = addressComponents.lng
+            )
+        }
 
     private val predictionsFlow: Flow<Pair<String, Location?>> =
         combine(
             addressSearchMutableStateFlow
                 .filterNotNull()
-                .filter { it.length >= 3 },
+                .filter { address -> address.length >= 3 },
             getUserLocationFlowUseCase.invoke()
         ) { address, location ->
             address to location
         }
 
     private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
-        predictionsFlow.mapLatest { (address, location) ->
+        predictionsFlow
+            .mapLatest { (address, location) ->
+                val localisation = if (location != null) {
+                    "${location.latitude},${location.longitude}"
+                } else {
+                    "40.7128,-74.0060"
+                }
 
-            val localisation = if (location != null) {
-                "${location.latitude},${location.longitude}"
-            } else {
-                "40.7128,-74.0060"
+                getPredictionsUseCase.invoke(
+                    address,
+                    localisation
+                )
             }
+            .asLiveData(coroutineDispatchersProvider.io)
 
-            getPredictionsUseCase.invoke(
-                address,
-                localisation
-            )
-        }.asLiveData(coroutineDispatchersProvider.io)
+    val predictionListViewState: LiveData<List<PredictionViewState>> =
+        predictionResponseLiveData.map { predictions ->
+            predictions.map { prediction ->
+                PredictionViewState(
+                    address = prediction.prediction,
+                    id = prediction.placeId
+                )
+            }
+        }
 
     private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
         getTemporaryPhotoListUseCase.invoke()
 
-    fun deleteTemporaryPhoto(temporaryPhoto: TemporaryPhoto) {
-        deleteTemporaryPhotoUseCase.invoke(temporaryPhoto)
-    }
-
     val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
-        temporaryPhotoStateFlow.asLiveData()
+        temporaryPhotoStateFlow.asLiveData(coroutineDispatchersProvider.io)
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
     }
 
-    val predictionListViewState: LiveData<List<PredictionViewState>> =
-        predictionResponseLiveData.map {
-            it.map { predictions ->
-                PredictionViewState(
-                    predictions.prediction,
-                    predictions.placeId
-                )
-            }
-        }
+    fun onSetAutocompleteAddressId(id: String) {
+        placeIdMutableStateFlow.value = id
+    }
+
+    fun deleteTemporaryPhoto(temporaryPhoto: TemporaryPhoto) {
+        deleteTemporaryPhotoUseCase.invoke(temporaryPhoto)
+    }
 
     fun createProperty(
         type: String,
@@ -154,15 +155,14 @@ class CreatePropertyViewModel @Inject constructor(
         poiResto: Boolean,
         poiSchool: Boolean,
         poiBus: Boolean,
-        poiPark: Boolean,
+        poiPark: Boolean
     ) {
-
-        val saleSince: String = Utils.todayDate()
-
+        val saleSince = Utils.todayDate()
         val dateOfSale = if (isSold) Utils.todayDate() else "Not yet sold"
+
         val property = PropertyEntity(
             type = type,
-            price = convertMoney(price.toString(), isDollar).toInt(),
+            price = price,
             address = address,
             city = city,
             state = state,
@@ -186,11 +186,11 @@ class CreatePropertyViewModel @Inject constructor(
             poiBus = poiBus,
             poiPark = poiPark
         )
-        viewModelScope.launch(coroutineDispatchersProvider.io) {
 
+        viewModelScope.launch(coroutineDispatchersProvider.io) {
             val propertyId = propertyRepository.insertProperty(property)
 
-            for (temporaryPhoto in temporaryPhotoStateFlow.value) {
+            temporaryPhotoStateFlow.value.forEach { temporaryPhoto ->
                 insertPhotoUseCase.invoke(
                     PhotoEntity(
                         propertyId = propertyId,
@@ -199,16 +199,11 @@ class CreatePropertyViewModel @Inject constructor(
                     )
                 )
             }
-            onDeleteTemporaryPhotoUseCase.invoke()
 
+            onDeleteTemporaryPhotoUseCase.invoke()
             navigateSingleLiveEvent.postValue(CreateViewAction.NavigateToMainActivity)
         }
     }
-
-    private fun convertMoney(price: String, isDollar: Boolean): String =
-        if (isDollar) price else Utils.convertEuroToDollar(price.toInt()).toString()
-
-    val navigateSingleLiveEvent: SingleLiveEvent<CreateViewAction> = SingleLiveEvent()
 
     fun onNavigateToMainActivity() {
         navigateSingleLiveEvent.setValue(CreateViewAction.NavigateToMainActivity)
@@ -217,5 +212,4 @@ class CreatePropertyViewModel @Inject constructor(
     fun clearTemporaryPhotos() {
         onDeleteTemporaryPhotoUseCase.invoke()
     }
-
 }

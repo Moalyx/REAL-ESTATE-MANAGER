@@ -354,14 +354,6 @@
                                     android:src="@drawable/ic_bus_station_24"
                                     android:visibility="gone" />
 
-<!--                                <ImageView-->
-<!--                                    android:id="@+id/poi_shop"-->
-<!--                                    android:layout_width="wrap_content"-->
-<!--                                    android:layout_height="wrap_content"-->
-<!--                                    android:contentDescription="shop"-->
-<!--                                    android:src="@drawable/ic_baseline_local_grocery_store_24"-->
-<!--                                    android:visibility="gone" />-->
-
                                 <ImageView
                                     android:id="@+id/poi_airport"
                                     android:layout_width="wrap_content"
@@ -540,12 +532,12 @@
                                 android:layout_marginTop="4dp"
                                 android:hint="@string/_385_wilson_avenue" />
 
-<!--                            <TextView-->
-<!--                                android:id="@+id/complement_adress"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginTop="4dp"-->
-<!--                                android:hint="apartment 123" />-->
+                            <!--                            <TextView-->
+                            <!--                                android:id="@+id/complement_adress"-->
+                            <!--                                android:layout_width="wrap_content"-->
+                            <!--                                android:layout_height="wrap_content"-->
+                            <!--                                android:layout_marginTop="4dp"-->
+                            <!--                                android:hint="apartment 123" />-->
 
                             <TextView
                                 android:id="@+id/zipcode"

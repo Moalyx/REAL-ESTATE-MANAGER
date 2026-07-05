@@ -36,7 +36,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="251dp" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <FrameLayout
         android:id="@+id/main_container_detail"

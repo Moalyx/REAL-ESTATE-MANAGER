@@ -79,11 +79,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewmodel.navigateSingleLiveEvent.observe(this) { //todo a verifier ici
+        viewmodel.navigateSingleLiveEvent.observe(this) {
             when (it) {
-//                MainViewAction.NavigateToDetailActivity -> startActivity(DetailActivity.navigate(
-//                    this))
-
                 MainViewAction.NavigateToSearch -> startActivity(
                     Intent(
                         this,

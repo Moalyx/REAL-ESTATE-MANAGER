@@ -17,16 +17,18 @@ class SearchPropertyViewModel @Inject constructor(
     private val setParametersUseCase: SetParametersUseCase
 ) : ViewModel() {
 
+    val navigateSingleLiveEvent: SingleLiveEvent<SearchViewAction> = SingleLiveEvent()
+
     fun getParametersLiveData(): LiveData<SearchParameters?> {
         return getParametersFlowUseCase.invoke().asLiveData(Dispatchers.IO)
     }
 
     fun setParameters(
         type: String?,
-        priceMini: String?,
-        priceMaxi: String?,
-        surfaceMini: String?,
-        surfaceMaxi: String?,
+        priceMinimum: String?,
+        priceMaximum: String?,
+        surfaceMinimum: String?,
+        surfaceMaximum: String?,
         city: String?,
         poiTrain: Boolean,
         poiAirport: Boolean,
@@ -34,76 +36,38 @@ class SearchPropertyViewModel @Inject constructor(
         poiSchool: Boolean,
         poiBus: Boolean,
         poiPark: Boolean,
+        soldStatus: Boolean?,
+        minimumPhotos: Int?
     ) {
-
         setParametersUseCase.invoke(
             SearchParameters(
-                typeParameter(type),
-                priceMiniParameter(priceMini)?.toIntOrNull(),
-                priceMaxiParameter(priceMaxi)?.toIntOrNull(),
-                surfaceMiniParameter(surfaceMini)?.toIntOrNull(),
-                surfaceMaxiParameter(surfaceMaxi)?.toIntOrNull(),
-                cityParameter(city),
-                poiTrain,
-                poiAirport,
-                poiResto,
-                poiSchool,
-                poiBus,
-                poiPark
+                type = stringParameter(type),
+                priceMinimum = stringParameter(priceMinimum)?.toIntOrNull(),
+                priceMaximum = stringParameter(priceMaximum)?.toIntOrNull(),
+                surfaceMinimum = stringParameter(surfaceMinimum)?.toIntOrNull(),
+                surfaceMaximum = stringParameter(surfaceMaximum)?.toIntOrNull(),
+                city = stringParameter(city),
+                poiTrain = poiTrain,
+                poiAirport = poiAirport,
+                poiResto = poiResto,
+                poiSchool = poiSchool,
+                poiBus = poiBus,
+                poiPark = poiPark,
+                soldStatus = soldStatus,
+                minimumPhotos = minimumPhotos
             )
         )
     }
 
-    private fun typeParameter(type: String?): String? {
-        if (type == "") {
-            return null
-        }
-        return type
-    }
-
-    private fun priceMiniParameter(priceMini: String?): String? {
-        if (priceMini.toString() == "") {
-            return null
-        }
-        return priceMini
-    }
-
-    private fun priceMaxiParameter(priceMaxi: String?): String? {
-        if (priceMaxi.toString() == "") {
-            return null
-        }
-        return priceMaxi
-    }
-
-    private fun surfaceMiniParameter(surfaceMini: String?): String? {
-        if (surfaceMini.toString() == "") {
-            return null
-        }
-        return surfaceMini
-    }
-
-    private fun surfaceMaxiParameter(surfaceMaxi: String?): String? {
-        if (surfaceMaxi.toString() == "") {
-            return null
-        }
-        return surfaceMaxi
-    }
-
-    private fun cityParameter(city: String?): String? {
-        if (city == "") {
-            return null
-        }
-        return city
-    }
-
     fun clearParameters() {
-        setParametersUseCase.invoke(null)
+        setParametersUseCase.invoke(SearchParameters())
     }
-
-    val navigateSingleLiveEvent: SingleLiveEvent<SearchViewAction> = SingleLiveEvent()
 
     fun onNavigateToMainActivity() {
         navigateSingleLiveEvent.setValue(SearchViewAction.NavigateToMainActivity)
     }
 
+    private fun stringParameter(value: String?): String? {
+        return value?.trim()?.takeIf { it.isNotEmpty() }
+    }
 }

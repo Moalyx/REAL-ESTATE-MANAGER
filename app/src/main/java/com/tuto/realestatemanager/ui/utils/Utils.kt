@@ -5,15 +5,16 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 
 object Utils {
 
     /**
-     * Conversion d'un prix d'un bien immobilier (Dollars vers Euros)
-     * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
-     *
-     * @param dollars
-     * @return
+     * Converts a real estate price from dollars to euros.
+     * Keep this method because it is part of the original project requirements.
      */
     fun convertDollarToEuro(dollars: Int): Int {
         return (dollars * 0.92).roundToInt()
@@ -24,10 +25,8 @@ object Utils {
     }
 
     /**
-     * Conversion de la date d'aujourd'hui en un format plus approprié
-     * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
-     *
-     * @return
+     * Returns today's date using the expected display format.
+     * Keep this method because it is part of the original project requirements.
      */
     fun todayDate(): String {
 
@@ -43,10 +42,27 @@ object Utils {
             SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
 
         val outputFormat =
-            SimpleDateFormat("yyyy/MM/dd", Locale.US)
+            SimpleDateFormat("MM/dd/yyyy", Locale.US)
 
         val date = inputFormat.parse(dateString) ?: return ""
 
         return outputFormat.format(date)
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } else {
+            @Suppress("DEPRECATION")
+            connectivityManager.activeNetworkInfo?.isConnected == true
+        }
     }
 }

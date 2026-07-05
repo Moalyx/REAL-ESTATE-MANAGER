@@ -214,4 +214,8 @@ class CreatePropertyViewModel @Inject constructor(
         navigateSingleLiveEvent.setValue(CreateViewAction.NavigateToMainActivity)
     }
 
+    fun clearTemporaryPhotos() {
+        onDeleteTemporaryPhotoUseCase.invoke()
+    }
+
 }

@@ -33,8 +33,6 @@ class PropertyDetailPhotoAdapter(val onPhotoClickListener: OnPhotoClickListener)
                 .centerCrop()
                 .into(binding.itemPropertyPhotoDetail)
 
-            Log.d("MOMO", "bind() called with: propertyPhotoViewState = ${propertyPhotoViewState.photoUri} for ${propertyPhotoViewState.photoTitle}")
-
             binding.itemPropertyPhotoTitle.text = propertyPhotoViewState.photoTitle
             binding.root.setOnClickListener{
                 listener.onPhotoClick(propertyPhotoViewState.photoUri)

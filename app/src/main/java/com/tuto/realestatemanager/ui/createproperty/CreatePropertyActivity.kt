@@ -26,6 +26,7 @@ class CreatePropertyActivity : AppCompatActivity() {
     private var lat: Double? = null
     private var lng: Double? = null
     private var onePhotoAtLeast = false
+    private var isUpdatingAddressFromAutocomplete = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         var type: String
+
 
         val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
@@ -66,15 +68,48 @@ class CreatePropertyActivity : AppCompatActivity() {
         })
 
         viewModel.placeDetailViewState.observe(this) {
+            isUpdatingAddressFromAutocomplete = true
+
             binding.address.setText("${it.number} ${it.address}")
             binding.zipcode.setText(it.zipCode)
             binding.state.setText(it.state)
             binding.country.setText(it.country)
             binding.city.setText(it.city)
-            //binding.complement.setText(it.lat.toString() + it.lng.toString())
+
             lat = it.lat
             lng = it.lng
+
+            isUpdatingAddressFromAutocomplete = false
         }
+
+        val addressTextWatcher = object : android.text.TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) = Unit
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                if (!isUpdatingAddressFromAutocomplete) {
+                    lat = null
+                    lng = null
+                }
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) = Unit
+        }
+
+        binding.address.addTextChangedListener(addressTextWatcher)
+        binding.city.addTextChangedListener(addressTextWatcher)
+        binding.zipcode.addTextChangedListener(addressTextWatcher)
+        binding.state.addTextChangedListener(addressTextWatcher)
+        binding.country.addTextChangedListener(addressTextWatcher)
 
         val searchAdapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
             override fun onPredictionClicked(id: String) {
@@ -221,6 +256,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         }
 
         binding.dismissButton.setOnClickListener {
+            viewModel.clearTemporaryPhotos()
             finish()
         }
 
@@ -231,6 +267,13 @@ class CreatePropertyActivity : AppCompatActivity() {
             finish()
         }
 
+
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        viewModel.clearTemporaryPhotos()
+        super.onBackPressed()
     }
 
 }

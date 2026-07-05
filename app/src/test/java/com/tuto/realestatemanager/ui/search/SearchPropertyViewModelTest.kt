@@ -49,7 +49,9 @@ class SearchPropertyViewModelTest {
             type = "House",
             priceMinimum = 100000,
             priceMaximum = 300000,
-            city = "Paris"
+            city = "Paris",
+            soldStatus = true,
+            minimumPhotos = 3
         )
 
         val result = viewModel.getParametersLiveData().getOrAwaitValue()
@@ -58,23 +60,27 @@ class SearchPropertyViewModelTest {
         assertEquals(100000, result?.priceMinimum)
         assertEquals(300000, result?.priceMaximum)
         assertEquals("Paris", result?.city)
+        assertEquals(true, result?.soldStatus)
+        assertEquals(3, result?.minimumPhotos)
     }
 
     @Test
     fun `setParameters should send search parameters`() {
         viewModel.setParameters(
             type = "House",
-            priceMini = "100000",
-            priceMaxi = "300000",
-            surfaceMini = "50",
-            surfaceMaxi = "120",
+            priceMinimum = "100000",
+            priceMaximum = "300000",
+            surfaceMinimum = "50",
+            surfaceMaximum = "120",
             city = "Paris",
             poiTrain = true,
             poiAirport = false,
             poiResto = true,
             poiSchool = false,
             poiBus = true,
-            poiPark = false
+            poiPark = false,
+            soldStatus = true,
+            minimumPhotos = 3
         )
 
         verify {
@@ -91,7 +97,9 @@ class SearchPropertyViewModelTest {
                     poiResto = true,
                     poiSchool = false,
                     poiBus = true,
-                    poiPark = false
+                    poiPark = false,
+                    soldStatus = true,
+                    minimumPhotos = 3
                 )
             )
         }
@@ -101,17 +109,19 @@ class SearchPropertyViewModelTest {
     fun `setParameters should convert empty strings to null`() {
         viewModel.setParameters(
             type = "",
-            priceMini = "",
-            priceMaxi = "",
-            surfaceMini = "",
-            surfaceMaxi = "",
+            priceMinimum = "",
+            priceMaximum = "",
+            surfaceMinimum = "",
+            surfaceMaximum = "",
             city = "",
             poiTrain = false,
             poiAirport = false,
             poiResto = false,
             poiSchool = false,
             poiBus = false,
-            poiPark = false
+            poiPark = false,
+            soldStatus = null,
+            minimumPhotos = null
         )
 
         verify {
@@ -128,7 +138,9 @@ class SearchPropertyViewModelTest {
                     poiResto = false,
                     poiSchool = false,
                     poiBus = false,
-                    poiPark = false
+                    poiPark = false,
+                    soldStatus = null,
+                    minimumPhotos = null
                 )
             )
         }
@@ -138,17 +150,19 @@ class SearchPropertyViewModelTest {
     fun `setParameters should convert invalid numbers to null`() {
         viewModel.setParameters(
             type = "Flat",
-            priceMini = "abc",
-            priceMaxi = "300000",
-            surfaceMini = "wrong",
-            surfaceMaxi = "100",
+            priceMinimum = "abc",
+            priceMaximum = "300000",
+            surfaceMinimum = "wrong",
+            surfaceMaximum = "100",
             city = "Lyon",
             poiTrain = false,
             poiAirport = true,
             poiResto = false,
             poiSchool = true,
             poiBus = false,
-            poiPark = true
+            poiPark = true,
+            soldStatus = false,
+            minimumPhotos = null
         )
 
         verify {
@@ -165,18 +179,76 @@ class SearchPropertyViewModelTest {
                     poiResto = false,
                     poiSchool = true,
                     poiBus = false,
-                    poiPark = true
+                    poiPark = true,
+                    soldStatus = false,
+                    minimumPhotos = null
                 )
             )
         }
     }
 
     @Test
-    fun `clearParameters should set null parameters`() {
+    fun `setParameters should keep sold status available`() {
+        viewModel.setParameters(
+            type = null,
+            priceMinimum = null,
+            priceMaximum = null,
+            surfaceMinimum = null,
+            surfaceMaximum = null,
+            city = null,
+            poiTrain = false,
+            poiAirport = false,
+            poiResto = false,
+            poiSchool = false,
+            poiBus = false,
+            poiPark = false,
+            soldStatus = false,
+            minimumPhotos = null
+        )
+
+        verify {
+            setParametersUseCase.invoke(
+                SearchParameters(
+                    soldStatus = false
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `setParameters should keep minimum photos`() {
+        viewModel.setParameters(
+            type = null,
+            priceMinimum = null,
+            priceMaximum = null,
+            surfaceMinimum = null,
+            surfaceMaximum = null,
+            city = null,
+            poiTrain = false,
+            poiAirport = false,
+            poiResto = false,
+            poiSchool = false,
+            poiBus = false,
+            poiPark = false,
+            soldStatus = null,
+            minimumPhotos = 4
+        )
+
+        verify {
+            setParametersUseCase.invoke(
+                SearchParameters(
+                    minimumPhotos = 4
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `clearParameters should set empty search parameters`() {
         viewModel.clearParameters()
 
         verify {
-            setParametersUseCase.invoke(null)
+            setParametersUseCase.invoke(SearchParameters())
         }
     }
 
@@ -202,7 +274,9 @@ class SearchPropertyViewModelTest {
         poiResto: Boolean = false,
         poiSchool: Boolean = false,
         poiBus: Boolean = false,
-        poiPark: Boolean = false
+        poiPark: Boolean = false,
+        soldStatus: Boolean? = null,
+        minimumPhotos: Int? = null
     ): SearchParameters {
         return SearchParameters(
             type = type,
@@ -216,7 +290,9 @@ class SearchPropertyViewModelTest {
             poiResto = poiResto,
             poiSchool = poiSchool,
             poiBus = poiBus,
-            poiPark = poiPark
+            poiPark = poiPark,
+            soldStatus = soldStatus,
+            minimumPhotos = minimumPhotos
         )
     }
 }

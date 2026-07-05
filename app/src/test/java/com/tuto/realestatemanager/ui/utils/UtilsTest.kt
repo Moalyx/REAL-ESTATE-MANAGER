@@ -35,6 +35,6 @@ class UtilsTest {
     fun formatToUS_shouldReturnDateWithUSFormat() {
         val result = Utils.formatToUS("15/01/2018")
 
-        assertEquals("2018/01/15", result)
+        assertEquals("01/15/2018", result)
     }
 }

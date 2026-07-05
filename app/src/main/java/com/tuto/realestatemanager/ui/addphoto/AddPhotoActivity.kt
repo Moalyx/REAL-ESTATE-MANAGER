@@ -163,7 +163,7 @@ class AddPhotoActivity : AppCompatActivity() {
 
         return FileProvider.getUriForFile(
             this,
-            "${BuildConfig.APPLICATION_ID}.provider",
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
             file
         )
     }

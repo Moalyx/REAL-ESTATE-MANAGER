@@ -23,10 +23,12 @@ import com.tuto.realestatemanager.ui.editproperty.EditPropertyActivity
 import dagger.hilt.android.AndroidEntryPoint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -124,16 +126,18 @@ class DetailsPropertyFragment : Fragment(), MenuProvider {
             val address =
                 "${it.address} ${it.city} ${it.zipcode} ${it.state} ${it.country}"
 
+            val encodedAddress = Uri.encode(address)
+
             val staticMap =
                 "https://maps.googleapis.com/maps/api/staticmap" +
-                        "?center=$address" +
+                        "?center=$encodedAddress" +
                         "&zoom=$zoom" +
                         "&size=$size" +
-                        "&markers=color:red%7C$address" +
+                        "&markers=color:red%7C$encodedAddress" +
                         "&key=$apiKey"
 
             val mapCacheKey = address
-                .lowercase()
+                .lowercase(Locale.ROOT)
                 .replace("[^a-z0-9]".toRegex(), "_")
 
             val localStaticMapFile = File(

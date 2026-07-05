@@ -6,11 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.search.SearchPropertyActivity">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -63,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/type"
-                android:inputType="text" />
+                android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,9 +83,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/prop_price_min"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="6dp"
             app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7"
@@ -97,12 +97,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_min"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/minimum_price"
-
+                android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -110,10 +110,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/prop_price_max"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            android:layout_marginStart="6dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
             app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7"
@@ -123,12 +124,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_max"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/maximum_price"
-
+                android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -151,10 +152,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/prop_surface_minimum"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
-
+            android:layout_marginEnd="6dp"
             app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7"
@@ -164,13 +166,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/surface_minimum"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_surface_2"
                 android:gravity="center"
                 android:hint="@string/minimum_surface"
-
+                android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -178,10 +180,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/prop_surface_maximum"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:layout_marginTop="12dp"
-
+            android:layout_marginEnd="12dp"
             app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7"
@@ -191,13 +194,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/surface_maximum"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_surface_2"
                 android:gravity="center"
                 android:hint="@string/maximum_surface"
-
+                android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -237,6 +240,85 @@
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_baseline_location_24"
                 android:hint="@string/city"
+                android:inputType="textCapWords"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="15dp"
+            android:text="Property status"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_city" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/prop_sold_status"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#89D8FB"
+            app:boxCornerRadiusBottomStart="25dp"
+            app:boxCornerRadiusTopEnd="25dp"
+            app:boxStrokeColor="#0099E8"
+            app:boxStrokeWidth="2dp"
+            app:boxStrokeWidthFocused="3dp"
+            app:endIconMode="dropdown_menu"
+            app:endIconTint="#673AB7"
+            app:layout_constraintTop_toBottomOf="@id/tv_status"
+            app:placeholderTextColor="@color/black">
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/sold_status_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="All"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_minimum_photos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="15dp"
+            android:text="Minimum photos"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prop_sold_status" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/prop_minimum_photos"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            app:boxBackgroundColor="#D2B3F8"
+            app:endIconMode="clear_text"
+            app:endIconTint="#673AB7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_minimum_photos">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/minimum_photos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Minimum photos"
+                android:inputType="number"
                 android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -245,9 +327,11 @@
             android:id="@+id/point_of_interest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="15dp"
+            android:layout_marginEnd="12dp"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/title_city">
+            app:layout_constraintTop_toBottomOf="@id/prop_minimum_photos">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -259,66 +343,65 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <CheckBox
                     android:id="@+id/checkbox_bus"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/bus" />
 
                 <CheckBox
                     android:id="@+id/checkbox_school"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="70dp"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/school" />
 
                 <CheckBox
                     android:id="@+id/checkbox_airport"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="70dp"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/airport" />
-
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <CheckBox
                     android:id="@+id/checkbox_train"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/train" />
 
                 <CheckBox
                     android:id="@+id/checkbox_park"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="62dp"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/park" />
 
                 <CheckBox
                     android:id="@+id/checkbox_restaurant"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="84dp"
+                    android:layout_weight="1"
                     android:buttonTint="#673AB7"
                     android:text="@string/restaurant" />
 
-
             </LinearLayout>
-
 
         </LinearLayout>
 
@@ -330,14 +413,16 @@
             android:text="@string/search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/point_of_interest" />
+            app:layout_constraintTop_toBottomOf="@id/point_of_interest" />
 
         <Button
             android:id="@+id/clear_parameters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
             android:text="@string/clear"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/validate_parameters_button" />

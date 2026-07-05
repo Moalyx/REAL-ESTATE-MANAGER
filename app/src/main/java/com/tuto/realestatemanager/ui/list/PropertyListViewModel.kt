@@ -37,7 +37,7 @@ class PropertyListViewModel @Inject constructor(
     private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase
 ) : ViewModel() {
 
-    private var isTablet = MutableStateFlow(false)
+    private val isTablet = MutableStateFlow(false)
 
     private val selectionFlow = combine(
         currentPropertyIdRepository.currentIdFlow,
@@ -52,8 +52,7 @@ class PropertyListViewModel @Inject constructor(
             getParametersFlowUseCase.invoke(),
             isDollarFlowUseCase.invoke(),
             isInternetAvailableUseCase.invoke(),
-            selectionFlow,
-
+            selectionFlow
         ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable, selection ->
 
             val currentPropertyId = selection.first
@@ -67,9 +66,7 @@ class PropertyListViewModel @Inject constructor(
             }
 
             if (isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-
                 for (property in propertiesWithoutLocation) {
-
                     val location = getLatLngPropertyLocationUseCase.invoke(
                         "${property.propertyEntity.address} " +
                                 "${property.propertyEntity.city} " +
@@ -83,9 +80,7 @@ class PropertyListViewModel @Inject constructor(
 
                     updatePropertyUseCase.invoke(property.propertyEntity)
                 }
-
             } else if (!isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-
                 Toast.makeText(
                     mainApplication,
                     "No internet some property may not appear on the map",
@@ -93,120 +88,134 @@ class PropertyListViewModel @Inject constructor(
                 ).show()
             }
 
-            if (searchParameters == null) {
-                emit(mapPropertiesIntoViewState(propertiesWithPhotosEntity, isDollar, currentPropertyId, isTablet))
+            val filteredList = if (searchParameters == null) {
+                propertiesWithPhotosEntity
             } else {
-                val filteredList: List<PropertyWithPhotosEntity> =
-                    propertiesWithPhotosEntity.filter { property ->
-                                comparePrice(searchParameters, property)
-                                && compareType(searchParameters, property)
-                                && compareSurface(searchParameters, property)
-                                && compareCity(searchParameters, property)
-                                && comparePoiTrain(searchParameters, property)
-                                && comparePoiAirport(searchParameters, property)
-                                && comparePoiResto(searchParameters, property)
-                                && comparePoiSchool(searchParameters, property)
-                                && comparePoiBus(searchParameters, property)
-                                && comparePoiPark(searchParameters, property)
-                    }
-
-                if (isTablet) {
-                    currentPropertyIdRepository.setCurrentId(
-                        filteredList.firstOrNull()?.propertyEntity?.id
-                    )
+                propertiesWithPhotosEntity.filter { property ->
+                    comparePrice(searchParameters, property) &&
+                            compareType(searchParameters, property) &&
+                            compareSurface(searchParameters, property) &&
+                            compareCity(searchParameters, property) &&
+                            comparePoiTrain(searchParameters, property) &&
+                            comparePoiAirport(searchParameters, property) &&
+                            comparePoiResto(searchParameters, property) &&
+                            comparePoiSchool(searchParameters, property) &&
+                            comparePoiBus(searchParameters, property) &&
+                            comparePoiPark(searchParameters, property) &&
+                            compareSoldStatus(searchParameters, property) &&
+                            compareMinimumPhotos(searchParameters, property)
                 }
-
-                emit(mapPropertiesIntoViewState(filteredList, isDollar, currentPropertyId,isTablet))
             }
+
+            if (isTablet) {
+                currentPropertyIdRepository.setCurrentId(
+                    filteredList.firstOrNull()?.propertyEntity?.id
+                )
+            }
+
+            emit(
+                mapPropertiesIntoViewState(
+                    propertiesWithPhotosEntity = filteredList,
+                    isDollar = isDollar,
+                    currentPropertyId = currentPropertyId,
+                    isTablet = isTablet
+                )
+            )
         }.collect()
     }
 
+    val navigateSingleLiveEvent: SingleLiveEvent<ListViewAction> = SingleLiveEvent()
+
     fun onDeleteTemporaryPhotoRepository() {
         onDeleteTemporaryPhotoUseCase.invoke()
+    }
+
+    fun onNavigateToCreateActivity() {
+        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToCreateActvity)
+    }
+
+    fun onConfigurationChanged(isTablet: Boolean) {
+        this.isTablet.value = isTablet
     }
 
     private fun mapPropertiesIntoViewState(
         propertiesWithPhotosEntity: List<PropertyWithPhotosEntity>,
         isDollar: Boolean,
         currentPropertyId: Long?,
-        isTablet: Boolean,
-    ): List<PropertyViewState> = propertiesWithPhotosEntity.map { propertyWithPhotosEntity ->
-        PropertyViewState(
-            id = propertyWithPhotosEntity.propertyEntity.id,
-            type = propertyWithPhotosEntity.propertyEntity.type,
-            price = convertMoney(
-                "${propertyWithPhotosEntity.propertyEntity.price}",
-                isDollar
-            ),
-            photoList = propertyWithPhotosEntity.photos.map { it },
-            city = propertyWithPhotosEntity.propertyEntity.city,
-            propertyWithPhotosEntity.propertyEntity.propertySold,
-            onItemClicked = {
-                if (!isTablet) {
-                    navigateSingleLiveEvent.setValue(ListViewAction.NavigateToDetailActivity)
-                }
-                currentPropertyIdRepository.setCurrentId(propertyWithPhotosEntity.propertyEntity.id)
-            },
-            isSelected = propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
-        )
+        isTablet: Boolean
+    ): List<PropertyViewState> {
+        return propertiesWithPhotosEntity.map { propertyWithPhotosEntity ->
+            PropertyViewState(
+                id = propertyWithPhotosEntity.propertyEntity.id,
+                type = propertyWithPhotosEntity.propertyEntity.type,
+                price = convertMoney(
+                    price = "${propertyWithPhotosEntity.propertyEntity.price}",
+                    isDollar = isDollar
+                ),
+                photoList = propertyWithPhotosEntity.photos.map { it },
+                city = propertyWithPhotosEntity.propertyEntity.city,
+                isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
+                onItemClicked = {
+                    if (!isTablet) {
+                        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToDetailActivity)
+                    }
+
+                    currentPropertyIdRepository.setCurrentId(
+                        propertyWithPhotosEntity.propertyEntity.id
+                    )
+                },
+                isSelected = propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
+            )
+        }
     }
 
     private fun convertMoney(price: String, isDollar: Boolean): String {
         val decimalFormat = DecimalFormat("#,###.#")
-        val formatPrice: String = decimalFormat.format(price.toInt()).toString()
-        val convertPrice: String = if (isDollar) {
-            "$formatPrice $"
+        val formattedPrice = decimalFormat.format(price.toInt()).toString()
+
+        return if (isDollar) {
+            "$formattedPrice $"
         } else {
-            decimalFormat.format(Utils.convertDollarToEuro(price.toInt())).toString() + " €"
+            "${decimalFormat.format(Utils.convertDollarToEuro(price.toInt()))} €"
         }
-        return convertPrice
     }
 
     private fun compareType(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        var isMatching = false
-        val searchType = searchParameters.type
-        val propertyType = property.propertyEntity.type
-
-        if (searchType == null || searchType == propertyType) {
-            isMatching = true
-        }
-        return isMatching
+        return searchParameters.type == null ||
+                searchParameters.type == property.propertyEntity.type
     }
 
     private fun comparePrice(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPriceMini = searchParameters.priceMinimum
-        val searchPriceMaxi = searchParameters.priceMaximum
+        val searchPriceMinimum = searchParameters.priceMinimum
+        val searchPriceMaximum = searchParameters.priceMaximum
         val propertyPrice = property.propertyEntity.price
 
-        //return searchPriceMini == null || searchPriceMaxi == null || propertyPrice in searchPriceMini..searchPriceMaxi
-        return (searchPriceMini == null || propertyPrice >= searchPriceMini) &&
-                (searchPriceMaxi == null || propertyPrice <= searchPriceMaxi)
+        return (searchPriceMinimum == null || propertyPrice >= searchPriceMinimum) &&
+                (searchPriceMaximum == null || propertyPrice <= searchPriceMaximum)
     }
 
     private fun compareSurface(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-
-        val searchSurfaceMini = searchParameters.surfaceMinimum
-        val searchSurfaceMaxi = searchParameters.surfaceMaximum
+        val searchSurfaceMinimum = searchParameters.surfaceMinimum
+        val searchSurfaceMaximum = searchParameters.surfaceMaximum
         val propertySurface = property.propertyEntity.surface
 
-        return (searchSurfaceMini == null || propertySurface >= searchSurfaceMini) &&
-                (searchSurfaceMaxi == null || propertySurface <= searchSurfaceMaxi)
+        return (searchSurfaceMinimum == null || propertySurface >= searchSurfaceMinimum) &&
+                (searchSurfaceMaximum == null || propertySurface <= searchSurfaceMaximum)
     }
 
     private fun compareCity(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-
         val searchCity = searchParameters.city
         val propertyCity = property.propertyEntity.city
 
@@ -216,64 +225,59 @@ class PropertyListViewModel @Inject constructor(
 
     private fun comparePoiTrain(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
-    ): Boolean = !searchParameters.poiTrain || property.propertyEntity.poiTrain
+        property: PropertyWithPhotosEntity
+    ): Boolean {
+        return !searchParameters.poiTrain || property.propertyEntity.poiTrain
+    }
 
     private fun comparePoiAirport(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPoiAirport = searchParameters.poiAirport
-        val propertyPoiAirport = property.propertyEntity.poiAirport
-
-        return !searchPoiAirport || propertyPoiAirport
+        return !searchParameters.poiAirport || property.propertyEntity.poiAirport
     }
 
     private fun comparePoiResto(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPoiResto = searchParameters.poiResto
-        val propertyPoiResto = property.propertyEntity.poiResto
-
-        return !searchPoiResto || propertyPoiResto
+        return !searchParameters.poiResto || property.propertyEntity.poiResto
     }
 
     private fun comparePoiSchool(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPoiSchool = searchParameters.poiSchool
-        val propertyPoiSchool = property.propertyEntity.poiSchool
-
-        return !searchPoiSchool || propertyPoiSchool
+        return !searchParameters.poiSchool || property.propertyEntity.poiSchool
     }
 
     private fun comparePoiBus(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPoiBus = searchParameters.poiBus
-        val propertyPoiBus = property.propertyEntity.poiBus
-
-        return !searchPoiBus || propertyPoiBus
+        return !searchParameters.poiBus || property.propertyEntity.poiBus
     }
+
     private fun comparePoiPark(
         searchParameters: SearchParameters,
-        property: PropertyWithPhotosEntity,
+        property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPoiPark = searchParameters.poiPark
-        val propertyPoiPark = property.propertyEntity.poiPark
-
-        return !searchPoiPark || propertyPoiPark
+        return !searchParameters.poiPark || property.propertyEntity.poiPark
     }
 
-    val navigateSingleLiveEvent: SingleLiveEvent<ListViewAction> = SingleLiveEvent()
-    fun onNavigateToCreateActivity() {
-        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToCreateActvity)
-    }
-    fun onConfigurationChanged(isTablet: Boolean) {
-        this.isTablet.value = isTablet
+    private fun compareSoldStatus(
+        searchParameters: SearchParameters,
+        property: PropertyWithPhotosEntity
+    ): Boolean {
+        return searchParameters.soldStatus == null ||
+                property.propertyEntity.propertySold == searchParameters.soldStatus
     }
 
+    private fun compareMinimumPhotos(
+        searchParameters: SearchParameters,
+        property: PropertyWithPhotosEntity
+    ): Boolean {
+        return searchParameters.minimumPhotos == null ||
+                property.photos.size >= searchParameters.minimumPhotos
+    }
 }

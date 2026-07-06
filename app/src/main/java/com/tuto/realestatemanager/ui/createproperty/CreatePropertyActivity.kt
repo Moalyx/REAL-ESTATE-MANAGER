@@ -8,10 +8,12 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
@@ -41,7 +43,7 @@ class CreatePropertyActivity : AppCompatActivity() {
         var type: String
 
 
-        val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
+        val types = resources.getStringArray(R.array.property_types)
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
             this,
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, types
@@ -58,12 +60,12 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         val searchView = binding.searchview
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
+            override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
-            override fun onQueryTextChange(p0: String?): Boolean {
-                viewModel.onAddressSearchChanged(p0)
+            override fun onQueryTextChange(query: String?): Boolean {
+                viewModel.onAddressSearchChanged(query)
                 return false
 
             }
@@ -147,7 +149,7 @@ class CreatePropertyActivity : AppCompatActivity() {
             if (!hasInternet) {
                 Toast.makeText(
                     this,
-                    "please enter an address manually",
+                    getString(R.string.please_enter_an_address_manually),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -181,7 +183,8 @@ class CreatePropertyActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
 
             if (!onePhotoAtLeast) {
-                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.please_add_at_least_one_photo), Toast.LENGTH_SHORT).show()
             } else {
 
                 type = binding.typeDropdown.text.toString()
@@ -205,7 +208,8 @@ class CreatePropertyActivity : AppCompatActivity() {
                     description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
                     bathrooms.isEmpty() || agent.isEmpty()
                 ) {
-                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,
+                        getString(R.string.please_fill_all_the_required_fields), Toast.LENGTH_SHORT).show()
                 } else {
 
                     val priceInt = price.toIntOrNull()
@@ -223,7 +227,8 @@ class CreatePropertyActivity : AppCompatActivity() {
                         bedroomsInt == null ||
                         bathroomsInt == null
                     ) {
-                        Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this,
+                            getString(R.string.please_enter_valid_numbers), Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
 
@@ -265,18 +270,19 @@ class CreatePropertyActivity : AppCompatActivity() {
 
         viewModel.navigateSingleLiveEvent.observe(this) {
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("property_created", true)
+            intent.putExtra(getString(R.string.property_created), true)
             startActivity(intent)
             finish()
         }
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.clearTemporaryPhotos()
+                finish()
+            }
+        })
 
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        viewModel.clearTemporaryPhotos()
-        super.onBackPressed()
-    }
 
 }

@@ -37,8 +37,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+            setDisplayShowTitleEnabled(false)
+        }
 
         binding.bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -100,9 +102,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu ?: return false
         menuInflater.inflate(R.menu.edit_property_menu, menu)
 
-        val currencyItem = menu!!.findItem(R.id.currency)
+        val currencyItem = menu.findItem(R.id.currency)
+        currencyItem ?: return true
 
         viewmodel.iconStatus.observe(this) { isDollar ->
             if (isDollar) {

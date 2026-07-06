@@ -7,22 +7,22 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.BuildConfig
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityAddPictureCameraBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
-@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class AddPictureCameraActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_CURRENT_PHOTO_URI = "KEY_CURRENT_PHOTO_URI"
-        private const val REQUEST_IMAGE_CAPTURE = 100
     }
 
     private val viewModel by viewModels<AddPictureCameraViewModel>()
@@ -31,8 +31,14 @@ class AddPictureCameraActivity : AppCompatActivity() {
 
     private var currentPhotoUri: Uri? = null
 
-    private var fromEditPropertyActivity: String? = null
-    private var getEditPropertyId = 0L
+    private val cameraLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                displayPhoto()
+            } else {
+                finish()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +47,6 @@ class AddPictureCameraActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         restoreCurrentPhotoUri(savedInstanceState)
-
-        fromEditPropertyActivity = intent.getStringExtra("XXX")
-        getEditPropertyId = intent.getLongExtra("edit_property", -1)
-
         setupListeners()
 
         if (savedInstanceState == null) {
@@ -61,19 +63,19 @@ class AddPictureCameraActivity : AppCompatActivity() {
 
             when {
                 title.isBlank() -> {
-                    Toast.makeText(this, "please enter a description", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        resources.getString(R.string.please_enter_a_description),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 uri.isNullOrBlank() -> {
-                    Toast.makeText(this, "photo missing", Toast.LENGTH_SHORT).show()
-                }
-
-                fromEditPropertyActivity == "XXX" -> {
-                    viewModel.onAddTemporaryPhoto(
-                        title = title,
-                        uri = uri
-                    )
-                    finish()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.photo_missing),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 else -> {
@@ -100,7 +102,7 @@ class AddPictureCameraActivity : AppCompatActivity() {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+        cameraLauncher.launch(intent)
     }
 
     private fun createImageUri(): Uri {
@@ -115,19 +117,6 @@ class AddPictureCameraActivity : AppCompatActivity() {
             "${BuildConfig.APPLICATION_ID}.fileprovider",
             imageFile
         )
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode != REQUEST_IMAGE_CAPTURE) return
-
-        if (resultCode == RESULT_OK) {
-            displayPhoto()
-        } else {
-            finish()
-        }
     }
 
     private fun displayPhoto() {

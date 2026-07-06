@@ -6,6 +6,13 @@
         <item>0</item>
     </array>
 
+    <string-array name="property_types">
+        <item>House</item>
+        <item>Penthouse</item>
+        <item>Duplex</item>
+        <item>Loft</item>
+        <item>Flat</item>
+    </string-array>
 
 
 

@@ -203,7 +203,27 @@ class PropertyListViewModelTest {
     }
 
     @Test
-    fun `tablet mode should select first filtered property`() = runTest {
+    fun `tablet mode should not select first filtered property when no property was previously selected`() = runTest {
+        viewModel.onConfigurationChanged(true)
+
+        propertiesFlow.value = listOf(
+            createProperty(id = 1L, city = "Paris"),
+            createProperty(id = 2L, city = "Lyon")
+        )
+
+        searchParametersFlow.value = createSearchParameters(city = "Lyon")
+
+        viewModel.propertyListLiveData.getOrAwaitValue()
+
+        verify(exactly = 0) {
+            currentPropertyIdRepository.setCurrentId(any())
+        }
+    }
+
+    @Test
+    fun `tablet mode should select first filtered property when current property is no longer visible`() = runTest {
+        currentIdFlow.value = 1L
+
         viewModel.onConfigurationChanged(true)
 
         propertiesFlow.value = listOf(

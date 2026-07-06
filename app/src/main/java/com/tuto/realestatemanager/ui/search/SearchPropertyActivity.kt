@@ -1,11 +1,12 @@
 package com.tuto.realestatemanager.ui.search
 
+import androidx.activity.OnBackPressedCallback
 import android.os.Bundle
 import android.text.InputType
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
-import androidx.appcompat.R
+import com.tuto.realestatemanager.R
 import androidx.appcompat.app.AppCompatActivity
 import com.tuto.realestatemanager.databinding.ActivitySearchPropertyBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,12 @@ class SearchPropertyActivity : AppCompatActivity() {
     private var type: String? = null
     private var soldStatus: Boolean? = null
 
+    private companion object {
+        const val STATUS_ALL = "All"
+        const val STATUS_AVAILABLE = "Available"
+        const val STATUS_SOLD = "Sold"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,6 +37,7 @@ class SearchPropertyActivity : AppCompatActivity() {
         setUserParameters()
         observeParameters()
         observeNavigation()
+        setupOnBackPressed()
     }
 
     private fun setToolbar() {
@@ -37,31 +45,39 @@ class SearchPropertyActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            viewModel.onNavigateToMainActivity()
         }
     }
 
+    private fun setupOnBackPressed() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.onNavigateToMainActivity()
+            }
+        })
+    }
+
     private fun setDropdownMenus() {
-        val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
+        val types = resources.getStringArray(R.array.property_types)
         val typeDropdownAdapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item,
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
             types
         )
 
         binding.typeDropdown.setAdapter(typeDropdownAdapter)
         binding.typeDropdown.inputType = InputType.TYPE_NULL
 
-        val statuses = arrayOf("All", "Available", "Sold")
+        val statuses = arrayOf(STATUS_ALL, STATUS_AVAILABLE, STATUS_SOLD)
         val statusDropdownAdapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item,
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
             statuses
         )
 
         binding.soldStatusDropdown.setAdapter(statusDropdownAdapter)
         binding.soldStatusDropdown.inputType = InputType.TYPE_NULL
-        binding.soldStatusDropdown.setText("All", false)
+        binding.soldStatusDropdown.setText(STATUS_ALL, false)
     }
 
     private fun setUserParameters() {
@@ -73,8 +89,8 @@ class SearchPropertyActivity : AppCompatActivity() {
         binding.soldStatusDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
                 soldStatus = when (parent.getItemAtPosition(position).toString()) {
-                    "Sold" -> true
-                    "Available" -> false
+                    STATUS_SOLD -> true
+                    STATUS_AVAILABLE -> false
                     else -> null
                 }
             }
@@ -134,9 +150,9 @@ class SearchPropertyActivity : AppCompatActivity() {
 
             binding.soldStatusDropdown.setText(
                 when (parameters.soldStatus) {
-                    true -> "Sold"
-                    false -> "Available"
-                    null -> "All"
+                    true -> STATUS_SOLD
+                    false -> STATUS_AVAILABLE
+                    null -> STATUS_ALL
                 },
                 false
             )
@@ -171,13 +187,8 @@ class SearchPropertyActivity : AppCompatActivity() {
         binding.checkboxBus.isChecked = false
         binding.checkboxPark.isChecked = false
 
-        binding.soldStatusDropdown.setText("All", false)
+        binding.soldStatusDropdown.setText(STATUS_ALL, false)
         binding.minimumPhotos.setText("")
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.onNavigateToMainActivity()
-    }
 }

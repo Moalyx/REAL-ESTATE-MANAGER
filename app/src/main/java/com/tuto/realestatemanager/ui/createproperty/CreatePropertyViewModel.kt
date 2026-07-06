@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
@@ -54,7 +55,9 @@ class CreatePropertyViewModel @Inject constructor(
     val navigateSingleLiveEvent: SingleLiveEvent<CreateViewAction> = SingleLiveEvent()
 
     val hasInternetLiveData: LiveData<Boolean> =
-        isInternetAvailableUseCase.invoke().asLiveData()
+        isInternetAvailableUseCase.invoke()
+            .distinctUntilChanged()
+            .asLiveData()
 
     private val placeDetailAddress: LiveData<AddressComponentsEntity> =
         placeIdMutableStateFlow

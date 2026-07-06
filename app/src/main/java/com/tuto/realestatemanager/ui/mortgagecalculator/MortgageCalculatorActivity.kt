@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.mortgagecalculator
 
+import androidx.activity.OnBackPressedCallback
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -50,6 +51,12 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         viewModel.navigateSingleLiveEvent.observe(this) {
             finish()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.onNavigateToMainActivity()
+            }
+        })
     }
 
     private fun setToolbar() {
@@ -61,9 +68,4 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.onNavigateToMainActivity()
-    }
 }

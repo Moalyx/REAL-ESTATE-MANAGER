@@ -1,5 +1,6 @@
 package com.tuto.realestatemanager.ui.editproperty
 
+import androidx.activity.OnBackPressedCallback
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -11,7 +12,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.R
+//import androidx.appcompat.R
+import com.tuto.realestatemanager.R
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,8 +33,6 @@ class EditPropertyActivity : AppCompatActivity() {
     private var isBindingPropertyDetails = false
 
     companion object {
-        const val XXX = "XXX"
-        const val KEY_EDIT = "edit_property"
         const val KEY_PROPERTY_ID = "KEY_PROPERTY_ID"
         fun navigate(context: Context, propertyId: Long): Intent {
             val intent = Intent(context, EditPropertyActivity::class.java)
@@ -129,13 +129,12 @@ class EditPropertyActivity : AppCompatActivity() {
             }
         }
 
-        val types = arrayOf("House", "Penthouse", "Duplex", "Loft", "Flat")
+        val types = resources.getStringArray(R.array.property_types)
         val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
             this,
-            R.layout.support_simple_spinner_dropdown_item, types
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, types
         )
         binding.typeDropdown.setAdapter(dropdownAdapter)
-        binding.typeDropdown.threshold
 
         binding.typeDropdown.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
@@ -146,17 +145,11 @@ class EditPropertyActivity : AppCompatActivity() {
         viewModel.setPropertyId(propertyId)
 
         binding.addPictureButton.setOnClickListener {
-            val intent = Intent(this, AddPhotoActivity::class.java)
-            intent.putExtra("XXX", XXX)
-            intent.putExtra(KEY_EDIT, propertyId)
-            startActivity(intent)
+            startActivity(Intent(this, AddPhotoActivity::class.java))
         }
 
         binding.takePictureButton.setOnClickListener {
-            val intent = Intent(this, AddPictureCameraActivity::class.java)
-            intent.putExtra("XXX", XXX)
-            intent.putExtra(KEY_EDIT, propertyId)
-            startActivity(intent)
+            startActivity(Intent(this, AddPictureCameraActivity::class.java))
         }
 
         val adapter = EditPropertyPhotoAdapter(
@@ -182,7 +175,7 @@ class EditPropertyActivity : AppCompatActivity() {
             binding.typeDropdown.setText(it.type, false)
             binding.description.setText(it.description, TextView.BufferType.EDITABLE)
             binding.price.setText(it.price.toString())
-            binding.surface.setText(it.surface.toString(), TextView.BufferType.EDITABLE).toString()
+            binding.surface.setText(it.surface.toString(), TextView.BufferType.EDITABLE)
             binding.rooms.setText(it.room.toString(), TextView.BufferType.EDITABLE)
             binding.bedrooms.setText(it.bedroom.toString(), TextView.BufferType.EDITABLE)
             binding.bathrooms.setText(it.bathroom.toString(), TextView.BufferType.EDITABLE)
@@ -214,7 +207,7 @@ class EditPropertyActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
 
             if (!onePhotoAtLeast) {
-                Toast.makeText(this, "please add at least one photo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getString(R.string.please_add_at_least_one_photo), Toast.LENGTH_SHORT).show()
             } else {
 
                 type = binding.typeDropdown.text.toString()
@@ -238,7 +231,7 @@ class EditPropertyActivity : AppCompatActivity() {
                     description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
                     bathrooms.isEmpty() || agent.isEmpty()
                 ) {
-                    Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, resources.getString(R.string.please_fill_all_the_required_fields), Toast.LENGTH_SHORT).show()
                 } else {
 
                     val priceInt = price.toIntOrNull()
@@ -256,7 +249,7 @@ class EditPropertyActivity : AppCompatActivity() {
                         bedroomsInt == null ||
                         bathroomsInt == null
                     ) {
-                        Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, resources.getString(R.string.please_enter_valid_numbers), Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
 
@@ -302,12 +295,14 @@ class EditPropertyActivity : AppCompatActivity() {
         viewModel.navigateSingleLiveEvent.observe(this) {
             finish()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.clearTemporaryPhotos()
+                finish()
+            }
+        })
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        viewModel.clearTemporaryPhotos()
-        super.onBackPressed()
-    }
 
 }

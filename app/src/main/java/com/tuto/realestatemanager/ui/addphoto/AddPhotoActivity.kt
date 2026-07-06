@@ -5,21 +5,22 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.tuto.realestatemanager.BuildConfig
+import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityAddPhotoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
+import androidx.core.net.toUri
 
-@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class AddPhotoActivity : AppCompatActivity() {
 
     companion object {
-        private const val INTENT_REQUEST_CODE = 100
         private const val KEY_PHOTO_URI = "KEY_PHOTO_URI"
     }
 
@@ -27,9 +28,42 @@ class AddPhotoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddPhotoBinding
 
-    private var fromEditPropertyActivity: String? = null
-    private var getEditPropertyId = 0L
     private var permanentPhotoUri: Uri? = null
+
+    private val galleryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val originalUri = result.data?.data
+
+                if (originalUri != null) {
+                    val copiedUri = copyUriToInternalStorage(originalUri)
+
+                    if (copiedUri != null) {
+                        permanentPhotoUri = copiedUri
+
+                        Glide.with(this)
+                            .load(permanentPhotoUri)
+                            .into(binding.image)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.unable_to_load_photo),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
+                    }
+                } else {
+                    Toast.makeText(
+                        this,
+                        resources.getString(R.string.photo_missing),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+            } else {
+                finish()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +71,15 @@ class AddPhotoActivity : AppCompatActivity() {
         binding = ActivityAddPhotoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        fromEditPropertyActivity = intent.getStringExtra("XXX")
-        getEditPropertyId = intent.getLongExtra("edit_property", -1)
-
         setupListeners()
 
-        permanentPhotoUri = savedInstanceState
-            ?.getString(KEY_PHOTO_URI)
-            ?.let { Uri.parse(it) }
+        val savedPhotoUri = savedInstanceState?.getString(KEY_PHOTO_URI)
+
+        permanentPhotoUri = if (savedPhotoUri.isNullOrBlank()) {
+            null
+        } else {
+            savedPhotoUri.toUri()
+        }
 
         if (permanentPhotoUri != null) {
             Glide.with(this)
@@ -64,7 +99,7 @@ class AddPhotoActivity : AppCompatActivity() {
                 title.isBlank() -> {
                     Toast.makeText(
                         this,
-                        "please enter a description",
+                        getString(R.string.please_enter_a_description),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -72,18 +107,11 @@ class AddPhotoActivity : AppCompatActivity() {
                 uri.isNullOrBlank() -> {
                     Toast.makeText(
                         this,
-                        "please choose a photo",
+                        getString(R.string.please_choose_a_photo),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
-                fromEditPropertyActivity == "XXX" -> {
-                    viewModel.onAddTemporaryPhoto(
-                        title = title,
-                        uri = uri
-                    )
-                    finish()
-                }
                 else -> {
                     viewModel.onAddTemporaryPhoto(
                         title = title,
@@ -97,52 +125,6 @@ class AddPhotoActivity : AppCompatActivity() {
         binding.cancelAction.setOnClickListener {
             finish()
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode != INTENT_REQUEST_CODE) return
-
-        if (resultCode != RESULT_OK) {
-            finish()
-            return
-        }
-
-        val originalUri = data?.data
-
-        if (originalUri == null) {
-            Toast.makeText(
-                this,
-                "photo missing",
-                Toast.LENGTH_SHORT
-            ).show()
-            finish()
-            return
-        }
-
-        val copiedUri = copyUriToInternalStorage(originalUri)
-
-        if (copiedUri == null) {
-            Toast.makeText(
-                this,
-                "unable to load photo",
-                Toast.LENGTH_SHORT
-            ).show()
-            finish()
-            return
-        }
-
-        permanentPhotoUri = copiedUri
-
-        Glide.with(this)
-            .load(permanentPhotoUri)
-            .into(binding.image)
     }
 
     private fun copyUriToInternalStorage(uri: Uri): Uri? {
@@ -171,8 +153,8 @@ class AddPhotoActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        permanentPhotoUri?.let {
-            outState.putString(KEY_PHOTO_URI, it.toString())
+        permanentPhotoUri?.let { uri ->
+            outState.putString(KEY_PHOTO_URI, uri.toString())
         }
     }
 
@@ -181,9 +163,6 @@ class AddPhotoActivity : AppCompatActivity() {
             type = "image/*"
         }
 
-        startActivityForResult(
-            Intent.createChooser(intent, "choose a photo"),
-            INTENT_REQUEST_CODE
-        )
+        galleryLauncher.launch(Intent.createChooser(intent, getString(R.string.choose_a_photo)))
     }
 }

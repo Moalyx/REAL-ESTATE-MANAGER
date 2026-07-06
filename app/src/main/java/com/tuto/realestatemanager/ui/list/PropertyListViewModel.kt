@@ -108,9 +108,21 @@ class PropertyListViewModel @Inject constructor(
             }
 
             if (isTablet) {
-                currentPropertyIdRepository.setCurrentId(
-                    filteredList.firstOrNull()?.propertyEntity?.id
-                )
+                if (filteredList.isEmpty()) {
+                    if (currentPropertyId != null) {
+                        currentPropertyIdRepository.setCurrentId(null)
+                    }
+                } else if (currentPropertyId != null) {
+                    val currentPropertyStillVisible = filteredList.any { property ->
+                        property.propertyEntity.id == currentPropertyId
+                    }
+
+                    if (!currentPropertyStillVisible) {
+                        currentPropertyIdRepository.setCurrentId(
+                            filteredList.first().propertyEntity.id
+                        )
+                    }
+                }
             }
 
             emit(

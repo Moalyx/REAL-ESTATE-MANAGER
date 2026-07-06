@@ -1,5 +1,7 @@
 package com.tuto.realestatemanager.ui.map
 
+import androidx.activity.result.contract.ActivityResultContracts
+import android.annotation.SuppressLint
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,8 +31,33 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private val viewModel by viewModels<MapViewModel>()
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private var googleMap: GoogleMap? = null
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        googleMap?.let { map ->
+            if (fineLocationGranted || coarseLocationGranted) {
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    @SuppressLint("MissingPermission")
+                    map.isMyLocationEnabled = true
+                    map.uiSettings.isMyLocationButtonEnabled = true
+                }
+            } else {
+                map.uiSettings.isMyLocationButtonEnabled = false
+            }
+        }
     }
 
     private var hasCameraMoved = false
@@ -66,37 +93,9 @@ class MapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     }
 
-@Deprecated("Deprecated in Java")
-override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<out String>,
-    grantResults: IntArray
-) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-    if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-        getMapAsync { map ->
-            if (
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                map.isMyLocationEnabled = true
-                map.uiSettings.isMyLocationButtonEnabled = true
-            } else {
-                map.uiSettings.isMyLocationButtonEnabled = false
-            }
-        }
-    }
-}
 
     override fun onMapReady(map: GoogleMap) {
-
+        googleMap = map
         map.uiSettings.isMyLocationButtonEnabled = false
 
         viewModel.getMapViewState.observe(viewLifecycleOwner) { mapViewState ->
@@ -169,15 +168,15 @@ override fun onRequestPermissionsResult(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            @SuppressLint("MissingPermission")
             map.isMyLocationEnabled = true
             map.uiSettings.isMyLocationButtonEnabled = true
         } else {
-            requestPermissions(
+            requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
+                )
             )
         }
     }

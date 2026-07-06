@@ -74,7 +74,19 @@ class MapViewModel @Inject constructor(
                 }
 
             if (markerPlaceList.isEmpty()) {
-                currentPropertyIdRepository.setCurrentId(null)
+                if (selectedMarkerId != null) {
+                    currentPropertyIdRepository.setCurrentId(null)
+                }
+            } else if (selectedMarkerId != null) {
+                val selectedMarkerStillVisible = markerPlaceList.any { marker ->
+                    marker.id == selectedMarkerId
+                }
+
+                if (!selectedMarkerStillVisible) {
+                    currentPropertyIdRepository.setCurrentId(
+                        markerPlaceList.first().id
+                    )
+                }
             }
 
             emit(

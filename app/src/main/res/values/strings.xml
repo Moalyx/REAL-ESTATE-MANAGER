@@ -97,5 +97,15 @@
     <string name="bank_loan">Bank loan</string>
     <string name="search_property">search property</string>
     <string name="edit_property">edit property</string>
+    <string name="property_created">property_created</string>
+    <string name="please_enter_valid_numbers">Please enter valid numbers</string>
+    <string name="please_fill_all_the_required_fields">Please fill all the required fields</string>
+    <string name="please_add_at_least_one_photo">please add at least one photo</string>
+    <string name="please_enter_an_address_manually">please enter an address manually</string>
+    <string name="please_choose_a_photo">please choose a photo</string>
+    <string name="please_enter_a_description">please enter a description</string>
+    <string name="photo_missing">photo missing</string>
+    <string name="unable_to_load_photo">unable to load photo</string>
+    <string name="choose_a_photo">choose a photo</string>
 
 </resources>

@@ -13,20 +13,31 @@ import android.os.Build
 object Utils {
 
     /**
-     * Converts a real estate price from dollars to euros.
-     * Keep this method because it is part of the original project requirements.
+     * Conversion of a real estate property price (Dollars to Euros).
+     * NOTE: DO NOT DELETE, TO BE SHOWN DURING THE SOUTENANCE.
+     *
+     * @param dollars price in dollars
+     * @return price in euros
      */
     fun convertDollarToEuro(dollars: Int): Int {
         return (dollars * 0.92).roundToInt()
     }
 
+    /**
+     * Conversion of a real estate property price (Euros to Dollars).
+     *
+     * @param euros price in euros
+     * @return price in dollars
+     */
     fun convertEuroToDollar(euros: Int): Int {
         return (euros / 0.92).roundToInt()
     }
 
     /**
-     * Returns today's date using the expected display format.
-     * Keep this method because it is part of the original project requirements.
+     * Conversion of today's date into a more appropriate format.
+     * NOTE: DO NOT DELETE, TO BE SHOWN DURING THE SOUTENANCE.
+     *
+     * @return formatted date string
      */
     fun todayDate(): String {
 

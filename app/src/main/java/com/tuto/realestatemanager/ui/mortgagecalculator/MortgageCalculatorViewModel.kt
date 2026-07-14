@@ -1,14 +1,16 @@
 package com.tuto.realestatemanager.ui.mortgagecalculator
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository.MortgageCalculatorRepository
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -18,50 +20,62 @@ class MortgageCalculatorViewModel @Inject constructor(
     private val isDollarFlowUseCase: IsDollarFlowUseCase
 ) : ViewModel() {
 
-    val loanAmountLiveData: LiveData<String> = liveData {
-        combine(
-            mortgageCalculatorRepository.getHousePrice(),
-            mortgageCalculatorRepository.getDownPayment(),
-            isDollarFlowUseCase.invoke()
-        ) { housePrice, downPayment, isDollar ->
+    val loanAmount: StateFlow<String> = combine(
+        mortgageCalculatorRepository.getHousePrice(),
+        mortgageCalculatorRepository.getDownPayment(),
+        isDollarFlowUseCase.invoke()
+    ) { housePrice, downPayment, isDollar ->
 
-            val loanAmount = housePrice - downPayment
-            val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
+        val loanAmount = housePrice - downPayment
+        val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
+        val currency = if (isDollar) "$" else "€"
 
-            val currency = if (isDollar) "$" else "€"
+        "${safeLoanAmount.toInt()} $currency"
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = "0 €"
+    )
 
-            emit("${safeLoanAmount.toInt()} $currency")
+    val monthlyPayment: StateFlow<String> = combine(
+        mortgageCalculatorRepository.getHousePrice(),
+        mortgageCalculatorRepository.getDownPayment(),
+        mortgageCalculatorRepository.getRate(),
+        mortgageCalculatorRepository.getDuration(),
+        isDollarFlowUseCase.invoke()
+    ) { housePrice, downPayment, rate, duration, isDollar ->
 
-        }.collect()
-    }
+        val loanAmount = housePrice - downPayment
+        val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
 
-    val getMonthlyPayment: LiveData<String> = liveData {
-        combine(
-            mortgageCalculatorRepository.getHousePrice(),
-            mortgageCalculatorRepository.getDownPayment(),
-            mortgageCalculatorRepository.getRate(),
-            mortgageCalculatorRepository.getDuration(),
-            isDollarFlowUseCase.invoke()
-        ) { housePrice, downPayment, rate, duration, isDollar ->
+        val monthlyRate = (rate / 100) / 12
+        val numberOfPayments = duration * 12
+        val currency = if (isDollar) "$" else "€"
 
-            val loanAmount = housePrice - downPayment
-            val safeLoanAmount = loanAmount.coerceAtLeast(0.0)
+        if (
+            safeLoanAmount == 0.0 ||
+            rate == 0.0 ||
+            duration == 0
+        ) {
+            "0 $currency"
+        } else {
+            val payment = safeLoanAmount * monthlyRate /
+                    (1 - (1 + monthlyRate).pow(-numberOfPayments.toDouble()))
 
-            val currentRate = (rate / 100) / 12
-            val time = duration * 12
-            val currency = if (isDollar) "$" else "€"
+            "${payment.toInt()} $currency"
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = "0 €"
+    )
 
-            if (safeLoanAmount == 0.0 || rate == 0.0 || duration == 0) {
-                emit("0 $currency")
-            } else {
-                val monthlyPayment =
-                    safeLoanAmount * currentRate / (1 - (1 + currentRate).pow(-time.toDouble()))
+    private val _viewAction = MutableSharedFlow<MortgageViewAction>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
 
-                emit("${monthlyPayment.toInt()} $currency")
-            }
-
-        }.collect()
-    }
+    val viewAction = _viewAction.asSharedFlow()
 
     fun setHousePrice(housePrice: String) {
         mortgageCalculatorRepository.setHousePrice(
@@ -87,9 +101,9 @@ class MortgageCalculatorViewModel @Inject constructor(
         )
     }
 
-    val navigateSingleLiveEvent: SingleLiveEvent<MortgageViewAction> = SingleLiveEvent()
-
     fun onNavigateToMainActivity() {
-        navigateSingleLiveEvent.setValue(MortgageViewAction.NavigateToMainActivity)
+        _viewAction.tryEmit(
+            MortgageViewAction.NavigateToMainActivity
+        )
     }
 }

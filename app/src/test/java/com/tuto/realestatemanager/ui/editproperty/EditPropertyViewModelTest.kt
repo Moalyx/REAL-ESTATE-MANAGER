@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.editproperty
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.data.repository.photo.PhotoRepository
@@ -14,20 +13,21 @@ import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCa
 import com.tuto.realestatemanager.domain.usecase.photo.InsertPhotoUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.GetTemporaryPhotoListUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
-import com.tuto.realestatemanager.getOrAwaitValue
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
-import com.tuto.realestatemanager.observeForTesting
 import com.tuto.realestatemanager.ui.utils.Utils
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -40,12 +40,9 @@ import org.junit.Test
 class EditPropertyViewModelTest {
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     private val propertyRepository: PropertyRepository = mockk(relaxed = true)
     private val photoRepository: PhotoRepository = mockk()
@@ -68,16 +65,33 @@ class EditPropertyViewModelTest {
 
     @Before
     fun setUp() {
-        every { currentPropertyIdRepository.currentIdFlow } returns currentIdFlow
-        every { photoRepository.getAllPhoto() } returns photoFlow
-        every { getTemporaryPhotoListUseCase.invoke() } returns temporaryPhotoFlow
+        currentIdFlow.value = null
+        photoFlow.value = emptyList()
+        temporaryPhotoFlow.value = emptyList()
 
-        every { propertyRepository.getPropertyById(1L) } returns flowOf(
-            createProperty(id = 1L)
-        )
+        every {
+            currentPropertyIdRepository.currentIdFlow
+        } returns currentIdFlow
 
-        every { getUserLocationFlowUseCase.invoke() } returns flowOf(null)
-        every { coroutineDispatchersProvider.io } returns testDispatcher
+        every {
+            photoRepository.getAllPhoto()
+        } returns photoFlow
+
+        every {
+            getTemporaryPhotoListUseCase.invoke()
+        } returns temporaryPhotoFlow
+
+        every {
+            propertyRepository.getPropertyById(1L)
+        } returns flowOf(createProperty(id = 1L))
+
+        every {
+            getUserLocationFlowUseCase.invoke()
+        } returns flowOf(null)
+
+        every {
+            coroutineDispatchersProvider.io
+        } returns testDispatcher
 
         viewModel = EditPropertyViewModel(
             propertyRepository = propertyRepository,
@@ -105,10 +119,12 @@ class EditPropertyViewModelTest {
     }
 
     @Test
-    fun `detailPropertyLiveData should expose property detail`() = runTest {
+    fun `detailPropertyStateFlow should expose property detail`() = runTest {
         currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+        val result = viewModel.detailPropertyStateFlow.first { state ->
+            state?.id == 1L
+        }!!
 
         assertEquals(1L, result.id)
         assertEquals("House", result.type)
@@ -129,7 +145,7 @@ class EditPropertyViewModelTest {
     }
 
     @Test
-    fun `getAllPhotoLiveData should expose saved photos for current property only`() = runTest {
+    fun `allPhotoStateFlow should expose saved photos for current property only`() = runTest {
         currentIdFlow.value = 1L
 
         photoFlow.value = listOf(
@@ -138,7 +154,9 @@ class EditPropertyViewModelTest {
             createPhoto(id = 3L, propertyId = 2L, photoUri = "uri_3", photoTitle = "Other")
         )
 
-        val result = viewModel.getAllPhotoLiveData.getOrAwaitValue()
+        val result = viewModel.allPhotoStateFlow.first { photos ->
+            photos.size == 2
+        }
 
         assertEquals(2, result.size)
         assertEquals(1L, result[0].id)
@@ -148,7 +166,7 @@ class EditPropertyViewModelTest {
     }
 
     @Test
-    fun `getAllPhotoLiveData should expose temporary photos`() = runTest {
+    fun `allPhotoStateFlow should expose temporary photos`() = runTest {
         currentIdFlow.value = 1L
 
         temporaryPhotoFlow.value = listOf(
@@ -156,7 +174,9 @@ class EditPropertyViewModelTest {
             TemporaryPhoto(id = 11L, title = "Temp Cuisine", uri = "temp_uri_2")
         )
 
-        val result = viewModel.getAllPhotoLiveData.getOrAwaitValue()
+        val result = viewModel.allPhotoStateFlow.first { photos ->
+            photos.size == 2
+        }
 
         assertEquals(2, result.size)
         assertEquals(10L, result[0].id)
@@ -174,14 +194,18 @@ class EditPropertyViewModelTest {
             createPhoto(id = 2L, propertyId = 1L, photoUri = "uri_2", photoTitle = "Cuisine")
         )
 
-        viewModel.getAllPhotoLiveData.observeForTesting {
-            viewModel.markPhotoAsDeleted(1L)
-
-            val result = viewModel.getAllPhotoLiveData.value
-
-            assertEquals(1, result?.size)
-            assertEquals(2L, result?.first()?.id)
+        viewModel.allPhotoStateFlow.first { photos ->
+            photos.size == 2
         }
+
+        viewModel.markPhotoAsDeleted(1L)
+
+        val result = viewModel.allPhotoStateFlow.first { photos ->
+            photos.size == 1 && photos.first().id == 2L
+        }
+
+        assertEquals(1, result.size)
+        assertEquals(2L, result.first().id)
     }
 
     @Test
@@ -214,6 +238,10 @@ class EditPropertyViewModelTest {
             createPhoto(id = 1L, propertyId = 1L, photoUri = "uri_1", photoTitle = "Salon")
         )
 
+        viewModel.allPhotoStateFlow.first { photos ->
+            photos.size == 1
+        }
+
         val photo = EditPropertyPhotoViewState(
             id = 1L,
             photoTitle = "Salon",
@@ -221,47 +249,32 @@ class EditPropertyViewModelTest {
             isTemporary = false
         )
 
-        viewModel.getAllPhotoLiveData.observeForTesting {
-            viewModel.onDeleteEditPhoto(photo)
+        viewModel.onDeleteEditPhoto(photo)
 
-            val result = viewModel.getAllPhotoLiveData.value
-
-            assertEquals(0, result?.size)
+        val result = viewModel.allPhotoStateFlow.first { photos ->
+            photos.isEmpty()
         }
+
+        assertTrue(result.isEmpty())
     }
 
     @Test
     fun `updateProperty should update property`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
+        updatePropertyThroughViewModel(
             type = "Flat",
             price = 250000,
             address = "20 rue update",
             city = "Lyon",
-            state = "France",
             zipcode = 69000,
-            country = "France",
             surface = 60,
             lat = 45.7640,
             lng = 4.8357,
             description = "updated description",
             room = 3,
             bedroom = 1,
-            bathroom = 1,
-            agent = "Updated Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = true,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = true,
-            poiSchool = false,
-            poiBus = true,
-            poiPark = false
+            agent = "Updated Agent"
         )
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             propertyRepository.updateProperty(
@@ -281,36 +294,11 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should accept null location`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
+        updatePropertyThroughViewModel(
             lat = null,
-            lng = null,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
+            lng = null
         )
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             propertyRepository.updateProperty(
@@ -323,36 +311,12 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should set sale date to today when property becomes sold`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
+        updatePropertyThroughViewModel(
             isSold = true,
             wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
+            previousDateOfSale = "Not yet sold"
         )
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             propertyRepository.updateProperty(
@@ -366,36 +330,12 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should keep previous sale date when property was already sold`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
+        updatePropertyThroughViewModel(
             isSold = true,
             wasSold = true,
-            previousDateOfSale = "10/06/2026",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
+            previousDateOfSale = "10/06/2026"
         )
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             propertyRepository.updateProperty(
@@ -409,36 +349,12 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should set date of sale to not yet sold when property is available`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
+        updatePropertyThroughViewModel(
             isSold = false,
             wasSold = true,
-            previousDateOfSale = "10/06/2026",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
+            previousDateOfSale = "10/06/2026"
         )
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             propertyRepository.updateProperty(
@@ -455,36 +371,8 @@ class EditPropertyViewModelTest {
         viewModel.markPhotoAsDeleted(1L)
         viewModel.markPhotoAsDeleted(2L)
 
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
-        )
+        updatePropertyThroughViewModel()
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             deletePhotoByIdUseCase.invoke(1L)
@@ -499,36 +387,8 @@ class EditPropertyViewModelTest {
             TemporaryPhoto(id = 11L, title = "Temp Cuisine", uri = "temp_uri_2")
         )
 
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
-        )
+        updatePropertyThroughViewModel()
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             insertPhotoUseCase.invoke(
@@ -553,36 +413,8 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should clear temporary photos`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
-        )
+        updatePropertyThroughViewModel()
 
-        testDispatcher.scheduler.advanceUntilIdle()
 
         verify {
             onDeleteTemporaryPhotoUseCase.invoke()
@@ -591,40 +423,18 @@ class EditPropertyViewModelTest {
 
     @Test
     fun `updateProperty should emit navigation event after update`() = runTest {
-        viewModel.updateProperty(
-            id = 1L,
-            type = "House",
-            price = 300000,
-            address = "10 rue test",
-            city = "Paris",
-            state = "France",
-            zipcode = 75000,
-            country = "France",
-            surface = 80,
-            lat = 48.8566,
-            lng = 2.3522,
-            description = "description",
-            room = 4,
-            bedroom = 2,
-            bathroom = 1,
-            agent = "Agent",
-            isSold = false,
-            wasSold = false,
-            previousDateOfSale = "Not yet sold",
-            poiTrain = false,
-            saleSince = "01/01/2024",
-            poiAirport = false,
-            poiResto = false,
-            poiSchool = false,
-            poiBus = false,
-            poiPark = false
-        )
+        val event = async(
+            start = CoroutineStart.UNDISPATCHED
+        ) {
+            viewModel.viewAction.first()
+        }
 
-        testDispatcher.scheduler.advanceUntilIdle()
+        updatePropertyThroughViewModel()
+
 
         assertEquals(
             EditViewAction.NavigateFromEditToDetailActivity,
-            viewModel.navigateSingleLiveEvent.getOrAwaitValue()
+            event.await()
         )
     }
 
@@ -635,6 +445,64 @@ class EditPropertyViewModelTest {
         verify {
             onDeleteTemporaryPhotoUseCase.invoke()
         }
+    }
+
+    private fun updatePropertyThroughViewModel(
+        id: Long = 1L,
+        type: String = "House",
+        price: Int = 300000,
+        address: String = "10 rue test",
+        city: String = "Paris",
+        state: String = "France",
+        zipcode: Int = 75000,
+        country: String = "France",
+        surface: Int = 80,
+        lat: Double? = 48.8566,
+        lng: Double? = 2.3522,
+        description: String = "description",
+        room: Int = 4,
+        bedroom: Int = 2,
+        bathroom: Int = 1,
+        agent: String = "Agent",
+        isSold: Boolean = false,
+        wasSold: Boolean = false,
+        previousDateOfSale: String = "Not yet sold",
+        poiTrain: Boolean = false,
+        saleSince: String = "01/01/2024",
+        poiAirport: Boolean = false,
+        poiResto: Boolean = false,
+        poiSchool: Boolean = false,
+        poiBus: Boolean = false,
+        poiPark: Boolean = false
+    ) {
+        viewModel.updateProperty(
+            id = id,
+            type = type,
+            price = price,
+            address = address,
+            city = city,
+            state = state,
+            zipcode = zipcode,
+            country = country,
+            surface = surface,
+            lat = lat,
+            lng = lng,
+            description = description,
+            room = room,
+            bedroom = bedroom,
+            bathroom = bathroom,
+            agent = agent,
+            isSold = isSold,
+            wasSold = wasSold,
+            previousDateOfSale = previousDateOfSale,
+            poiTrain = poiTrain,
+            saleSince = saleSince,
+            poiAirport = poiAirport,
+            poiResto = poiResto,
+            poiSchool = poiSchool,
+            poiBus = poiBus,
+            poiPark = poiPark
+        )
     }
 
     private fun createPhoto(

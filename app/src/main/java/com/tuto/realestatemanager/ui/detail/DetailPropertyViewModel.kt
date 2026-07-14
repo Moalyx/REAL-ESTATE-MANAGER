@@ -1,26 +1,24 @@
 package com.tuto.realestatemanager.ui.detail
 
-import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -29,11 +27,20 @@ class DetailPropertyViewModel @Inject constructor(
     currentIdFlowUseCase: CurrentIdFlowUseCase,
     isDollarFlowUseCase: IsDollarFlowUseCase,
     private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase,
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
+    isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
-    private val getCurrentPropertyFlow = currentIdFlowUseCase.invoke()
-        .onEach { photoUriMutableStateFlow.value = null }
+    private companion object {
+        private const val STOP_TIMEOUT_MILLIS = 5_000L
+    }
+
+    private val _selectedPhotoUri = MutableStateFlow<String?>(null)
+    val selectedPhotoUri: StateFlow<String?> = _selectedPhotoUri.asStateFlow()
+
+    private val currentPropertyFlow = currentIdFlowUseCase.invoke()
+        .onEach {
+            _selectedPhotoUri.value = null
+        }
         .flatMapLatest { currentId ->
             if (currentId == null) {
                 flowOf(null)
@@ -42,93 +49,106 @@ class DetailPropertyViewModel @Inject constructor(
             }
         }
 
-    private val photoUriMutableStateFlow = MutableStateFlow<String?>(null)
+    private val _viewAction = MutableSharedFlow<DetailViewAction>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
+
+    val viewAction = _viewAction.asSharedFlow()
+
+    val detailPropertyStateFlow: StateFlow<PropertyDetailViewState?> = combine(
+        _selectedPhotoUri,
+        currentPropertyFlow,
+        isDollarFlowUseCase.invoke(),
+        isInternetAvailableUseCase.invoke()
+    ) { selectedPhotoUri, propertyWithPhotosEntity, isDollar, hasInternet ->
+
+        if (propertyWithPhotosEntity == null) {
+            null
+        } else {
+            PropertyDetailViewState(
+                id = propertyWithPhotosEntity.propertyEntity.id,
+                type = propertyWithPhotosEntity.propertyEntity.type,
+                price = convertMoney(
+                    price = propertyWithPhotosEntity.propertyEntity.price.toString(),
+                    isDollar = isDollar
+                ),
+                photoList = propertyWithPhotosEntity.photos,
+                address = propertyWithPhotosEntity.propertyEntity.address,
+                city = propertyWithPhotosEntity.propertyEntity.city,
+                zipcode = propertyWithPhotosEntity.propertyEntity.zipCode,
+                state = propertyWithPhotosEntity.propertyEntity.state,
+                country = propertyWithPhotosEntity.propertyEntity.country,
+                surface = propertyWithPhotosEntity.propertyEntity.surface,
+                description = propertyWithPhotosEntity.propertyEntity.description,
+                room = propertyWithPhotosEntity.propertyEntity.room,
+                bedroom = propertyWithPhotosEntity.propertyEntity.bedroom,
+                bathroom = propertyWithPhotosEntity.propertyEntity.bathroom,
+                agent = propertyWithPhotosEntity.propertyEntity.agent,
+                isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
+                saleSince = convertDate(
+                    date = propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
+                    isDollar = isDollar
+                ),
+                saleDate = if (
+                    propertyWithPhotosEntity.propertyEntity.propertySold &&
+                    propertyWithPhotosEntity.propertyEntity.propertyDateOfSale != "Not yet sold"
+                ) {
+                    convertDate(
+                        date = propertyWithPhotosEntity.propertyEntity.propertyDateOfSale,
+                        isDollar = isDollar
+                    )
+                } else {
+                    propertyWithPhotosEntity.propertyEntity.propertyDateOfSale
+                },
+                poiTrain = propertyWithPhotosEntity.propertyEntity.poiTrain,
+                poiAirport = propertyWithPhotosEntity.propertyEntity.poiAirport,
+                poiResto = propertyWithPhotosEntity.propertyEntity.poiResto,
+                poiSchool = propertyWithPhotosEntity.propertyEntity.poiSchool,
+                poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
+                poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
+                photoUri = selectedPhotoUri
+                    ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri
+                    ?: "",
+                hasInternet = hasInternet
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+        initialValue = null
+    )
 
     fun setUri(uri: String) {
-        photoUriMutableStateFlow.tryEmit(uri)
+        _selectedPhotoUri.value = uri
     }
-
-    fun getUri(): LiveData<String> =
-        photoUriMutableStateFlow.filterNotNull().asLiveData(Dispatchers.IO)
-
-    val detailPropertyLiveData: LiveData<PropertyDetailViewState?> = liveData {
-        combine(
-            photoUriMutableStateFlow,
-            getCurrentPropertyFlow,
-            isDollarFlowUseCase.invoke(),
-            isInternetAvailableUseCase.invoke()
-        ) { photoUri, propertyWithPhotosEntity, isDollar, hasInternet ->
-
-            if (propertyWithPhotosEntity == null) {
-                null
-            } else {
-                PropertyDetailViewState(
-                    id = propertyWithPhotosEntity.propertyEntity.id,
-                    type = propertyWithPhotosEntity.propertyEntity.type,
-                    price = convertMoney(
-                        propertyWithPhotosEntity.propertyEntity.price.toString(),
-                        isDollar
-                    ),
-                    photoList = propertyWithPhotosEntity.photos.map { it },
-                    address = propertyWithPhotosEntity.propertyEntity.address,
-                    city = propertyWithPhotosEntity.propertyEntity.city,
-                    zipcode = propertyWithPhotosEntity.propertyEntity.zipCode,
-                    state = propertyWithPhotosEntity.propertyEntity.state,
-                    country = propertyWithPhotosEntity.propertyEntity.country,
-                    surface = propertyWithPhotosEntity.propertyEntity.surface,
-                    description = propertyWithPhotosEntity.propertyEntity.description,
-                    room = propertyWithPhotosEntity.propertyEntity.room,
-                    bedroom = propertyWithPhotosEntity.propertyEntity.bedroom,
-                    bathroom = propertyWithPhotosEntity.propertyEntity.bathroom,
-                    agent = propertyWithPhotosEntity.propertyEntity.agent,
-                    isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
-                    saleSince = convertDate(
-                        propertyWithPhotosEntity.propertyEntity.propertyOnSaleSince,
-                        isDollar
-                    ),
-                    saleDate = if (
-                        propertyWithPhotosEntity.propertyEntity.propertySold &&
-                        propertyWithPhotosEntity.propertyEntity.propertyDateOfSale != "Not yet sold"
-                    ) {
-                        convertDate(propertyWithPhotosEntity.propertyEntity.propertyDateOfSale, isDollar)
-                    } else {
-                        propertyWithPhotosEntity.propertyEntity.propertyDateOfSale
-                    },
-                    poiTrain = propertyWithPhotosEntity.propertyEntity.poiTrain,
-                    poiAirport = propertyWithPhotosEntity.propertyEntity.poiAirport,
-                    poiResto = propertyWithPhotosEntity.propertyEntity.poiResto,
-                    poiSchool = propertyWithPhotosEntity.propertyEntity.poiSchool,
-                    poiBus = propertyWithPhotosEntity.propertyEntity.poiBus,
-                    poiPark = propertyWithPhotosEntity.propertyEntity.poiPark,
-                    photoUri = photoUri
-                        ?: propertyWithPhotosEntity.photos.firstOrNull()?.photoUri
-                        ?: "",
-                    hasInternet = hasInternet
-                )
-            }
-        }.collect {
-            emit(it)
-        }
-    }
-
-    private fun convertMoney(price: String, isDollar: Boolean): String {
-        val decimalFormat = DecimalFormat("#,###.#")
-        val formatPrice: String = decimalFormat.format(price.toInt()).toString().trim()
-        val convertPrice: String = if (isDollar) {
-            "$formatPrice $"
-        } else {
-            decimalFormat.format(Utils.convertDollarToEuro(price.toInt())) + " €"
-        }
-        return convertPrice
-    }
-
-    private fun convertDate(date: String, isDollar: Boolean): String =
-        if (isDollar) Utils.formatToUS(date) else date
-
-    val navigateSingleLiveEvent: SingleLiveEvent<DetailViewAction> = SingleLiveEvent()
 
     fun onNavigateToEditActivity() {
-        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
+        _viewAction.tryEmit(DetailViewAction.NavigateToEditActivity)
     }
 
+    private fun convertMoney(
+        price: String,
+        isDollar: Boolean
+    ): String {
+        val decimalFormat = DecimalFormat("#,###.#")
+        val formattedPrice = decimalFormat.format(price.toInt()).trim()
+
+        return if (isDollar) {
+            "$formattedPrice $"
+        } else {
+            "${decimalFormat.format(Utils.convertDollarToEuro(price.toInt()))} €"
+        }
+    }
+
+    private fun convertDate(
+        date: String,
+        isDollar: Boolean
+    ): String {
+        return if (isDollar) {
+            Utils.formatToUS(date)
+        } else {
+            date
+        }
+    }
 }

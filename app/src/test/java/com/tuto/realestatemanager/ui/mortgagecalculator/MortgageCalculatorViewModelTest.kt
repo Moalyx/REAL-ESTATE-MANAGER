@@ -1,15 +1,16 @@
 package com.tuto.realestatemanager.ui.mortgagecalculator
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.data.repository.mortgagecalculatorrepository.MortgageCalculatorRepository
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
-import com.tuto.realestatemanager.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -20,13 +21,13 @@ import org.junit.Test
 class MortgageCalculatorViewModelTest {
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val mortgageCalculatorRepository: MortgageCalculatorRepository = mockk(relaxed = true)
-    private val isDollarFlowUseCase: IsDollarFlowUseCase = mockk()
+    private val mortgageCalculatorRepository:
+            MortgageCalculatorRepository = mockk(relaxed = true)
+
+    private val isDollarFlowUseCase:
+            IsDollarFlowUseCase = mockk()
 
     private val housePriceFlow = MutableStateFlow(0.0)
     private val downPaymentFlow = MutableStateFlow(0.0)
@@ -38,11 +39,31 @@ class MortgageCalculatorViewModelTest {
 
     @Before
     fun setUp() {
-        every { mortgageCalculatorRepository.getHousePrice() } returns housePriceFlow
-        every { mortgageCalculatorRepository.getDownPayment() } returns downPaymentFlow
-        every { mortgageCalculatorRepository.getRate() } returns rateFlow
-        every { mortgageCalculatorRepository.getDuration() } returns durationFlow
-        every { isDollarFlowUseCase.invoke() } returns isDollarFlow
+        housePriceFlow.value = 0.0
+        downPaymentFlow.value = 0.0
+        rateFlow.value = 0.0
+        durationFlow.value = 0
+        isDollarFlow.value = true
+
+        every {
+            mortgageCalculatorRepository.getHousePrice()
+        } returns housePriceFlow
+
+        every {
+            mortgageCalculatorRepository.getDownPayment()
+        } returns downPaymentFlow
+
+        every {
+            mortgageCalculatorRepository.getRate()
+        } returns rateFlow
+
+        every {
+            mortgageCalculatorRepository.getDuration()
+        } returns durationFlow
+
+        every {
+            isDollarFlowUseCase.invoke()
+        } returns isDollarFlow
 
         viewModel = MortgageCalculatorViewModel(
             mortgageCalculatorRepository = mortgageCalculatorRepository,
@@ -51,89 +72,95 @@ class MortgageCalculatorViewModelTest {
     }
 
     @Test
-    fun `loanAmountLiveData should calculate loan amount in dollar`() = runTest {
+    fun `loanAmount should calculate loan amount in dollar`() {
         housePriceFlow.value = 300000.0
         downPaymentFlow.value = 50000.0
         isDollarFlow.value = true
 
-        val result = viewModel.loanAmountLiveData.getOrAwaitValue()
-
-        assertEquals("250000 $", result)
+        assertEquals(
+            "250000 $",
+            viewModel.loanAmount.value
+        )
     }
 
     @Test
-    fun `loanAmountLiveData should calculate loan amount in euro`() = runTest {
+    fun `loanAmount should calculate loan amount in euro`() {
         housePriceFlow.value = 300000.0
         downPaymentFlow.value = 50000.0
         isDollarFlow.value = false
 
-        val result = viewModel.loanAmountLiveData.getOrAwaitValue()
-
-        assertEquals("250000 €", result)
+        assertEquals(
+            "250000 €",
+            viewModel.loanAmount.value
+        )
     }
 
     @Test
-    fun `loanAmountLiveData should return zero when down payment is higher than house price`() =
-        runTest {
-            housePriceFlow.value = 100000.0
-            downPaymentFlow.value = 150000.0
-            isDollarFlow.value = true
+    fun `loanAmount should return zero when down payment is higher than house price`() {
+        housePriceFlow.value = 100000.0
+        downPaymentFlow.value = 150000.0
+        isDollarFlow.value = true
 
-            val result = viewModel.loanAmountLiveData.getOrAwaitValue()
-
-            assertEquals("0 $", result)
-        }
+        assertEquals(
+            "0 $",
+            viewModel.loanAmount.value
+        )
+    }
 
     @Test
-    fun `getMonthlyPayment should calculate monthly payment`() = runTest {
+    fun `monthlyPayment should calculate monthly payment`() {
         housePriceFlow.value = 300000.0
         downPaymentFlow.value = 50000.0
         rateFlow.value = 3.0
         durationFlow.value = 20
         isDollarFlow.value = true
 
-        val result = viewModel.getMonthlyPayment.getOrAwaitValue()
-
-        assertEquals("1386 $", result)
+        assertEquals(
+            "1386 $",
+            viewModel.monthlyPayment.value
+        )
     }
 
     @Test
-    fun `getMonthlyPayment should return zero when loan amount is zero`() = runTest {
+    fun `monthlyPayment should return zero when loan amount is zero`() {
         housePriceFlow.value = 100000.0
         downPaymentFlow.value = 100000.0
         rateFlow.value = 3.0
         durationFlow.value = 20
         isDollarFlow.value = true
 
-        val result = viewModel.getMonthlyPayment.getOrAwaitValue()
-
-        assertEquals("0 $", result)
+        assertEquals(
+            "0 $",
+            viewModel.monthlyPayment.value
+        )
     }
 
     @Test
-    fun `getMonthlyPayment should return zero when rate is zero`() = runTest {
+    fun `monthlyPayment should return zero when rate is zero`() {
         housePriceFlow.value = 300000.0
         downPaymentFlow.value = 50000.0
         rateFlow.value = 0.0
         durationFlow.value = 20
         isDollarFlow.value = true
 
-        val result = viewModel.getMonthlyPayment.getOrAwaitValue()
-
-        assertEquals("0 $", result)
+        assertEquals(
+            "0 $",
+            viewModel.monthlyPayment.value
+        )
     }
 
     @Test
-    fun `getMonthlyPayment should return zero when duration is zero`() = runTest {
+    fun `monthlyPayment should return zero when duration is zero`() {
         housePriceFlow.value = 300000.0
         downPaymentFlow.value = 50000.0
         rateFlow.value = 3.0
         durationFlow.value = 0
         isDollarFlow.value = true
 
-        val result = viewModel.getMonthlyPayment.getOrAwaitValue()
-
-        assertEquals("0 $", result)
+        assertEquals(
+            "0 $",
+            viewModel.monthlyPayment.value
+        )
     }
 
     @Test
@@ -191,13 +218,16 @@ class MortgageCalculatorViewModelTest {
     }
 
     @Test
-    fun `onNavigateToMainActivity should emit navigation event`() {
+    fun `onNavigateToMainActivity should emit navigation event`() = runTest {
+        val event = async(start = CoroutineStart.UNDISPATCHED) {
+            viewModel.viewAction.first()
+        }
+
         viewModel.onNavigateToMainActivity()
 
         assertEquals(
             MortgageViewAction.NavigateToMainActivity,
-            viewModel.navigateSingleLiveEvent.getOrAwaitValue()
+            event.await()
         )
     }
-
 }

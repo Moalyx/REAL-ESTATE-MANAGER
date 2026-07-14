@@ -5,67 +5,130 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
 import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
 import com.tuto.realestatemanager.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PropertyListFragment : Fragment() {
 
     private var _binding: FragmentPropertyListBinding? = null
-    private val binding: FragmentPropertyListBinding get() = _binding!!
+
+    private val binding: FragmentPropertyListBinding
+        get() = _binding!!
 
     private val viewModel by viewModels<PropertyListViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPropertyListBinding.inflate(inflater, container, false)
+        _binding = FragmentPropertyListBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val recyclerView: RecyclerView = binding.recyclerview
         val adapter = PropertyListAdapter()
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        viewModel.propertyListLiveData.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
 
-        viewModel.navigateSingleLiveEvent.observe(viewLifecycleOwner){
-            when(it){
-                ListViewAction.NavigateToCreateActvity -> startActivity(Intent(context, CreatePropertyActivity::class.java))
-                ListViewAction.NavigateToDetailActivity -> startActivity(Intent(context, DetailActivity::class.java))
+        binding.recyclerview.adapter = adapter
+        binding.recyclerview.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        val isTablet =
+            resources.getBoolean(R.bool.isTablet)
+
+        viewModel.onConfigurationChanged(isTablet)
+
+        binding.createProperty.visibility =
+            if (isTablet) {
+                View.GONE
+            } else {
+                View.VISIBLE
             }
 
+        binding.createProperty.setOnClickListener {
+            onCreatePropertyClicked()
         }
 
-        binding.createProperty.setOnClickListener {
-            viewModel.onDeleteTemporaryPhotoRepository()
-            viewModel.onNavigateToCreateActivity()
-        }
+        observeViewModel(adapter)
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.onConfigurationChanged(resources.getBoolean(R.bool.isTablet))
+    fun onCreatePropertyClicked() {
+        viewModel.onDeleteTemporaryPhotoRepository()
+        viewModel.onNavigateToCreateActivity()
+    }
+
+    private fun observeViewModel(
+        adapter: PropertyListAdapter
+    ) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(
+                Lifecycle.State.STARTED
+            ) {
+                launch {
+                    viewModel.viewAction.collect { action ->
+                        when (action) {
+                            ListViewAction.NavigateToCreateActvity -> {
+                                startActivity(
+                                    Intent(
+                                        requireContext(),
+                                        CreatePropertyActivity::class.java
+                                    )
+                                )
+                            }
+
+                            ListViewAction.NavigateToDetailActivity -> {
+                                startActivity(
+                                    Intent(
+                                        requireContext(),
+                                        DetailActivity::class.java
+                                    )
+                                )
+                            }
+
+                            ListViewAction.ShowNoInternetWarning -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No internet some property may not appear on the map",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.propertyListStateFlow.collect { properties ->
+                        adapter.submitList(properties)
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

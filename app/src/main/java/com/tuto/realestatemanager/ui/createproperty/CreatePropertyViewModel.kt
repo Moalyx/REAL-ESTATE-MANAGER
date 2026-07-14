@@ -1,17 +1,12 @@
 package com.tuto.realestatemanager.ui.createproperty
 
 import android.location.Location
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.data.repository.property.PropertyRepository
 import com.tuto.realestatemanager.domain.autocomplete.GetPredictionsUseCase
-import com.tuto.realestatemanager.domain.autocomplete.model.PredictionAddressEntity
 import com.tuto.realestatemanager.domain.place.CoroutineDispatchersProvider
 import com.tuto.realestatemanager.domain.place.GetPlaceAddressComponentsUseCase
-import com.tuto.realestatemanager.domain.place.model.AddressComponentsEntity
 import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.location.GetUserLocationFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.photo.DeleteTemporaryPhotoUseCase
@@ -21,17 +16,22 @@ import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporar
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.TemporaryPhoto
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,56 +49,84 @@ class CreatePropertyViewModel @Inject constructor(
     isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
-    private val addressSearchMutableStateFlow = MutableStateFlow<String?>(null)
-    private val placeIdMutableStateFlow = MutableStateFlow<String?>(null)
+    private companion object {
+        private const val MINIMUM_ADDRESS_LENGTH = 3
+        private const val DEFAULT_LOCATION = "40.7128,-74.0060"
+        private const val STOP_TIMEOUT_MILLIS = 5_000L
+    }
 
-    val navigateSingleLiveEvent: SingleLiveEvent<CreateViewAction> = SingleLiveEvent()
+    private val addressSearchMutableStateFlow =
+        MutableStateFlow<String?>(null)
 
-    val hasInternetLiveData: LiveData<Boolean> =
+    private val placeIdMutableStateFlow =
+        MutableStateFlow<String?>(null)
+
+    private val _viewAction = MutableSharedFlow<CreateViewAction>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
+
+    val viewAction = _viewAction.asSharedFlow()
+
+    val hasInternetStateFlow: StateFlow<Boolean?> =
         isInternetAvailableUseCase.invoke()
             .distinctUntilChanged()
-            .asLiveData()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(
+                    STOP_TIMEOUT_MILLIS
+                ),
+                initialValue = null
+            )
 
-    private val placeDetailAddress: LiveData<AddressComponentsEntity> =
+    val placeDetailViewState: StateFlow<PlaceDetailViewState?> =
         placeIdMutableStateFlow
             .filterNotNull()
             .mapLatest { placeId ->
                 getPlaceAddressComponentsUseCase.invoke(placeId)
             }
             .filterNotNull()
-            .asLiveData(coroutineDispatchersProvider.io)
-
-    val placeDetailViewState: LiveData<PlaceDetailViewState> =
-        placeDetailAddress.map { addressComponents ->
-            PlaceDetailViewState(
-                number = addressComponents.streetNumber,
-                address = addressComponents.fullAddress,
-                city = addressComponents.city,
-                zipCode = addressComponents.zipCode,
-                state = addressComponents.state,
-                country = addressComponents.country,
-                lat = addressComponents.lat,
-                lng = addressComponents.lng
+            .map { addressComponents ->
+                PlaceDetailViewState(
+                    number = addressComponents.streetNumber,
+                    address = addressComponents.fullAddress,
+                    city = addressComponents.city,
+                    zipCode = addressComponents.zipCode,
+                    state = addressComponents.state,
+                    country = addressComponents.country,
+                    lat = addressComponents.lat,
+                    lng = addressComponents.lng
+                )
+            }
+            .flowOn(coroutineDispatchersProvider.io)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(
+                    STOP_TIMEOUT_MILLIS
+                ),
+                initialValue = null
             )
-        }
 
     private val predictionsFlow: Flow<Pair<String, Location?>> =
         combine(
             addressSearchMutableStateFlow
                 .filterNotNull()
-                .filter { address -> address.length >= 3 },
+                .filter { address ->
+                    address.length >= MINIMUM_ADDRESS_LENGTH
+                },
             getUserLocationFlowUseCase.invoke()
         ) { address, location ->
             address to location
         }
 
-    private val predictionResponseLiveData: LiveData<List<PredictionAddressEntity>> =
+    val predictionListViewState:
+            StateFlow<List<PredictionViewState>> =
         predictionsFlow
             .mapLatest { (address, location) ->
                 val localisation = if (location != null) {
                     "${location.latitude},${location.longitude}"
                 } else {
-                    "40.7128,-74.0060"
+                    DEFAULT_LOCATION
                 }
 
                 getPredictionsUseCase.invoke(
@@ -106,23 +134,26 @@ class CreatePropertyViewModel @Inject constructor(
                     localisation
                 )
             }
-            .asLiveData(coroutineDispatchersProvider.io)
-
-    val predictionListViewState: LiveData<List<PredictionViewState>> =
-        predictionResponseLiveData.map { predictions ->
-            predictions.map { prediction ->
-                PredictionViewState(
-                    address = prediction.prediction,
-                    id = prediction.placeId
-                )
+            .map { predictions ->
+                predictions.map { prediction ->
+                    PredictionViewState(
+                        address = prediction.prediction,
+                        id = prediction.placeId
+                    )
+                }
             }
-        }
+            .flowOn(coroutineDispatchersProvider.io)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(
+                    STOP_TIMEOUT_MILLIS
+                ),
+                initialValue = emptyList()
+            )
 
-    private val temporaryPhotoStateFlow: StateFlow<List<TemporaryPhoto>> =
+    val temporaryPhotoStateFlow:
+            StateFlow<List<TemporaryPhoto>> =
         getTemporaryPhotoListUseCase.invoke()
-
-    val temporaryPhotoLiveData: LiveData<List<TemporaryPhoto>> =
-        temporaryPhotoStateFlow.asLiveData(coroutineDispatchersProvider.io)
 
     fun onAddressSearchChanged(address: String?) {
         addressSearchMutableStateFlow.value = address
@@ -132,7 +163,9 @@ class CreatePropertyViewModel @Inject constructor(
         placeIdMutableStateFlow.value = id
     }
 
-    fun deleteTemporaryPhoto(temporaryPhoto: TemporaryPhoto) {
+    fun deleteTemporaryPhoto(
+        temporaryPhoto: TemporaryPhoto
+    ) {
         deleteTemporaryPhotoUseCase.invoke(temporaryPhoto)
     }
 
@@ -161,7 +194,12 @@ class CreatePropertyViewModel @Inject constructor(
         poiPark: Boolean
     ) {
         val saleSince = Utils.todayDate()
-        val dateOfSale = if (isSold) Utils.todayDate() else "Not yet sold"
+
+        val dateOfSale = if (isSold) {
+            Utils.todayDate()
+        } else {
+            "Not yet sold"
+        }
 
         val property = PropertyEntity(
             type = type,
@@ -190,10 +228,15 @@ class CreatePropertyViewModel @Inject constructor(
             poiPark = poiPark
         )
 
-        viewModelScope.launch(coroutineDispatchersProvider.io) {
-            val propertyId = propertyRepository.insertProperty(property)
+        viewModelScope.launch(
+            coroutineDispatchersProvider.io
+        ) {
+            val propertyId =
+                propertyRepository.insertProperty(property)
 
-            temporaryPhotoStateFlow.value.forEach { temporaryPhoto ->
+            temporaryPhotoStateFlow.value.forEach {
+                    temporaryPhoto ->
+
                 insertPhotoUseCase.invoke(
                     PhotoEntity(
                         propertyId = propertyId,
@@ -204,12 +247,17 @@ class CreatePropertyViewModel @Inject constructor(
             }
 
             onDeleteTemporaryPhotoUseCase.invoke()
-            navigateSingleLiveEvent.postValue(CreateViewAction.NavigateToMainActivity)
+
+            _viewAction.emit(
+                CreateViewAction.NavigateToMainActivity
+            )
         }
     }
 
     fun onNavigateToMainActivity() {
-        navigateSingleLiveEvent.setValue(CreateViewAction.NavigateToMainActivity)
+        _viewAction.tryEmit(
+            CreateViewAction.NavigateToMainActivity
+        )
     }
 
     fun clearTemporaryPhotos() {

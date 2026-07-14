@@ -1,21 +1,24 @@
 package com.tuto.realestatemanager.ui.mortgagecalculator
 
-import androidx.activity.OnBackPressedCallback
-import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.tuto.realestatemanager.databinding.ActivityMortgageCalculatorBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MortgageCalculatorActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMortgageCalculatorBinding
+
     private val viewModel by viewModels<MortgageCalculatorViewModel>()
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,40 +26,68 @@ class MortgageCalculatorActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setToolbar()
+        setListeners()
+        observeViewModel()
+        configureBackNavigation()
+    }
 
-        binding.housePrice.doAfterTextChanged {
-            viewModel.setHousePrice(it.toString())
+    private fun setListeners() {
+        binding.housePrice.doAfterTextChanged { editable ->
+            viewModel.setHousePrice(editable.toString())
         }
 
-        binding.downPayment.doAfterTextChanged {
-            viewModel.setDownPayment(it.toString())
+        binding.downPayment.doAfterTextChanged { editable ->
+            viewModel.setDownPayment(editable.toString())
         }
 
-        binding.rate.doAfterTextChanged {
-            viewModel.setRate(it.toString())
+        binding.rate.doAfterTextChanged { editable ->
+            viewModel.setRate(editable.toString())
         }
 
-        binding.duration.doAfterTextChanged {
-            viewModel.setDuration(it.toString())
+        binding.duration.doAfterTextChanged { editable ->
+            viewModel.setDuration(editable.toString())
         }
+    }
 
-        viewModel.loanAmountLiveData.observe(this) {
-            binding.loanAmount.text = it
-        }
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-        viewModel.getMonthlyPayment.observe(this) {
-            binding.monthlyPayment.text = it
-        }
+                launch {
+                    viewModel.loanAmount.collect { loanAmount ->
+                        binding.loanAmount.text = loanAmount
+                    }
+                }
 
-        viewModel.navigateSingleLiveEvent.observe(this) {
-            finish()
-        }
+                launch {
+                    viewModel.monthlyPayment.collect { monthlyPayment ->
+                        binding.monthlyPayment.text = monthlyPayment
+                    }
+                }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                viewModel.onNavigateToMainActivity()
+                launch {
+                    viewModel.viewAction.collect { action ->
+                        when (action) {
+                            MortgageViewAction.NavigateToMainActivity -> {
+                                finish()
+                            }
+                        }
+                    }
+                }
             }
-        })
+        }
+    }
+
+    private fun configureBackNavigation() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+
+                override fun handleOnBackPressed() {
+                    viewModel.onNavigateToMainActivity()
+                }
+            }
+        )
     }
 
     private fun setToolbar() {
@@ -67,5 +98,4 @@ class MortgageCalculatorActivity : AppCompatActivity() {
             viewModel.onNavigateToMainActivity()
         }
     }
-
 }

@@ -1,25 +1,22 @@
 package com.tuto.realestatemanager.ui.detail
 
 import androidx.lifecycle.ViewModel
-import com.tuto.realestatemanager.ui.main.MainViewAction
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(
+class DetailViewModel @Inject constructor() : ViewModel() {
 
-) : ViewModel() {
+    private val _viewAction = MutableSharedFlow<DetailViewAction>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
 
-    val navigateSingleLiveEvent: SingleLiveEvent<DetailViewAction> = SingleLiveEvent()
+    val viewAction = _viewAction.asSharedFlow()
 
-    fun onNavigateToMainActivity(){
-        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToMainActivity)
+    fun onNavigateToMainActivity() {
+        _viewAction.tryEmit(DetailViewAction.NavigateToMainActivity)
     }
-
-    fun onNavigateToEditActivity(){
-        navigateSingleLiveEvent.setValue(DetailViewAction.NavigateToEditActivity)
-    }
-
 }

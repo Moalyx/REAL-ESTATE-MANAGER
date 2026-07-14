@@ -1,10 +1,7 @@
 package com.tuto.realestatemanager.ui.list
 
-import android.app.Application
-import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.tuto.realestatemanager.data.current_property.CurrentPropertyIdRepository
 import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.geocode.GetLatLngPropertyLocationUseCase
@@ -15,18 +12,20 @@ import com.tuto.realestatemanager.domain.usecase.property.UpdatePropertyUseCase
 import com.tuto.realestatemanager.domain.usecase.temporaryphoto.OnDeleteTemporaryPhotoUseCase
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
 import com.tuto.realestatemanager.model.SearchParameters
-import com.tuto.realestatemanager.ui.utils.SingleLiveEvent
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-    private val mainApplication: Application,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
     private val updatePropertyUseCase: UpdatePropertyUseCase,
@@ -46,104 +45,109 @@ class PropertyListViewModel @Inject constructor(
         Pair(currentPropertyId, isTablet)
     }
 
-    val propertyListLiveData: LiveData<List<PropertyViewState>> = liveData {
-        combine(
-            getAllPropertiesWithPhotosUseCase.invoke(),
-            getParametersFlowUseCase.invoke(),
-            isDollarFlowUseCase.invoke(),
-            isInternetAvailableUseCase.invoke(),
-            selectionFlow
-        ) { propertiesWithPhotosEntity, searchParameters, isDollar, isInternetAvailable, selection ->
+    private val _viewAction = MutableSharedFlow<ListViewAction>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
 
-            val currentPropertyId = selection.first
-            val isTablet = selection.second
+    val viewAction = _viewAction.asSharedFlow()
 
-            val propertiesWithoutLocation = propertiesWithPhotosEntity.filter { property ->
-                property.propertyEntity.lat == null ||
-                        property.propertyEntity.lng == null ||
-                        property.propertyEntity.lat == 0.0 ||
-                        property.propertyEntity.lng == 0.0
-            }
+    val propertyListStateFlow: StateFlow<List<PropertyViewState>> = combine(
+        getAllPropertiesWithPhotosUseCase.invoke(),
+        getParametersFlowUseCase.invoke(),
+        isDollarFlowUseCase.invoke(),
+        isInternetAvailableUseCase.invoke(),
+        selectionFlow
+    ) { propertiesWithPhotosEntity,
+        searchParameters,
+        isDollar,
+        isInternetAvailable,
+        selection ->
 
-            if (isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-                for (property in propertiesWithoutLocation) {
-                    val location = getLatLngPropertyLocationUseCase.invoke(
-                        "${property.propertyEntity.address} " +
-                                "${property.propertyEntity.city} " +
-                                "${property.propertyEntity.zipCode} " +
-                                "${property.propertyEntity.state} " +
-                                property.propertyEntity.country
-                    )
+        val currentPropertyId = selection.first
+        val isTablet = selection.second
 
-                    property.propertyEntity.lat = location.lat
-                    property.propertyEntity.lng = location.lng
+        val propertiesWithoutLocation = propertiesWithPhotosEntity.filter { property ->
+            property.propertyEntity.lat == null ||
+                    property.propertyEntity.lng == null ||
+                    property.propertyEntity.lat == 0.0 ||
+                    property.propertyEntity.lng == 0.0
+        }
 
-                    updatePropertyUseCase.invoke(property.propertyEntity)
-                }
-            } else if (!isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-                Toast.makeText(
-                    mainApplication,
-                    "No internet some property may not appear on the map",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val filteredList = if (searchParameters == null) {
-                propertiesWithPhotosEntity
-            } else {
-                propertiesWithPhotosEntity.filter { property ->
-                    comparePrice(searchParameters, property) &&
-                            compareType(searchParameters, property) &&
-                            compareSurface(searchParameters, property) &&
-                            compareCity(searchParameters, property) &&
-                            comparePoiTrain(searchParameters, property) &&
-                            comparePoiAirport(searchParameters, property) &&
-                            comparePoiResto(searchParameters, property) &&
-                            comparePoiSchool(searchParameters, property) &&
-                            comparePoiBus(searchParameters, property) &&
-                            comparePoiPark(searchParameters, property) &&
-                            compareSoldStatus(searchParameters, property) &&
-                            compareMinimumPhotos(searchParameters, property)
-                }
-            }
-
-            if (isTablet) {
-                if (filteredList.isEmpty()) {
-                    if (currentPropertyId != null) {
-                        currentPropertyIdRepository.setCurrentId(null)
-                    }
-                } else if (currentPropertyId != null) {
-                    val currentPropertyStillVisible = filteredList.any { property ->
-                        property.propertyEntity.id == currentPropertyId
-                    }
-
-                    if (!currentPropertyStillVisible) {
-                        currentPropertyIdRepository.setCurrentId(
-                            filteredList.first().propertyEntity.id
-                        )
-                    }
-                }
-            }
-
-            emit(
-                mapPropertiesIntoViewState(
-                    propertiesWithPhotosEntity = filteredList,
-                    isDollar = isDollar,
-                    currentPropertyId = currentPropertyId,
-                    isTablet = isTablet
+        if (isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
+            for (property in propertiesWithoutLocation) {
+                val location = getLatLngPropertyLocationUseCase.invoke(
+                    "${property.propertyEntity.address} " +
+                            "${property.propertyEntity.city} " +
+                            "${property.propertyEntity.zipCode} " +
+                            "${property.propertyEntity.state} " +
+                            property.propertyEntity.country
                 )
-            )
-        }.collect()
-    }
 
-    val navigateSingleLiveEvent: SingleLiveEvent<ListViewAction> = SingleLiveEvent()
+                property.propertyEntity.lat = location.lat
+                property.propertyEntity.lng = location.lng
+
+                updatePropertyUseCase.invoke(property.propertyEntity)
+            }
+        } else if (!isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
+            _viewAction.emit(ListViewAction.ShowNoInternetWarning)
+        }
+
+        val filteredList = if (searchParameters == null) {
+            propertiesWithPhotosEntity
+        } else {
+            propertiesWithPhotosEntity.filter { property ->
+                comparePrice(searchParameters, property) &&
+                        compareType(searchParameters, property) &&
+                        compareSurface(searchParameters, property) &&
+                        compareCity(searchParameters, property) &&
+                        comparePoiTrain(searchParameters, property) &&
+                        comparePoiAirport(searchParameters, property) &&
+                        comparePoiResto(searchParameters, property) &&
+                        comparePoiSchool(searchParameters, property) &&
+                        comparePoiBus(searchParameters, property) &&
+                        comparePoiPark(searchParameters, property) &&
+                        compareSoldStatus(searchParameters, property) &&
+                        compareMinimumPhotos(searchParameters, property)
+            }
+        }
+
+        if (isTablet) {
+            if (filteredList.isEmpty()) {
+                if (currentPropertyId != null) {
+                    currentPropertyIdRepository.setCurrentId(null)
+                }
+            } else if (currentPropertyId != null) {
+                val currentPropertyStillVisible = filteredList.any { property ->
+                    property.propertyEntity.id == currentPropertyId
+                }
+
+                if (!currentPropertyStillVisible) {
+                    currentPropertyIdRepository.setCurrentId(
+                        filteredList.first().propertyEntity.id
+                    )
+                }
+            }
+        }
+
+        mapPropertiesIntoViewState(
+            propertiesWithPhotosEntity = filteredList,
+            isDollar = isDollar,
+            currentPropertyId = currentPropertyId,
+            isTablet = isTablet
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     fun onDeleteTemporaryPhotoRepository() {
         onDeleteTemporaryPhotoUseCase.invoke()
     }
 
     fun onNavigateToCreateActivity() {
-        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToCreateActvity)
+        _viewAction.tryEmit(ListViewAction.NavigateToCreateActvity)
     }
 
     fun onConfigurationChanged(isTablet: Boolean) {
@@ -169,19 +173,23 @@ class PropertyListViewModel @Inject constructor(
                 isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
                 onItemClicked = {
                     if (!isTablet) {
-                        navigateSingleLiveEvent.setValue(ListViewAction.NavigateToDetailActivity)
+                        _viewAction.tryEmit(ListViewAction.NavigateToDetailActivity)
                     }
 
                     currentPropertyIdRepository.setCurrentId(
                         propertyWithPhotosEntity.propertyEntity.id
                     )
                 },
-                isSelected = propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
+                isSelected =
+                    propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
             )
         }
     }
 
-    private fun convertMoney(price: String, isDollar: Boolean): String {
+    private fun convertMoney(
+        price: String,
+        isDollar: Boolean
+    ): String {
         val decimalFormat = DecimalFormat("#,###.#")
         val formattedPrice = decimalFormat.format(price.toInt()).toString()
 
@@ -208,8 +216,10 @@ class PropertyListViewModel @Inject constructor(
         val searchPriceMaximum = searchParameters.priceMaximum
         val propertyPrice = property.propertyEntity.price
 
-        return (searchPriceMinimum == null || propertyPrice >= searchPriceMinimum) &&
-                (searchPriceMaximum == null || propertyPrice <= searchPriceMaximum)
+        return (searchPriceMinimum == null ||
+                propertyPrice >= searchPriceMinimum) &&
+                (searchPriceMaximum == null ||
+                        propertyPrice <= searchPriceMaximum)
     }
 
     private fun compareSurface(
@@ -220,8 +230,10 @@ class PropertyListViewModel @Inject constructor(
         val searchSurfaceMaximum = searchParameters.surfaceMaximum
         val propertySurface = property.propertyEntity.surface
 
-        return (searchSurfaceMinimum == null || propertySurface >= searchSurfaceMinimum) &&
-                (searchSurfaceMaximum == null || propertySurface <= searchSurfaceMaximum)
+        return (searchSurfaceMinimum == null ||
+                propertySurface >= searchSurfaceMinimum) &&
+                (searchSurfaceMaximum == null ||
+                        propertySurface <= searchSurfaceMaximum)
     }
 
     private fun compareCity(
@@ -239,42 +251,48 @@ class PropertyListViewModel @Inject constructor(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiTrain || property.propertyEntity.poiTrain
+        return !searchParameters.poiTrain ||
+                property.propertyEntity.poiTrain
     }
 
     private fun comparePoiAirport(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiAirport || property.propertyEntity.poiAirport
+        return !searchParameters.poiAirport ||
+                property.propertyEntity.poiAirport
     }
 
     private fun comparePoiResto(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiResto || property.propertyEntity.poiResto
+        return !searchParameters.poiResto ||
+                property.propertyEntity.poiResto
     }
 
     private fun comparePoiSchool(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiSchool || property.propertyEntity.poiSchool
+        return !searchParameters.poiSchool ||
+                property.propertyEntity.poiSchool
     }
 
     private fun comparePoiBus(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiBus || property.propertyEntity.poiBus
+        return !searchParameters.poiBus ||
+                property.propertyEntity.poiBus
     }
 
     private fun comparePoiPark(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        return !searchParameters.poiPark || property.propertyEntity.poiPark
+        return !searchParameters.poiPark ||
+                property.propertyEntity.poiPark
     }
 
     private fun compareSoldStatus(
@@ -282,7 +300,8 @@ class PropertyListViewModel @Inject constructor(
         property: PropertyWithPhotosEntity
     ): Boolean {
         return searchParameters.soldStatus == null ||
-                property.propertyEntity.propertySold == searchParameters.soldStatus
+                property.propertyEntity.propertySold ==
+                searchParameters.soldStatus
     }
 
     private fun compareMinimumPhotos(

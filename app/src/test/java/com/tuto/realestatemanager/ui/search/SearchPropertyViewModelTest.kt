@@ -1,16 +1,17 @@
 package com.tuto.realestatemanager.ui.search
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.domain.usecase.Search.GetParametersFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.Search.SetParametersUseCase
-import com.tuto.realestatemanager.getOrAwaitValue
 import com.tuto.realestatemanager.model.SearchParameters
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -19,9 +20,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchPropertyViewModelTest {
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -35,7 +33,11 @@ class SearchPropertyViewModelTest {
 
     @Before
     fun setUp() {
-        every { getParametersFlowUseCase.invoke() } returns searchParametersFlow
+        searchParametersFlow.value = null
+
+        every {
+            getParametersFlowUseCase.invoke()
+        } returns searchParametersFlow
 
         viewModel = SearchPropertyViewModel(
             getParametersFlowUseCase = getParametersFlowUseCase,
@@ -44,8 +46,8 @@ class SearchPropertyViewModelTest {
     }
 
     @Test
-    fun `getParametersLiveData should expose current parameters`() = runTest {
-        searchParametersFlow.value = createSearchParameters(
+    fun `parametersStateFlow should expose current parameters`() = runTest {
+        val expectedParameters = createSearchParameters(
             type = "House",
             priceMinimum = 100000,
             priceMaximum = 300000,
@@ -54,7 +56,11 @@ class SearchPropertyViewModelTest {
             minimumPhotos = 3
         )
 
-        val result = viewModel.getParametersLiveData().getOrAwaitValue()
+        searchParametersFlow.value = expectedParameters
+
+        val result = viewModel.parametersStateFlow.first { parameters ->
+            parameters == expectedParameters
+        }
 
         assertEquals("House", result?.type)
         assertEquals(100000, result?.priceMinimum)
@@ -253,12 +259,18 @@ class SearchPropertyViewModelTest {
     }
 
     @Test
-    fun `onNavigateToMainActivity should emit navigation event`() {
+    fun `onNavigateToMainActivity should emit navigation event`() = runTest {
+        val event = async(
+            start = CoroutineStart.UNDISPATCHED
+        ) {
+            viewModel.viewAction.first()
+        }
+
         viewModel.onNavigateToMainActivity()
 
         assertEquals(
             SearchViewAction.NavigateToMainActivity,
-            viewModel.navigateSingleLiveEvent.getOrAwaitValue()
+            event.await()
         )
     }
 

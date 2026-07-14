@@ -1,22 +1,22 @@
 package com.tuto.realestatemanager.ui.detailproperty
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.tuto.realestatemanager.MainDispatcherRule
 import com.tuto.realestatemanager.domain.usecase.currentproperty.CurrentIdFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.internetconnectivity.IsInternetAvailableUseCase
 import com.tuto.realestatemanager.domain.usecase.priceconverter.IsDollarFlowUseCase
 import com.tuto.realestatemanager.domain.usecase.property.GetPropertyWithPhotosByIdUseCase
-import com.tuto.realestatemanager.getOrAwaitValue
 import com.tuto.realestatemanager.model.PhotoEntity
 import com.tuto.realestatemanager.model.PropertyEntity
 import com.tuto.realestatemanager.model.PropertyWithPhotosEntity
-import com.tuto.realestatemanager.observeForTesting
 import com.tuto.realestatemanager.ui.detail.DetailPropertyViewModel
 import com.tuto.realestatemanager.ui.detail.DetailViewAction
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -31,15 +31,16 @@ import org.junit.Test
 class DetailPropertyViewModelTest {
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     private val currentIdFlowUseCase: CurrentIdFlowUseCase = mockk()
     private val isDollarFlowUseCase: IsDollarFlowUseCase = mockk()
-    private val getPropertyWithPhotosByIdUseCase: GetPropertyWithPhotosByIdUseCase = mockk()
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase = mockk()
+
+    private val getPropertyWithPhotosByIdUseCase:
+            GetPropertyWithPhotosByIdUseCase = mockk()
+
+    private val isInternetAvailableUseCase:
+            IsInternetAvailableUseCase = mockk()
 
     private val currentIdFlow = MutableStateFlow<Long?>(null)
     private val isDollarFlow = MutableStateFlow(true)
@@ -49,36 +50,55 @@ class DetailPropertyViewModelTest {
 
     @Before
     fun setUp() {
-        every { currentIdFlowUseCase.invoke() } returns currentIdFlow
-        every { isDollarFlowUseCase.invoke() } returns isDollarFlow
-        every { isInternetAvailableUseCase.invoke() } returns internetFlow
+        currentIdFlow.value = null
+        isDollarFlow.value = true
+        internetFlow.value = true
 
-        every { getPropertyWithPhotosByIdUseCase.invoke(1L) } returns flowOf(
+        every {
+            currentIdFlowUseCase.invoke()
+        } returns currentIdFlow
+
+        every {
+            isDollarFlowUseCase.invoke()
+        } returns isDollarFlow
+
+        every {
+            isInternetAvailableUseCase.invoke()
+        } returns internetFlow
+
+        every {
+            getPropertyWithPhotosByIdUseCase.invoke(1L)
+        } returns flowOf(
             createPropertyWithPhotos(id = 1L)
         )
 
         viewModel = DetailPropertyViewModel(
             currentIdFlowUseCase = currentIdFlowUseCase,
             isDollarFlowUseCase = isDollarFlowUseCase,
-            getPropertyWithPhotosByIdUseCase = getPropertyWithPhotosByIdUseCase,
-            isInternetAvailableUseCase = isInternetAvailableUseCase
+            getPropertyWithPhotosByIdUseCase =
+                getPropertyWithPhotosByIdUseCase,
+            isInternetAvailableUseCase =
+                isInternetAvailableUseCase
         )
     }
 
     @Test
-    fun `detailPropertyLiveData should return null when current id is null`() = runTest {
-        currentIdFlow.value = null
+    fun `detailPropertyStateFlow should return null when current id is null`() =
+        runTest {
+            currentIdFlow.value = null
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+            val result = viewModel.detailPropertyStateFlow.first()
 
-        assertNull(result)
-    }
+            assertNull(result)
+        }
 
     @Test
-    fun `detailPropertyLiveData should expose property detail`() = runTest {
+    fun `detailPropertyStateFlow should expose property detail`() = runTest {
         currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+        val result = viewModel.detailPropertyStateFlow.first { state ->
+            state?.id == 1L
+        }
 
         assertNotNull(result)
         assertEquals(1L, result?.id)
@@ -96,82 +116,121 @@ class DetailPropertyViewModelTest {
     }
 
     @Test
-    fun `detailPropertyLiveData should expose first photo uri by default`() = runTest {
-        currentIdFlow.value = 1L
+    fun `detailPropertyStateFlow should expose first photo uri by default`() =
+        runTest {
+            currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+            val result = viewModel.detailPropertyStateFlow.first { state ->
+                state?.photoUri == "uri_1"
+            }
 
-        assertEquals("uri_1", result?.photoUri)
-    }
+            assertEquals("uri_1", result?.photoUri)
+        }
 
     @Test
     fun `setUri should update displayed photo uri`() = runTest {
         currentIdFlow.value = 1L
 
-        viewModel.detailPropertyLiveData.observeForTesting {
-            viewModel.setUri("custom_uri")
-
-            assertEquals("custom_uri", viewModel.detailPropertyLiveData.value?.photoUri)
+        viewModel.detailPropertyStateFlow.first { state ->
+            state?.id == 1L
         }
+
+        val updatedState = async(
+            start = CoroutineStart.UNDISPATCHED
+        ) {
+            viewModel.detailPropertyStateFlow.first { state ->
+                state?.photoUri == "custom_uri"
+            }
+        }
+
+        viewModel.setUri("custom_uri")
+
+        assertEquals(
+            "custom_uri",
+            updatedState.await()?.photoUri
+        )
     }
 
     @Test
-    fun `getUri should expose selected uri`() = runTest {
+    fun `selectedPhotoUri should expose selected uri`() {
         viewModel.setUri("selected_uri")
 
-        val result = viewModel.getUri().getOrAwaitValue()
-
-        assertEquals("selected_uri", result)
+        assertEquals(
+            "selected_uri",
+            viewModel.selectedPhotoUri.value
+        )
     }
 
     @Test
-    fun `detailPropertyLiveData should display dollar price when dollar mode is enabled`() = runTest {
-        isDollarFlow.value = true
-        currentIdFlow.value = 1L
+    fun `detailPropertyStateFlow should display dollar price when dollar mode is enabled`() =
+        runTest {
+            isDollarFlow.value = true
+            currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+            val result = viewModel.detailPropertyStateFlow.first { state ->
+                state?.id == 1L
+            }
 
-        assertEquals("300000", result?.price?.filter { it.isDigit() })
-        assertTrue(result?.price?.endsWith("$") == true)
-    }
-
-    @Test
-    fun `detailPropertyLiveData should display euro price when dollar mode is disabled`() = runTest {
-        isDollarFlow.value = false
-        currentIdFlow.value = 1L
-
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
-
-        assertTrue(result?.price?.endsWith("€") == true)
-    }
+            assertEquals(
+                "300000",
+                result?.price?.filter { character ->
+                    character.isDigit()
+                }
+            )
+            assertTrue(result?.price?.endsWith("$") == true)
+        }
 
     @Test
-    fun `detailPropertyLiveData should expose internet state`() = runTest {
+    fun `detailPropertyStateFlow should display euro price when dollar mode is disabled`() =
+        runTest {
+            isDollarFlow.value = false
+            currentIdFlow.value = 1L
+
+            val result = viewModel.detailPropertyStateFlow.first { state ->
+                state?.price?.endsWith("€") == true
+            }
+
+            assertTrue(result?.price?.endsWith("€") == true)
+        }
+
+    @Test
+    fun `detailPropertyStateFlow should expose internet state`() = runTest {
         internetFlow.value = false
         currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+        val result = viewModel.detailPropertyStateFlow.first { state ->
+            state?.id == 1L && !state.hasInternet
+        }
 
         assertEquals(false, result?.hasInternet)
     }
 
     @Test
-    fun `detailPropertyLiveData should expose not yet sold date when property is not sold`() = runTest {
-        currentIdFlow.value = 1L
+    fun `detailPropertyStateFlow should expose not yet sold date when property is not sold`() =
+        runTest {
+            currentIdFlow.value = 1L
 
-        val result = viewModel.detailPropertyLiveData.getOrAwaitValue()
+            val result = viewModel.detailPropertyStateFlow.first { state ->
+                state?.id == 1L
+            }
 
-        assertEquals(false, result?.isSold)
-        assertEquals("Not yet sold", result?.saleDate)
-    }
+            assertEquals(false, result?.isSold)
+            assertEquals("Not yet sold", result?.saleDate)
+        }
 
     @Test
-    fun `onNavigateToEditActivity should emit navigation event`() {
+    fun `onNavigateToEditActivity should emit navigation event`() = runTest {
+        val event = async(
+            start = CoroutineStart.UNDISPATCHED
+        ) {
+            viewModel.viewAction.first()
+        }
+
         viewModel.onNavigateToEditActivity()
 
         assertEquals(
             DetailViewAction.NavigateToEditActivity,
-            viewModel.navigateSingleLiveEvent.getOrAwaitValue()
+            event.await()
         )
     }
 

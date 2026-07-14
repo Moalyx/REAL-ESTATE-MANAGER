@@ -3,15 +3,19 @@ package com.tuto.realestatemanager.ui.createproperty
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
@@ -19,12 +23,17 @@ import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
 import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
-
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CreatePropertyActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<CreatePropertyViewModel>()
+    private lateinit var binding:
+            ActivityCreatePropertyBinding
+
+    private val viewModel by
+    viewModels<CreatePropertyViewModel>()
+
     private var lat: Double? = null
     private var lng: Double? = null
     private var onePhotoAtLeast = false
@@ -34,255 +43,518 @@ class CreatePropertyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityCreatePropertyBinding.inflate(layoutInflater)
+        binding =
+            ActivityCreatePropertyBinding.inflate(
+                layoutInflater
+            )
+
         setContentView(binding.root)
 
-        binding.tvDateOfPublication.visibility = View.GONE
-        binding.titleDate.visibility = View.GONE
+        binding.tvDateOfPublication.visibility =
+            View.GONE
 
-        var type: String
+        binding.titleDate.visibility =
+            View.GONE
 
+        binding.checkboxSaleStatus.visibility =
+            View.GONE
 
-        val types = resources.getStringArray(R.array.property_types)
-        val dropdownAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            this,
-            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, types
+        configureTypeDropdown()
+        configureAddressSearch()
+        configureAddressTextWatchers()
+
+        val searchAdapter =
+            configurePredictionList()
+
+        val photoAdapter =
+            configurePhotoList()
+
+        observeViewModel(
+            searchAdapter = searchAdapter,
+            photoAdapter = photoAdapter
         )
-        binding.typeDropdown.setAdapter(dropdownAdapter)
-        binding.typeDropdown.threshold
-        binding.checkboxSaleStatus.visibility = View.GONE
-        binding.typeDropdown.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, _, position, _ ->
-                type = parent.getItemAtPosition(position).toString()
+
+        configurePhotoButtons()
+        configureSaveButton()
+        configureDismissButton()
+        configureBackNavigation()
+    }
+
+    private fun configureTypeDropdown() {
+        val types =
+            resources.getStringArray(
+                R.array.property_types
+            )
+
+        val dropdownAdapter = ArrayAdapter(
+            this,
+            androidx.appcompat.R.layout
+                .support_simple_spinner_dropdown_item,
+            types
+        )
+
+        binding.typeDropdown.setAdapter(
+            dropdownAdapter
+        )
+
+        binding.typeDropdown.inputType =
+            InputType.TYPE_NULL
+    }
+
+    private fun configureAddressSearch() {
+        binding.searchview.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+
+                override fun onQueryTextSubmit(
+                    query: String?
+                ): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(
+                    query: String?
+                ): Boolean {
+                    viewModel.onAddressSearchChanged(
+                        query
+                    )
+
+                    return false
+                }
+            }
+        )
+    }
+
+    private fun configureAddressTextWatchers() {
+        val addressTextWatcher =
+            object : TextWatcher {
+
+                override fun beforeTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) = Unit
+
+                override fun onTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    if (
+                        !isUpdatingAddressFromAutocomplete
+                    ) {
+                        lat = null
+                        lng = null
+                    }
+                }
+
+                override fun afterTextChanged(
+                    editable: Editable?
+                ) = Unit
             }
 
-        binding.typeDropdown.inputType = InputType.TYPE_NULL
+        binding.address.addTextChangedListener(
+            addressTextWatcher
+        )
 
-        val searchView = binding.searchview
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+        binding.city.addTextChangedListener(
+            addressTextWatcher
+        )
+
+        binding.zipcode.addTextChangedListener(
+            addressTextWatcher
+        )
+
+        binding.state.addTextChangedListener(
+            addressTextWatcher
+        )
+
+        binding.country.addTextChangedListener(
+            addressTextWatcher
+        )
+    }
+
+    private fun configurePredictionList():
+            SearchAdapter {
+
+        val searchAdapter = SearchAdapter(
+            object :
+                SearchAdapter.OnSearchClickListener {
+
+                override fun onPredictionClicked(
+                    id: String
+                ) {
+                    viewModel
+                        .onSetAutocompleteAddressId(id)
+
+                    binding.searchview.clearFocus()
+
+                    binding.searchview.setQuery(
+                        "",
+                        false
+                    )
+                }
+            }
+        )
+
+        binding.predictionRecyclerview
+            .layoutManager =
+            LinearLayoutManager(this)
+
+        binding.predictionRecyclerview.adapter =
+            searchAdapter
+
+        return searchAdapter
+    }
+
+    private fun configurePhotoList():
+            CreatePropertyPhotoAdapter {
+
+        val photoAdapter =
+            CreatePropertyPhotoAdapter {
+                    temporaryPhoto ->
+
+                viewModel.deleteTemporaryPhoto(
+                    temporaryPhoto
+                )
             }
 
-            override fun onQueryTextChange(query: String?): Boolean {
-                viewModel.onAddressSearchChanged(query)
-                return false
+        binding.createUpdatePhotoRecyclerview
+            .layoutManager =
+            LinearLayoutManager(this)
 
-            }
+        binding.createUpdatePhotoRecyclerview
+            .adapter =
+            photoAdapter
 
-        })
+        return photoAdapter
+    }
 
-        viewModel.placeDetailViewState.observe(this) {
-            isUpdatingAddressFromAutocomplete = true
-
-            binding.address.setText("${it.number} ${it.address}")
-            binding.zipcode.setText(it.zipCode)
-            binding.state.setText(it.state)
-            binding.country.setText(it.country)
-            binding.city.setText(it.city)
-
-            lat = it.lat
-            lng = it.lng
-
-            isUpdatingAddressFromAutocomplete = false
-        }
-
-        val addressTextWatcher = object : android.text.TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) = Unit
-
-            override fun onTextChanged(
-                s: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
+    private fun observeViewModel(
+        searchAdapter: SearchAdapter,
+        photoAdapter: CreatePropertyPhotoAdapter
+    ) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(
+                Lifecycle.State.STARTED
             ) {
-                if (!isUpdatingAddressFromAutocomplete) {
-                    lat = null
-                    lng = null
+                launch {
+                    viewModel.viewAction.collect {
+                            action ->
+
+                        when (action) {
+                            CreateViewAction
+                                .NavigateToMainActivity -> {
+
+                                val intent = Intent(
+                                    this@CreatePropertyActivity,
+                                    MainActivity::class.java
+                                )
+
+                                intent.putExtra(
+                                    getString(
+                                        R.string.property_created
+                                    ),
+                                    true
+                                )
+
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.placeDetailViewState
+                        .collect { placeDetail ->
+
+                            placeDetail?.let { state ->
+                                isUpdatingAddressFromAutocomplete =
+                                    true
+
+                                binding.address.setText(
+                                    "${state.number} ${state.address}"
+                                )
+
+                                binding.zipcode.setText(
+                                    state.zipCode
+                                )
+
+                                binding.state.setText(
+                                    state.state
+                                )
+
+                                binding.country.setText(
+                                    state.country
+                                )
+
+                                binding.city.setText(
+                                    state.city
+                                )
+
+                                lat = state.lat
+                                lng = state.lng
+
+                                isUpdatingAddressFromAutocomplete =
+                                    false
+                            }
+                        }
+                }
+
+                launch {
+                    viewModel.predictionListViewState
+                        .collect { predictions ->
+
+                            if (predictions.isEmpty()) {
+                                binding
+                                    .predictionRecyclerview
+                                    .visibility =
+                                    View.GONE
+                            } else {
+                                binding
+                                    .predictionRecyclerview
+                                    .visibility =
+                                    View.VISIBLE
+
+                                searchAdapter.submitList(
+                                    predictions
+                                )
+
+                                binding
+                                    .predictionRecyclerview
+                                    .post {
+                                        binding
+                                            .predictionRecyclerview
+                                            .requestLayout()
+                                    }
+                            }
+                        }
+                }
+
+                launch {
+                    viewModel.hasInternetStateFlow
+                        .collect { hasInternet ->
+
+                            if (hasInternet == false) {
+                                Toast.makeText(
+                                    this@CreatePropertyActivity,
+                                    getString(
+                                        R.string
+                                            .please_enter_an_address_manually
+                                    ),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                }
+
+                launch {
+                    viewModel.temporaryPhotoStateFlow
+                        .collect { temporaryPhotos ->
+
+                            onePhotoAtLeast =
+                                temporaryPhotos.isNotEmpty()
+
+                            photoAdapter.submitList(
+                                temporaryPhotos
+                            )
+                        }
                 }
             }
-
-            override fun afterTextChanged(s: android.text.Editable?) = Unit
         }
+    }
 
-        binding.address.addTextChangedListener(addressTextWatcher)
-        binding.city.addTextChangedListener(addressTextWatcher)
-        binding.zipcode.addTextChangedListener(addressTextWatcher)
-        binding.state.addTextChangedListener(addressTextWatcher)
-        binding.country.addTextChangedListener(addressTextWatcher)
-
-        val searchAdapter = SearchAdapter(object : SearchAdapter.OnSearchClickListener {
-            override fun onPredictionClicked(id: String) {
-                viewModel.onSetAutocompleteAddressId(id)
-                binding.searchview.clearFocus()
-                searchView.setQuery("", false)
-            }
-        })
-
-        binding.predictionRecyclerview.layoutManager = LinearLayoutManager(this)
-        binding.predictionRecyclerview.adapter = searchAdapter
-        viewModel.predictionListViewState.observe(this) {
-
-            if (it.isNullOrEmpty()) {
-
-                binding.predictionRecyclerview.visibility = View.GONE
-
-            } else {
-
-                binding.predictionRecyclerview.visibility = View.VISIBLE
-
-                searchAdapter.submitList(it)
-
-                binding.predictionRecyclerview.post {
-                    binding.predictionRecyclerview.requestLayout()
-                }
-            }
-        }
-
-        viewModel.hasInternetLiveData.observe(this) { hasInternet ->
-
-            if (!hasInternet) {
-                Toast.makeText(
-                    this,
-                    getString(R.string.please_enter_an_address_manually),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-
-
-        val adapter = CreatePropertyPhotoAdapter { temporaryPhoto ->
-            viewModel.deleteTemporaryPhoto(temporaryPhoto)
-        }
-
-        binding.createUpdatePhotoRecyclerview.layoutManager = LinearLayoutManager(this)
-
-        binding.createUpdatePhotoRecyclerview.adapter = adapter
-
-        viewModel.temporaryPhotoLiveData.observe(this) { temporaryPhotos ->
-            onePhotoAtLeast = temporaryPhotos.isNotEmpty()
-            adapter.submitList(temporaryPhotos)
-        }
-
+    private fun configurePhotoButtons() {
         binding.addPictureButton.setOnClickListener {
-            startActivity(Intent(this, AddPhotoActivity::class.java))
-
+            startActivity(
+                Intent(
+                    this,
+                    AddPhotoActivity::class.java
+                )
+            )
         }
 
         binding.takePictureButton.setOnClickListener {
-            startActivity(Intent(this, AddPictureCameraActivity::class.java))
+            startActivity(
+                Intent(
+                    this,
+                    AddPictureCameraActivity::class.java
+                )
+            )
         }
+    }
 
-
+    private fun configureSaveButton() {
         binding.saveButton.setOnClickListener {
-
             if (!onePhotoAtLeast) {
-                Toast.makeText(this,
-                    getString(R.string.please_add_at_least_one_photo), Toast.LENGTH_SHORT).show()
-            } else {
+                Toast.makeText(
+                    this,
+                    getString(
+                        R.string
+                            .please_add_at_least_one_photo
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
 
-                type = binding.typeDropdown.text.toString()
-
-                val price = binding.price.text.toString()
-                val address = binding.address.text.toString()
-                val city = binding.city.text.toString()
-                val state = binding.state.text.toString()
-                val zipcode = binding.zipcode.text.toString()
-                val country = binding.country.text.toString()
-                val surface = binding.surface.text.toString()
-                val description = binding.description.text.toString()
-                val rooms = binding.rooms.text.toString()
-                val bedrooms = binding.bedrooms.text.toString()
-                val bathrooms = binding.bathrooms.text.toString()
-                val agent = binding.agent.text.toString()
-
-                if (
-                    type.isEmpty() || price.isEmpty() || address.isEmpty() || city.isEmpty() ||
-                    state.isEmpty() || zipcode.isEmpty() || country.isEmpty() || surface.isEmpty() ||
-                    description.isEmpty() || rooms.isEmpty() || bedrooms.isEmpty() ||
-                    bathrooms.isEmpty() || agent.isEmpty()
-                ) {
-                    Toast.makeText(this,
-                        getString(R.string.please_fill_all_the_required_fields), Toast.LENGTH_SHORT).show()
-                } else {
-
-                    val priceInt = price.toIntOrNull()
-                    val zipcodeInt = zipcode.toIntOrNull()
-                    val surfaceInt = surface.toIntOrNull()
-                    val roomsInt = rooms.toIntOrNull()
-                    val bedroomsInt = bedrooms.toIntOrNull()
-                    val bathroomsInt = bathrooms.toIntOrNull()
-
-                    if (
-                        priceInt == null ||
-                        zipcodeInt == null ||
-                        surfaceInt == null ||
-                        roomsInt == null ||
-                        bedroomsInt == null ||
-                        bathroomsInt == null
-                    ) {
-                        Toast.makeText(this,
-                            getString(R.string.please_enter_valid_numbers), Toast.LENGTH_SHORT).show()
-                        return@setOnClickListener
-                    }
-
-                    viewModel.createProperty(
-                        type,
-                        priceInt,
-                        address,
-                        city,
-                        state,
-                        zipcodeInt,
-                        country,
-                        surfaceInt,
-                        lat,
-                        lng,
-                        description,
-                        roomsInt,
-                        bedroomsInt,
-                        bathroomsInt,
-                        agent,
-                        binding.checkboxSaleStatus.isChecked,
-                        binding.checkboxTrain.isChecked,
-                        binding.checkboxAirport.isChecked,
-                        binding.checkboxRestaurant.isChecked,
-                        binding.checkboxSchool.isChecked,
-                        binding.checkboxBus.isChecked,
-                        binding.checkboxPark.isChecked
-                    )
-
-//                    viewModel.onNavigateToMainActivity()
-//                    finish()
-                }
+                return@setOnClickListener
             }
-        }
 
+            val type =
+                binding.typeDropdown.text.toString()
+
+            val price =
+                binding.price.text.toString()
+
+            val address =
+                binding.address.text.toString()
+
+            val city =
+                binding.city.text.toString()
+
+            val state =
+                binding.state.text.toString()
+
+            val zipcode =
+                binding.zipcode.text.toString()
+
+            val country =
+                binding.country.text.toString()
+
+            val surface =
+                binding.surface.text.toString()
+
+            val description =
+                binding.description.text.toString()
+
+            val rooms =
+                binding.rooms.text.toString()
+
+            val bedrooms =
+                binding.bedrooms.text.toString()
+
+            val bathrooms =
+                binding.bathrooms.text.toString()
+
+            val agent =
+                binding.agent.text.toString()
+
+            if (
+                type.isEmpty() ||
+                price.isEmpty() ||
+                address.isEmpty() ||
+                city.isEmpty() ||
+                state.isEmpty() ||
+                zipcode.isEmpty() ||
+                country.isEmpty() ||
+                surface.isEmpty() ||
+                description.isEmpty() ||
+                rooms.isEmpty() ||
+                bedrooms.isEmpty() ||
+                bathrooms.isEmpty() ||
+                agent.isEmpty()
+            ) {
+                Toast.makeText(
+                    this,
+                    getString(
+                        R.string
+                            .please_fill_all_the_required_fields
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            val priceInt =
+                price.toIntOrNull()
+
+            val zipcodeInt =
+                zipcode.toIntOrNull()
+
+            val surfaceInt =
+                surface.toIntOrNull()
+
+            val roomsInt =
+                rooms.toIntOrNull()
+
+            val bedroomsInt =
+                bedrooms.toIntOrNull()
+
+            val bathroomsInt =
+                bathrooms.toIntOrNull()
+
+            if (
+                priceInt == null ||
+                zipcodeInt == null ||
+                surfaceInt == null ||
+                roomsInt == null ||
+                bedroomsInt == null ||
+                bathroomsInt == null
+            ) {
+                Toast.makeText(
+                    this,
+                    getString(
+                        R.string
+                            .please_enter_valid_numbers
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            viewModel.createProperty(
+                type = type,
+                price = priceInt,
+                address = address,
+                city = city,
+                state = state,
+                zipcode = zipcodeInt,
+                country = country,
+                surface = surfaceInt,
+                lat = lat,
+                lng = lng,
+                description = description,
+                room = roomsInt,
+                bedroom = bedroomsInt,
+                bathroom = bathroomsInt,
+                agent = agent,
+                isSold =
+                    binding.checkboxSaleStatus.isChecked,
+                poiTrain =
+                    binding.checkboxTrain.isChecked,
+                poiAirport =
+                    binding.checkboxAirport.isChecked,
+                poiResto =
+                    binding.checkboxRestaurant.isChecked,
+                poiSchool =
+                    binding.checkboxSchool.isChecked,
+                poiBus =
+                    binding.checkboxBus.isChecked,
+                poiPark =
+                    binding.checkboxPark.isChecked
+            )
+        }
+    }
+
+    private fun configureDismissButton() {
         binding.dismissButton.setOnClickListener {
             viewModel.clearTemporaryPhotos()
             finish()
         }
-
-        viewModel.navigateSingleLiveEvent.observe(this) {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra(getString(R.string.property_created), true)
-            startActivity(intent)
-            finish()
-        }
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                viewModel.clearTemporaryPhotos()
-                finish()
-            }
-        })
-
     }
 
-
+    private fun configureBackNavigation() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.clearTemporaryPhotos()
+                    finish()
+                }
+            }
+        )
+    }
 }

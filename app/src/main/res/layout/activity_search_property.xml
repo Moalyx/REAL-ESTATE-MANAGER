@@ -251,7 +251,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="15dp"
-            android:text="Property status"
+            android:text="@string/property_status"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -281,7 +281,7 @@
                 android:id="@+id/sold_status_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="All"
+                android:hint="@string/all"
                 android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -292,7 +292,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="15dp"
-            android:text="Minimum photos"
+            android:text="@string/minimum_photos"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -317,7 +317,7 @@
                 android:id="@+id/minimum_photos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Minimum photos"
+                android:hint="@string/minimum_photos"
                 android:inputType="number"
                 android:textSize="15sp" />
 

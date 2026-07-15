@@ -235,6 +235,7 @@ class EditPropertyActivity : AppCompatActivity() {
         return photoAdapter
     }
 
+    @SuppressLint("SetTextI18n")
     private fun observeViewModel(
         searchAdapter: SearchAdapter,
         photoAdapter: EditPropertyPhotoAdapter

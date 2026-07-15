@@ -107,5 +107,8 @@
     <string name="photo_missing">photo missing</string>
     <string name="unable_to_load_photo">unable to load photo</string>
     <string name="choose_a_photo">choose a photo</string>
+    <string name="property_status">Property status</string>
+    <string name="all">All</string>
+    <string name="minimum_photos">Minimum photos</string>
 
 </resources>

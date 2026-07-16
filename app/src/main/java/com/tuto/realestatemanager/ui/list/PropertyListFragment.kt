@@ -1,17 +1,20 @@
 package com.tuto.realestatemanager.ui.list
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.FragmentPropertyListBinding
 import com.tuto.realestatemanager.ui.createproperty.CreatePropertyActivity
@@ -28,6 +31,21 @@ class PropertyListFragment : Fragment() {
         get() = _binding!!
 
     private val viewModel by viewModels<PropertyListViewModel>()
+
+    private val createPropertyLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                _binding?.root?.let { root ->
+                    Snackbar.make(
+                        root,
+                        "Property successfully added",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,7 +108,7 @@ class PropertyListFragment : Fragment() {
                     viewModel.viewAction.collect { action ->
                         when (action) {
                             ListViewAction.NavigateToCreateActvity -> {
-                                startActivity(
+                                createPropertyLauncher.launch(
                                     Intent(
                                         requireContext(),
                                         CreatePropertyActivity::class.java

@@ -22,9 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
-    private val getParametersFlowUseCase: GetParametersFlowUseCase,
-    private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
+    getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    getParametersFlowUseCase: GetParametersFlowUseCase,
+    getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
@@ -81,7 +81,9 @@ class MapViewModel @Inject constructor(
         val markerPlaceList = filteredProperties
             .filter { property ->
                 property.propertyEntity.lat != null &&
-                        property.propertyEntity.lng != null
+                        property.propertyEntity.lng != null &&
+                        property.propertyEntity.lat != 0.0 &&
+                        property.propertyEntity.lng != 0.0
             }
             .map { property ->
                 MarkerPlace(

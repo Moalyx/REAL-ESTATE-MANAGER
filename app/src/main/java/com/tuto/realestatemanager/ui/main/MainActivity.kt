@@ -10,7 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityMainBinding
 import com.tuto.realestatemanager.ui.detail.DetailsPropertyFragment
@@ -45,21 +44,6 @@ class MainActivity : AppCompatActivity() {
             findViewById(R.id.create_property_tablet)
 
         configureTabletFab()
-
-        if (
-            intent.getBooleanExtra(
-                "property_created",
-                false
-            )
-        ) {
-            Snackbar.make(
-                binding.root,
-                "Property successfully added",
-                Snackbar.LENGTH_LONG
-            ).show()
-
-            intent.removeExtra("property_created")
-        }
 
         setSupportActionBar(binding.toolbar)
 

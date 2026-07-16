@@ -1,6 +1,5 @@
 package com.tuto.realestatemanager.ui.editproperty
 
-import android.location.Location
 import android.widget.CheckBox
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,20 +22,21 @@ import com.tuto.realestatemanager.ui.createproperty.PlaceDetailViewState
 import com.tuto.realestatemanager.ui.createproperty.PredictionViewState
 import com.tuto.realestatemanager.ui.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,12 +52,13 @@ class EditPropertyViewModel @Inject constructor(
     private val deleteTemporaryPhotoUseCase: DeleteTemporaryPhotoUseCase,
     private val getPlaceAddressComponentsUseCase: GetPlaceAddressComponentsUseCase,
     private val getPredictionsUseCase: GetPredictionsUseCase,
-    getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
+    private val getUserLocationFlowUseCase: GetUserLocationFlowUseCase,
     private val coroutineDispatchersProvider: CoroutineDispatchersProvider
 ) : ViewModel() {
 
     private companion object {
         private const val MINIMUM_ADDRESS_LENGTH = 3
+        private const val AUTOCOMPLETE_DELAY_MILLIS = 400L
         private const val DEFAULT_LOCATION = "40.7128,-74.0060"
         private const val STOP_TIMEOUT_MILLIS = 5_000L
     }
@@ -109,38 +110,36 @@ class EditPropertyViewModel @Inject constructor(
                 initialValue = null
             )
 
-    private val predictionsFlow: Flow<Pair<String, Location?>> =
-        combine(
-            addressSearchMutableStateFlow
-                .filterNotNull()
-                .filter { address ->
-                    address.length >= MINIMUM_ADDRESS_LENGTH
-                },
-            getUserLocationFlowUseCase.invoke()
-        ) { address, location ->
-            address to location
-        }
-
     val predictionListViewState: StateFlow<List<PredictionViewState>> =
-        predictionsFlow
-            .mapLatest { (address, location) ->
-                val localisation = if (location != null) {
-                    "${location.latitude},${location.longitude}"
-                } else {
-                    DEFAULT_LOCATION
-                }
-
-                getPredictionsUseCase.invoke(
-                    address,
-                    localisation
-                )
+        addressSearchMutableStateFlow
+            .map { address ->
+                address.orEmpty().trim()
             }
-            .map { predictions ->
-                predictions.map { prediction ->
-                    PredictionViewState(
-                        address = prediction.prediction,
-                        id = prediction.placeId
-                    )
+            .distinctUntilChanged()
+            .mapLatest { address ->
+                if (address.length < MINIMUM_ADDRESS_LENGTH) {
+                    emptyList()
+                } else {
+                    delay(AUTOCOMPLETE_DELAY_MILLIS)
+
+                    val location =
+                        getUserLocationFlowUseCase.invoke().first()
+
+                    val localisation = if (location != null) {
+                        "${location.latitude},${location.longitude}"
+                    } else {
+                        DEFAULT_LOCATION
+                    }
+
+                    getPredictionsUseCase.invoke(
+                        address,
+                        localisation
+                    ).map { prediction ->
+                        PredictionViewState(
+                            address = prediction.prediction,
+                            id = prediction.placeId
+                        )
+                    }
                 }
             }
             .flowOn(coroutineDispatchersProvider.io)

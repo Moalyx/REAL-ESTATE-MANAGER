@@ -26,13 +26,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
-    private val getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
+    isInternetAvailableUseCase: IsInternetAvailableUseCase,
+    getAllPropertiesWithPhotosUseCase: GetAllPropertiesWithPhotosUseCase,
     private val updatePropertyUseCase: UpdatePropertyUseCase,
     private val onDeleteTemporaryPhotoUseCase: OnDeleteTemporaryPhotoUseCase,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository,
-    private val isDollarFlowUseCase: IsDollarFlowUseCase,
-    private val getParametersFlowUseCase: GetParametersFlowUseCase,
+    isDollarFlowUseCase: IsDollarFlowUseCase,
+    getParametersFlowUseCase: GetParametersFlowUseCase,
     private val getLatLngPropertyLocationUseCase: GetLatLngPropertyLocationUseCase
 ) : ViewModel() {
 
@@ -67,50 +67,73 @@ class PropertyListViewModel @Inject constructor(
         val currentPropertyId = selection.first
         val isTablet = selection.second
 
-        val propertiesWithoutLocation = propertiesWithPhotosEntity.filter { property ->
-            property.propertyEntity.lat == null ||
-                    property.propertyEntity.lng == null ||
-                    property.propertyEntity.lat == 0.0 ||
-                    property.propertyEntity.lng == 0.0
-        }
-
-        if (isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-            for (property in propertiesWithoutLocation) {
-                val location = getLatLngPropertyLocationUseCase.invoke(
-                    "${property.propertyEntity.address} " +
-                            "${property.propertyEntity.city} " +
-                            "${property.propertyEntity.zipCode} " +
-                            "${property.propertyEntity.state} " +
-                            property.propertyEntity.country
-                )
-
-                property.propertyEntity.lat = location.lat
-                property.propertyEntity.lng = location.lng
-
-                updatePropertyUseCase.invoke(property.propertyEntity)
-            }
-        } else if (!isInternetAvailable && propertiesWithoutLocation.isNotEmpty()) {
-            _viewAction.emit(ListViewAction.ShowNoInternetWarning)
-        }
-
-        val filteredList = if (searchParameters == null) {
-            propertiesWithPhotosEntity
-        } else {
+        val propertiesWithoutLocation =
             propertiesWithPhotosEntity.filter { property ->
-                comparePrice(searchParameters, property) &&
-                        compareType(searchParameters, property) &&
-                        compareSurface(searchParameters, property) &&
-                        compareCity(searchParameters, property) &&
-                        comparePoiTrain(searchParameters, property) &&
-                        comparePoiAirport(searchParameters, property) &&
-                        comparePoiResto(searchParameters, property) &&
-                        comparePoiSchool(searchParameters, property) &&
-                        comparePoiBus(searchParameters, property) &&
-                        comparePoiPark(searchParameters, property) &&
-                        compareSoldStatus(searchParameters, property) &&
-                        compareMinimumPhotos(searchParameters, property)
+                property.propertyEntity.lat == null ||
+                        property.propertyEntity.lng == null ||
+                        property.propertyEntity.lat == 0.0 ||
+                        property.propertyEntity.lng == 0.0
             }
+
+        if (
+            isInternetAvailable &&
+            propertiesWithoutLocation.isNotEmpty()
+        ) {
+            for (property in propertiesWithoutLocation) {
+                val location =
+                    getLatLngPropertyLocationUseCase.invoke(
+                        "${property.propertyEntity.address} " +
+                                "${property.propertyEntity.city} " +
+                                "${property.propertyEntity.zipCode} " +
+                                "${property.propertyEntity.state} " +
+                                property.propertyEntity.country
+                    )
+
+                val latitude = location.lat
+                val longitude = location.lng
+
+                if (
+                    latitude != null &&
+                    longitude != null &&
+                    latitude != 0.0 &&
+                    longitude != 0.0
+                ) {
+                    property.propertyEntity.lat = latitude
+                    property.propertyEntity.lng = longitude
+
+                    updatePropertyUseCase.invoke(
+                        property.propertyEntity
+                    )
+                }
+            }
+        } else if (
+            !isInternetAvailable &&
+            propertiesWithoutLocation.isNotEmpty()
+        ) {
+            _viewAction.emit(
+                ListViewAction.ShowNoInternetWarning
+            )
         }
+
+        val filteredList =
+            if (searchParameters == null) {
+                propertiesWithPhotosEntity
+            } else {
+                propertiesWithPhotosEntity.filter { property ->
+                    comparePrice(searchParameters, property) &&
+                            compareType(searchParameters, property) &&
+                            compareSurface(searchParameters, property) &&
+                            compareCity(searchParameters, property) &&
+                            comparePoiTrain(searchParameters, property) &&
+                            comparePoiAirport(searchParameters, property) &&
+                            comparePoiResto(searchParameters, property) &&
+                            comparePoiSchool(searchParameters, property) &&
+                            comparePoiBus(searchParameters, property) &&
+                            comparePoiPark(searchParameters, property) &&
+                            compareSoldStatus(searchParameters, property) &&
+                            compareMinimumPhotos(searchParameters, property)
+                }
+            }
 
         if (isTablet) {
             if (filteredList.isEmpty()) {
@@ -118,9 +141,11 @@ class PropertyListViewModel @Inject constructor(
                     currentPropertyIdRepository.setCurrentId(null)
                 }
             } else if (currentPropertyId != null) {
-                val currentPropertyStillVisible = filteredList.any { property ->
-                    property.propertyEntity.id == currentPropertyId
-                }
+                val currentPropertyStillVisible =
+                    filteredList.any { property ->
+                        property.propertyEntity.id ==
+                                currentPropertyId
+                    }
 
                 if (!currentPropertyStillVisible) {
                     currentPropertyIdRepository.setCurrentId(
@@ -147,7 +172,9 @@ class PropertyListViewModel @Inject constructor(
     }
 
     fun onNavigateToCreateActivity() {
-        _viewAction.tryEmit(ListViewAction.NavigateToCreateActvity)
+        _viewAction.tryEmit(
+            ListViewAction.NavigateToCreateActvity
+        )
     }
 
     fun onConfigurationChanged(isTablet: Boolean) {
@@ -160,28 +187,41 @@ class PropertyListViewModel @Inject constructor(
         currentPropertyId: Long?,
         isTablet: Boolean
     ): List<PropertyViewState> {
-        return propertiesWithPhotosEntity.map { propertyWithPhotosEntity ->
+        return propertiesWithPhotosEntity.map {
+                propertyWithPhotosEntity ->
+
             PropertyViewState(
-                id = propertyWithPhotosEntity.propertyEntity.id,
-                type = propertyWithPhotosEntity.propertyEntity.type,
+                id = propertyWithPhotosEntity
+                    .propertyEntity.id,
+                type = propertyWithPhotosEntity
+                    .propertyEntity.type,
                 price = convertMoney(
-                    price = "${propertyWithPhotosEntity.propertyEntity.price}",
+                    price =
+                        "${propertyWithPhotosEntity.propertyEntity.price}",
                     isDollar = isDollar
                 ),
-                photoList = propertyWithPhotosEntity.photos.map { it },
-                city = propertyWithPhotosEntity.propertyEntity.city,
-                isSold = propertyWithPhotosEntity.propertyEntity.propertySold,
+                photoList =
+                    propertyWithPhotosEntity.photos.map { it },
+                city = propertyWithPhotosEntity
+                    .propertyEntity.city,
+                isSold = propertyWithPhotosEntity
+                    .propertyEntity.propertySold,
                 onItemClicked = {
                     if (!isTablet) {
-                        _viewAction.tryEmit(ListViewAction.NavigateToDetailActivity)
+                        _viewAction.tryEmit(
+                            ListViewAction
+                                .NavigateToDetailActivity
+                        )
                     }
 
                     currentPropertyIdRepository.setCurrentId(
-                        propertyWithPhotosEntity.propertyEntity.id
+                        propertyWithPhotosEntity
+                            .propertyEntity.id
                     )
                 },
                 isSelected =
-                    propertyWithPhotosEntity.propertyEntity.id == currentPropertyId
+                    propertyWithPhotosEntity.propertyEntity.id ==
+                            currentPropertyId
             )
         }
     }
@@ -190,13 +230,22 @@ class PropertyListViewModel @Inject constructor(
         price: String,
         isDollar: Boolean
     ): String {
-        val decimalFormat = DecimalFormat("#,###.#")
-        val formattedPrice = decimalFormat.format(price.toInt()).toString()
+        val decimalFormat =
+            DecimalFormat("#,###.#")
+
+        val formattedPrice =
+            decimalFormat.format(price.toInt()).toString()
 
         return if (isDollar) {
             "$formattedPrice $"
         } else {
-            "${decimalFormat.format(Utils.convertDollarToEuro(price.toInt()))} €"
+            "${
+                decimalFormat.format(
+                    Utils.convertDollarToEuro(
+                        price.toInt()
+                    )
+                )
+            } €"
         }
     }
 
@@ -205,35 +254,54 @@ class PropertyListViewModel @Inject constructor(
         property: PropertyWithPhotosEntity
     ): Boolean {
         return searchParameters.type == null ||
-                searchParameters.type == property.propertyEntity.type
+                searchParameters.type ==
+                property.propertyEntity.type
     }
 
     private fun comparePrice(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchPriceMinimum = searchParameters.priceMinimum
-        val searchPriceMaximum = searchParameters.priceMaximum
-        val propertyPrice = property.propertyEntity.price
+        val searchPriceMinimum =
+            searchParameters.priceMinimum
 
-        return (searchPriceMinimum == null ||
-                propertyPrice >= searchPriceMinimum) &&
-                (searchPriceMaximum == null ||
-                        propertyPrice <= searchPriceMaximum)
+        val searchPriceMaximum =
+            searchParameters.priceMaximum
+
+        val propertyPrice =
+            property.propertyEntity.price
+
+        return (
+                searchPriceMinimum == null ||
+                        propertyPrice >= searchPriceMinimum
+                ) &&
+                (
+                        searchPriceMaximum == null ||
+                                propertyPrice <= searchPriceMaximum
+                        )
     }
 
     private fun compareSurface(
         searchParameters: SearchParameters,
         property: PropertyWithPhotosEntity
     ): Boolean {
-        val searchSurfaceMinimum = searchParameters.surfaceMinimum
-        val searchSurfaceMaximum = searchParameters.surfaceMaximum
-        val propertySurface = property.propertyEntity.surface
+        val searchSurfaceMinimum =
+            searchParameters.surfaceMinimum
 
-        return (searchSurfaceMinimum == null ||
-                propertySurface >= searchSurfaceMinimum) &&
-                (searchSurfaceMaximum == null ||
-                        propertySurface <= searchSurfaceMaximum)
+        val searchSurfaceMaximum =
+            searchParameters.surfaceMaximum
+
+        val propertySurface =
+            property.propertyEntity.surface
+
+        return (
+                searchSurfaceMinimum == null ||
+                        propertySurface >= searchSurfaceMinimum
+                ) &&
+                (
+                        searchSurfaceMaximum == null ||
+                                propertySurface <= searchSurfaceMaximum
+                        )
     }
 
     private fun compareCity(
@@ -241,10 +309,14 @@ class PropertyListViewModel @Inject constructor(
         property: PropertyWithPhotosEntity
     ): Boolean {
         val searchCity = searchParameters.city
-        val propertyCity = property.propertyEntity.city
+        val propertyCity =
+            property.propertyEntity.city
 
         return searchCity.isNullOrBlank() ||
-                propertyCity.equals(searchCity.trim(), ignoreCase = true)
+                propertyCity.equals(
+                    searchCity.trim(),
+                    ignoreCase = true
+                )
     }
 
     private fun comparePoiTrain(
@@ -309,6 +381,7 @@ class PropertyListViewModel @Inject constructor(
         property: PropertyWithPhotosEntity
     ): Boolean {
         return searchParameters.minimumPhotos == null ||
-                property.photos.size >= searchParameters.minimumPhotos
+                property.photos.size >=
+                searchParameters.minimumPhotos
     }
 }

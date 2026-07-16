@@ -21,7 +21,6 @@ import com.tuto.realestatemanager.R
 import com.tuto.realestatemanager.databinding.ActivityCreatePropertyBinding
 import com.tuto.realestatemanager.ui.addphoto.AddPhotoActivity
 import com.tuto.realestatemanager.ui.addpicturecamera.AddPictureCameraActivity
-import com.tuto.realestatemanager.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -248,19 +247,7 @@ class CreatePropertyActivity : AppCompatActivity() {
                             CreateViewAction
                                 .NavigateToMainActivity -> {
 
-                                val intent = Intent(
-                                    this@CreatePropertyActivity,
-                                    MainActivity::class.java
-                                )
-
-                                intent.putExtra(
-                                    getString(
-                                        R.string.property_created
-                                    ),
-                                    true
-                                )
-
-                                startActivity(intent)
+                                setResult(RESULT_OK)
                                 finish()
                             }
                         }

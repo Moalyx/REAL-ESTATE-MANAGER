@@ -1,6 +1,6 @@
 package com.tuto.realestatemanager.ui.createproperty
 
-data class PlaceDetailViewState(
+data class  PlaceDetailViewState(
     val number: String,
     val address: String,
     val city: String,

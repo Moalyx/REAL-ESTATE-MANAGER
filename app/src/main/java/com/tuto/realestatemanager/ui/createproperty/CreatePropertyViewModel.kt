@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(
@@ -117,7 +118,7 @@ class CreatePropertyViewModel @Inject constructor(
                 if (address.length < MINIMUM_ADDRESS_LENGTH) {
                     emptyList()
                 } else {
-                    delay(AUTOCOMPLETE_DELAY_MILLIS)
+                    delay(AUTOCOMPLETE_DELAY_MILLIS.milliseconds)
 
                     val location =
                         getUserLocationFlowUseCase.invoke().first()

@@ -80,11 +80,6 @@ class DataModule {
     }
 
 
-//    @Provides
-//    @Singleton
-//    fun provideGoogleApi(retrofit: Retrofit): GoogleApi =
-//        retrofit.create(GoogleApi::class.java)
-
 
     @Provides
     @Singleton
@@ -113,21 +108,6 @@ class DataModule {
             //.addInterceptor(provideInterceptorForKey())
             .build()
 
-//    @Provides
-//    @Singleton
-//    fun provideInterceptorForKey(): Interceptor = Interceptor { chain ->
-//        chain.proceed(
-//            chain.request().let {request ->
-//                request.newBuilder()
-//                    .url(
-//                        request.url.newBuilder()
-//                            .addQueryParameter("key", BuildConfig.GOOGLE_AUTOCOMPLETE_KEY)
-//                            .build()
-//                    )
-//                    .build()
-//            }
-//        )
-//    }
 
     @Provides
     @Singleton

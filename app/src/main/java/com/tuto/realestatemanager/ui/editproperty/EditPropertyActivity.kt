@@ -49,6 +49,7 @@ class EditPropertyActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityCreatePropertyBinding
+    private var hasBoundInitialProperty = false
 
     private val viewModel by viewModels<EditPropertyViewModel>()
 
@@ -303,8 +304,12 @@ class EditPropertyActivity : AppCompatActivity() {
 
                 launch {
                     viewModel.detailPropertyStateFlow.collect { property ->
-                        property?.let { state ->
-                            bindPropertyDetails(state)
+                        if (
+                            property != null &&
+                            !hasBoundInitialProperty
+                        ) {
+                            bindPropertyDetails(property)
+                            hasBoundInitialProperty = true
                         }
                     }
                 }

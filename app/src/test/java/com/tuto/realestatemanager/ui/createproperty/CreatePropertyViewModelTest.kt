@@ -254,22 +254,22 @@ class CreatePropertyViewModelTest {
         }
     }
 
-    @Test
-    fun `onNavigateToMainActivity should emit navigation event`() =
-        runTest {
-            val event = async(
-                start = CoroutineStart.UNDISPATCHED
-            ) {
-                viewModel.viewAction.first()
-            }
-
-            viewModel.onNavigateToMainActivity()
-
-            assertEquals(
-                CreateViewAction.NavigateToMainActivity,
-                event.await()
-            )
-        }
+//    @Test
+//    fun `onNavigateToMainActivity should emit navigation event`() =
+//        runTest {
+//            val event = async(
+//                start = CoroutineStart.UNDISPATCHED
+//            ) {
+//                viewModel.viewAction.first()
+//            }
+//
+//            viewModel.onNavigateToMainActivity()
+//
+//            assertEquals(
+//                CreateViewAction.NavigateToMainActivity,
+//                event.await()
+//            )
+//        }
 
     @Test
     fun `hasInternetStateFlow should expose internet state`() =

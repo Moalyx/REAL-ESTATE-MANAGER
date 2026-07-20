@@ -377,7 +377,8 @@
                     android:layout_marginTop="12dp"
                     app:boxBackgroundColor="#D2B3F8"
                     app:endIconMode="clear_text"
-                    app:endIconTint="#673AB7">
+                    app:endIconTint="#673AB7"
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/complement"
@@ -592,7 +593,8 @@
                 android:text="@string/date_of_publication"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/title_date"
@@ -607,7 +609,8 @@
                 app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                 app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/date"

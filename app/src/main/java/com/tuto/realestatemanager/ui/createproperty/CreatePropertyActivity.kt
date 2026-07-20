@@ -322,10 +322,15 @@ class CreatePropertyActivity : AppCompatActivity() {
                 }
 
                 launch {
+                    var toastAlreadyShown = false
+
                     viewModel.hasInternetStateFlow
                         .collect { hasInternet ->
 
-                            if (hasInternet == false) {
+                            if (
+                                hasInternet == false &&
+                                !toastAlreadyShown
+                            ) {
                                 Toast.makeText(
                                     this@CreatePropertyActivity,
                                     getString(
@@ -334,6 +339,12 @@ class CreatePropertyActivity : AppCompatActivity() {
                                     ),
                                     Toast.LENGTH_SHORT
                                 ).show()
+
+                                toastAlreadyShown = true
+                            }
+
+                            if (hasInternet == true) {
+                                toastAlreadyShown = false
                             }
                         }
                 }

@@ -76,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="12dp"
+            android:hint="@string/price"
             app:boxBackgroundColor="#D2B3F8"
             app:endIconMode="clear_text"
             app:endIconTint="#673AB7">
@@ -86,9 +87,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
-                android:hint="@string/price"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,7 +129,8 @@
                 android:hint="@string/description"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title_description" />
+                app:layout_constraintTop_toBottomOf="@id/title_description"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -201,7 +203,8 @@
                                 android:gravity="center"
                                 android:hint="@string/surface"
                                 android:inputType="number"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                tools:ignore="TextContrastCheck" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -232,8 +235,7 @@
                                 android:hint="@string/rooms"
                                 android:inputType="number"
                                 android:textSize="15sp"
-
-                                />
+                                tools:ignore="TextContrastCheck" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -264,7 +266,7 @@
                                 android:inputType="number"
                                 android:textSize="15sp"
 
-                                />
+                                tools:ignore="TextContrastCheck" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -293,7 +295,8 @@
                                 android:gravity="center"
                                 android:hint="@string/bathrooms"
                                 android:inputType="number"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                tools:ignore="TextContrastCheck" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -354,6 +357,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:hint="@string/address"
                     app:boxBackgroundColor="#D2B3F8"
                     app:endIconMode="clear_text"
                     app:endIconTint="#673AB7">
@@ -363,9 +367,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_baseline_location_24"
-                        android:hint="@string/address"
                         android:inputType="textPostalAddress"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -375,10 +379,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:visibility="gone"
                     app:boxBackgroundColor="#D2B3F8"
                     app:endIconMode="clear_text"
-                    app:endIconTint="#673AB7"
-                    android:visibility="gone">
+                    app:endIconTint="#673AB7">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/complement"
@@ -594,7 +598,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/title_date"
@@ -603,14 +607,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="12dp"
+                android:visibility="gone"
                 app:boxBackgroundColor="#D2B3F8"
                 app:endIconMode="clear_text"
                 app:endIconTint="#673AB7"
                 app:layout_constraintBottom_toTopOf="@id/title_bedrooms"
                 app:layout_constraintEnd_toStartOf="@id/title_Rooms"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/date"

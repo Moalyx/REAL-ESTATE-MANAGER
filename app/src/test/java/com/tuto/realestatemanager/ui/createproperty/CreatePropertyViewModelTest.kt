@@ -22,9 +22,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -253,23 +251,6 @@ class CreatePropertyViewModelTest {
             )
         }
     }
-
-//    @Test
-//    fun `onNavigateToMainActivity should emit navigation event`() =
-//        runTest {
-//            val event = async(
-//                start = CoroutineStart.UNDISPATCHED
-//            ) {
-//                viewModel.viewAction.first()
-//            }
-//
-//            viewModel.onNavigateToMainActivity()
-//
-//            assertEquals(
-//                CreateViewAction.NavigateToMainActivity,
-//                event.await()
-//            )
-//        }
 
     @Test
     fun `hasInternetStateFlow should expose internet state`() =

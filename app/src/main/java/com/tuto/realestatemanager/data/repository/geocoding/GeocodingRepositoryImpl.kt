@@ -33,7 +33,7 @@ class GeocodingRepositoryImpl @Inject constructor(
                 lng = location?.lng
             )
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             LocationEntity(
                 lat = null,
                 lng = null

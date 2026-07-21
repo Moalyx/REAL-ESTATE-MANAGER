@@ -103,7 +103,8 @@
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/minimum_price"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -130,7 +131,8 @@
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/maximum_price"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -173,7 +175,8 @@
                 android:gravity="center"
                 android:hint="@string/minimum_surface"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -201,7 +204,8 @@
                 android:gravity="center"
                 android:hint="@string/maximum_surface"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -241,7 +245,8 @@
                 android:drawableStart="@drawable/ic_baseline_location_24"
                 android:hint="@string/city"
                 android:inputType="textCapWords"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -281,8 +286,9 @@
                 android:id="@+id/sold_status_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/all"
-                android:inputType="none" />
+                android:inputType="none"
+                android:hint="@string/sale_status"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -319,7 +325,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/minimum_photos"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

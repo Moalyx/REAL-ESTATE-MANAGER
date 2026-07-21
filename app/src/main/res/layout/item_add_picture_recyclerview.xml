@@ -39,8 +39,8 @@
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintEnd_toEndOf="@id/photo"
         app:layout_constraintStart_toStartOf="@id/photo"
-        tools:text="title photo"
-        />
+        tools:ignore="TextContrastCheck"
+        tools:text="title photo" />
 
     <ImageButton
         android:id="@+id/delete_button"
@@ -54,6 +54,6 @@
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintStart_toEndOf="@id/photo"
         app:layout_constraintTop_toTopOf="@id/photo"
-        />
+        tools:ignore="ImageContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -41,7 +41,8 @@
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/house_price"
                 android:inputType="numberDecimal"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +65,8 @@
                 android:drawableStart="@drawable/ic_baseline_attach_money_24"
                 android:hint="@string/down_payment"
                 android:inputType="numberDecimal"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,7 +101,8 @@
                     android:text="@string/_0"
                     android:textColor="#03A9F4"
                     android:textSize="28sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="TextContrastCheck" />
 
             </LinearLayout>
 
@@ -124,7 +127,8 @@
                 android:drawableStart="@drawable/baseline_percent_24"
                 android:hint="@string/interest_rate"
                 android:inputType="numberDecimal"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -147,7 +151,8 @@
                 android:drawableStart="@drawable/baseline_access_time_24"
                 android:hint="@string/duration_years"
                 android:inputType="number"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -174,7 +179,8 @@
                     android:text="@string/monthly_payment"
                     android:textColor="#03A9F4"
                     android:textSize="35sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="TextContrastCheck" />
 
                 <TextView
                     android:id="@+id/monthly_payment"

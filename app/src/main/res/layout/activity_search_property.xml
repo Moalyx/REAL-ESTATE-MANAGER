@@ -286,9 +286,9 @@
                 android:id="@+id/sold_status_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
                 android:hint="@string/sale_status"
-                />
+                android:inputType="none"
+                tools:ignore="SpeakableTextPresentCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

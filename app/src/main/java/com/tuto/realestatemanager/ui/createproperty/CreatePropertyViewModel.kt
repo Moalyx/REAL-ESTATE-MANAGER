@@ -107,6 +107,10 @@ class CreatePropertyViewModel @Inject constructor(
                 initialValue = null
             )
 
+    fun onAddressSearchChanged(address: String?) {
+        addressSearchMutableStateFlow.value = address
+    }
+
     val predictionListViewState:
             StateFlow<List<PredictionViewState>> =
         addressSearchMutableStateFlow
@@ -152,10 +156,6 @@ class CreatePropertyViewModel @Inject constructor(
     val temporaryPhotoStateFlow:
             StateFlow<List<TemporaryPhoto>> =
         getTemporaryPhotoListUseCase.invoke()
-
-    fun onAddressSearchChanged(address: String?) {
-        addressSearchMutableStateFlow.value = address
-    }
 
     fun onSetAutocompleteAddressId(id: String) {
         placeIdMutableStateFlow.value = id
@@ -250,12 +250,6 @@ class CreatePropertyViewModel @Inject constructor(
                 CreateViewAction.NavigateToMainActivity
             )
         }
-    }
-
-    fun onNavigateToMainActivity() {
-        _viewAction.tryEmit(
-            CreateViewAction.NavigateToMainActivity
-        )
     }
 
     fun clearTemporaryPhotos() {

@@ -19,7 +19,8 @@ interface GoogleApi {
         @Query("key") key : String,
         @Query("location") location : String,
         @Query("radius") radius : String,
-        @Query("input") input :String
+        @Query("input") input :String,
+        @Query("strictbounds") strictBounds: Boolean
     ) : PredictionResponse
 
     @GET("maps/api/geocode/json")

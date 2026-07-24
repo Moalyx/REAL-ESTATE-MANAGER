@@ -12,7 +12,7 @@ class AutocompleteRepositoryImpl @Inject constructor(
 ) : AutocompleteRepository {
 
     private companion object{
-        private const val RADIUS = "5"
+        private const val RADIUS = "5000"
     }
     override suspend fun getAutocompleteResult(
         address: String,
@@ -26,7 +26,8 @@ class AutocompleteRepositoryImpl @Inject constructor(
                 BuildConfig.GOOGLE_AUTOCOMPLETE_KEY,
                 localisation,
                 RADIUS,
-                address
+                address,
+                true
             )
 
             val addresses: List<Pair<String, String>> = response.predictions.map {

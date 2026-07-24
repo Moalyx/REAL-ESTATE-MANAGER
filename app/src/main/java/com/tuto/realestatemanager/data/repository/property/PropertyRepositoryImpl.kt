@@ -22,9 +22,6 @@ class PropertyRepositoryImpl @Inject constructor(
         propertyDao.updateProperty(propertyEntity)
     }
 
-
-    //override fun getAllProperties(): Flow<List<PropertyWithPhotosEntity>> = flowOf(propertiesWithPhotos)
-
     override fun getAllPropertiesWithPhotosEntity(): Flow<List<PropertyWithPhotosEntity>> {
         return propertyDao.getAllPropertyWithPhotos()
     }
